@@ -4,6 +4,7 @@ import Link from "next/link";
 import { verusData } from "@/public/data/meta/verusData";
 import { useEffect } from "react";
 import Script from "next/script";
+import NavBar from "./components/NavBar";
 
 export default function Home() {
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <NavBar />
       {/* Dados estruturados para SEO */}
       <Script
         id="structured-data"

@@ -1,6 +1,8 @@
 import { Noto_Sans_JP } from 'next/font/google';
 import { ReactNode } from 'react';
 import Image from "next/image";
+import NavBar from '@/app/components/NavBar';
+
 const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
@@ -19,6 +21,7 @@ export default function Produtos({
 
   return (
     <main className="mt-24 min-h-screen">
+      <NavBar />
       <div className='mb-5'>
         <div className="flex justify-center items-center flex-col" >
           <a href="/products">

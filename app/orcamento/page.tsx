@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { verusData } from "@/public/data/meta/verusData";
+import NavBar from '../components/NavBar';
 
 export default function OrcamentoPage() {
     const [formData, setFormData] = useState({
@@ -102,6 +103,7 @@ export default function OrcamentoPage() {
 
     return (
         <div className="pt-20 min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 relative overflow-hidden">
+            <NavBar />
             {/* Background Elements */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 text-4xl animate-bounce">📧</div>

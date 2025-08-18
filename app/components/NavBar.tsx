@@ -59,6 +59,7 @@ export default function NavBar() {
                                 src="/assets/logo.png"
                                 fill
                                 className="object-contain"
+                                priority
                             />
                         </div>
                         <h1 className="font-bold text-shadow-strong text-white">

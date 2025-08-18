@@ -1,8 +1,10 @@
 import React from "react";
 import Image from "next/image";
+import NavBar from "../components/NavBar";
 export default function ProdutosPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-16 bg-gray-50 pt-34">
+      <NavBar />
       <h1 className="text-3xl sm:text-4xl font-bold text-blue-900 mb-4 text-center">
         Página de Produtos em Construção
       </h1>

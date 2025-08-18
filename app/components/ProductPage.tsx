@@ -1,7 +1,7 @@
 import Button from "@/app/components/Button";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { quoteProduct } from "@/app/products/[[...slug]]/page";
+// import { quoteProduct } from "@/app/products/[[...slug]]/page";
 
 export default function ProductsPage({ productId, description, imageUrl, price, tags, supplier, video, technicalInfo, title, subtitle }: { productId: string, description: string, imageUrl: string, price: number, tags: string | string[], supplier: string, video: string, technicalInfo: string, title: string, subtitle: string }) {
     console.log("passou aqui")
@@ -16,6 +16,7 @@ export default function ProductsPage({ productId, description, imageUrl, price, 
                                 <Image
                                     src={imageUrl}
                                     alt={"Nao foi possivel carregar a imagem"}
+                                    quality={100}
                                     fill
                                     className="object-contain"
                                     sizes="(max-width: 768px) 100vw, 50vw"

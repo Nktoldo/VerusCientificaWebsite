@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import GoogleAnalytics from "./components/GoogleAnalytics";
@@ -132,7 +131,6 @@ export default function RootLayout({
                 <GoogleAnalytics />
                 <PerformanceOptimizer />
                 <ScrollToTop />
-                <NavBar />
                 <main>
                     {children}
                 </main>

@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { db } from '../../../lib/firebase.mjs';
 import PathCard from "../../components/PathCard";
 import ProductCard from "../../components/ProductCard";
 import { useRouter, useParams } from "next/navigation";
 import ProductsPage from "../../components/ProductPage";
+import * as firebaseFunctions from "@/lib/sendDataTest";
+import router from "next/router";
 
 type Product = {
   subtitle: string;
@@ -26,16 +26,7 @@ type Path = {
 
 type DataItem = {
   key: string;
-  value: Product | Path;
 };
-
-export const quoteProduct = {
-  title: "",
-  link: "",
-  subtitle: "",
-  technicalInfo: "",
-  supplier: ""
-}
 
 export default function Produtos() {
   const [items, setItems] = useState<DataItem[]>([]);
@@ -50,29 +41,21 @@ export default function Produtos() {
     : 'produtos/';
 
 
-
+  firebaseFunctions.getSubCategories({ category: "categoria0" })
   useEffect(() => {
     setLoading(true);
-    const dbRef = ref(db, currentPath);
-    const unsubscribe = onValue(dbRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data && typeof data === "object" && "title" in data && "price" in data) {
-        // É um produto, não uma lista!
-        setItems([{ key: slug[slug.length - 1], value: data }]);
-      } else {
-        // É uma lista/categoria
-        const newItems: DataItem[] = [];
-        snapshot.forEach((element) => {
-          const value = element.val();
-          newItems.push({ key: element.key as string, value });
-        });
+        let newItems: DataItem[] = [];
+        firebaseFunctions.getCategories().then((element)=>{
+          element.forEach((cats) => {
+            
+            newItems.push({ key: cats as string });
+        })
         setItems(newItems);
-      }
-      setLoading(false);
+        setLoading(false);
+        });
+      
     });
-
-    return () => unsubscribe();
-  }, [currentPath]);
+  };
 
   const handlePathClick = (key: string) => {
     const newSlug = [...slug, key];

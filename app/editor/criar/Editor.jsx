@@ -14,7 +14,7 @@ import Heading from '@tiptap/extension-heading'
 import Paragraph from '@tiptap/extension-paragraph'
 import { v4 as uuidv4 } from 'uuid'
 import { useEffect, useState } from 'react';
-import { db } from '../../lib/firebase.mjs';
+import { db } from '@/lib/firebase.mjs';
 import { ref, onValue } from 'firebase/database';
 
 const CustomTextStyle = TextStyle.extend({

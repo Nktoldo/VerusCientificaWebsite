@@ -1,378 +1,99 @@
-'use client';
+"use client"
+import { buscarProdutos } from "@/lib/sendDataTest";
+import { getCategories, getSubCategories } from "@/lib/sendDataTest";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { useState, useEffect } from "react";
 
-import { useEffect, useState } from 'react';
-import Editor from './Editor';
-import { uploadProductImage, writeData } from '@/lib//sendDataTest.js';
-import { v4 as uuidv4 } from 'uuid';
-import { onValue, ref } from 'firebase/database';
-import { db } from '@/lib/firebase.mjs';
-import { GoogleGenAI } from "@google/genai";
+type Item = { id?: string, title?: string, img?: string }
 
-const ai = new GoogleGenAI({
-  apiKey: "AIzaSyDF26FD1kHIX0SgdLear-3VYuIGLcVJDDM" // Coloque sua chave aqui diretamente
-});
+export default function editor() {
+    // buscarProdutos()
+    const [selected, setSelected] = useState<1 | 2 | 3>(1);
+    const [items, setItems] = useState<Item[]>([]);
+    const [loading, setLoading] = useState(false);
 
-async function getHTMLFromUrl(url: string) {
-  const resposta = await fetch("/api/html", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ url })
-  });
-
-  const dados = await resposta.json();
-  return dados.html;
-}
-
-
-export default function Formulario() {
-  const [titulo, setTitulo] = useState('');
-  const [subtitulo, setSubtitulo] = useState('');
-  const [preco, setPreco] = useState('');
-  const [tags, setTags] = useState('');
-  const [fornecedor, setFornecedor] = useState('');
-  const [imagem, setImagem] = useState('');
-  const [video, setVideo] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [detalhes, setDetalhes] = useState('');
-  const [observacoes, setObservacoes] = useState('');
-  const [instrucoes, setInstrucoes] = useState('');
-  const [imagemFile, setImagemFile] = useState<File | null>(null);
-  const [precoEspecial, setPrecoEspecial] = useState(''); // Para "Sob Consulta", "Sob Orçamento", etc.
-
-  const handleEnviar = async () => {
-    let imageUrlToUse = imagem;
-    if (imagemFile) {
-      const imageId = uuidv4();
-      imageUrlToUse = await uploadProductImage(imagemFile, imageId);
+    const handleSearchType = async () => {
+        setLoading(true);
+        try {
+            switch (selected) {
+                case 2:
+                    let data = await getCategories();
+                    console.log(data)
+                    console.log((data ?? []).map((t) => ({ id: t, title: t })))
+                    setItems((data ?? []).map((t) => ({ id: t, title: t })))
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
-    // Tratar o preço antes de enviar
-    let precoParaEnviar = null;
-    if (preco && preco !== "" && preco !== "Solicite cotação") {
-      const precoNumerico = parseFloat(preco);
-      if (!isNaN(precoNumerico)) {
-        precoParaEnviar = precoNumerico;
-      }
-    }
-
-    await writeData(
-      0,
-      titulo ?? "",
-      subtitulo ?? "",
-      descricao ?? "",
-      detalhes ?? "",
-      imageUrlToUse ?? "",
-      `${categoriaSelecionada}/${subcategoriaSelecionada}`,
-      precoParaEnviar ?? "Solicite cotação",
-      tags ?? "",
-      fornecedor ?? "",
-      video ?? ""
-    );
-  };
-
-  const [categorias, setCategorias] = useState<string[]>([]);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
-  const [subcategorias, setSubcategorias] = useState<string[]>([]);
-  const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState('');
-
-  // Buscar categorias ao montar
-  useEffect(() => {
-    const categoriasRef = ref(db, 'produtos');
-    onValue(categoriasRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const cats = Object.keys(data).filter(key => data[key].type === 2);
-        setCategorias(cats);
-      }
-    });
-  }, []);
-
-  // Buscar subcategorias quando categoriaSelecionada mudar
-  useEffect(() => {
-    if (!categoriaSelecionada) {
-      setSubcategorias([]);
-      setSubcategoriaSelecionada('');
-      return;
-    }
-    const subRef = ref(db, `produtos/${categoriaSelecionada}`);
-    onValue(subRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const subs = Object.keys(data).filter(key => data[key].type === 1);
-        setSubcategorias(subs);
-      }
-    });
-  }, [categoriaSelecionada]);
-  const path = `${categoriaSelecionada}/${subcategoriaSelecionada}`;
-
-  // Estado para controlar o modal
-  const [showIAModal, setShowIAModal] = useState(false);
-  // Estados para os campos do modal IA
-  const [iaLink, setIaLink] = useState("");
-  const [iaMensagem, setIaMensagem] = useState("");
-
-  async function handleEnviarIA() {
-    const html = await getHTMLFromUrl(iaLink);
-    if (!html) {
-      alert('Não foi possível obter o HTML da URL informada.');
-      return;
-    } else {
-      console.log(html);
-    }
-
-    const prompt = `Extraia e sugira os seguintes campos em formato JSON, analisando SOMENTE o conteúdo do html (não pesquise fora do html ou link fornecido):
-
-LINK:
-${iaLink}
-
-HTML:
-${html}
-
-JSON:
-{
-  "titulo": "",
-  "subtitulo": "",
-  "tags": "",
-  "fornecedor": "",
-  "imagem": "",
-  "video": "",
-  "descricao": "",
-  "detalhes": ""
-}
-
-- O subtitulo deve ser o modelo do produto, se houver. Caso tenha, nao colocar no titulo.
-- A imagem deve ser o link direto da imagem do produto.
-- O vídeo deve ser o link do YouTube do iframe, se houver.
-- A descrição deve ser completa e exata do produto, formate com <p> e <br>, <b> e <i> para quebrar linhas, formatar, criar divisoes, destacar informações e titulos.
-- Os detalhes devem conter as informações técnicas, preferencialmente em formato de tabela utilizando <table> e <tr> e <td>, se houver.
-- Sempre preencha: titulo, subtitulo, descricao, detalhes, tags, fornecedor (a menos que não existam).
-- NUNCA INVENTE DADOS.
-- Não use informações de outros produtos da página, apenas do produto principal.
-
-REVISE OS DADOS E VEJA SE ESTAO COMPLETOS, NAO FALTA NADA E ESTAO CORRETOS.
-
-Responda apenas com o JSON.`;
-
-    try {
-      const chat = ai.chats.create({
-        model: "gemini-2.5-flash",
-      });
-
-      const response = await chat.sendMessage({ message: prompt });
-      const resposta = response.text;
-
-      // Limpar blocos markdown ```json ... ``` ou ``` ... ```
-      let respostaLimpa = resposta ?? "";
-      // Remove blocos markdown do início e fim
-      respostaLimpa = respostaLimpa.replace(/^```[a-zA-Z]*\s*([\s\S]*?)\s*```$/m, '$1').trim();
-      // Se ainda houver múltiplos blocos, pega o primeiro JSON válido
-      const match = respostaLimpa.match(/\{[\s\S]*\}/);
-      if (match) {
-        respostaLimpa = match[0];
-      }
-      const sugestao = JSON.parse(respostaLimpa);
-
-      if (sugestao.titulo) setTitulo(sugestao.titulo);
-      if (sugestao.subtitulo) setSubtitulo(sugestao.subtitulo);
-      if (sugestao.preco === "Solicite cotação") {
-        setPreco("Solicite cotação");
-      } else if (sugestao.preco) {
-        setPreco(sugestao.preco);
-      }
-      if (sugestao.tags) setTags(sugestao.tags);
-      if (sugestao.fornecedor) setFornecedor(sugestao.fornecedor);
-      if (sugestao.imagem) setImagem(sugestao.imagem);
-      if (sugestao.video) setVideo(sugestao.video);
-      if (sugestao.descricao) setDescricao(sugestao.descricao);
-      if (sugestao.detalhes) setDetalhes(sugestao.detalhes);
-      setShowIAModal(false);
-    } catch (e) {
-      alert('Não foi possível interpretar a resposta da IA.');
-      console.error(e);
-    }
-  }
-
-  return (
-    <div className="w-full pt-24 p-6 flex flex-col gap-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-b-2xl shadow-2xl border border-slate-700">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-3xl font-bold text-blue-300">Cadastro de Produto</h1>
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition"
-          onClick={() => setShowIAModal(true)}
-        >
-          IA Assistent
-        </button>
-      </div>
-
-      {/* Modal IA Assistent */}
-      {showIAModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-              onClick={() => setShowIAModal(false)}
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-bold mb-4 text-green-700">IA Assistent</h2>
-            <div className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Link</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                  placeholder="Insira um link do produto aqui"
-                  value={iaLink}
-                  onChange={e => setIaLink(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mensagem</label>
-                <textarea
-                  className="w-full border border-gray-300 rounded px-3 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-green-400"
-                  placeholder="Insira instrucoes extras para a IA"
-                  value={iaMensagem}
-                  onChange={e => setIaMensagem(e.target.value)}
-                />
-              </div>
-              <button
-                className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded transition"
-                onClick={handleEnviarIA}
-              >
-                Enviar
-              </button>
+    return (
+        <main className="min-h-screen px-2">
+            <div className="w-full h-30 px-2 py-4">
+                <div className="w-full h-full shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md bg-white grid grid-cols-5">
+                    <div className="flex justify-around items-center col-span-3 gap-10 px-5">
+                        <input type="text" placeholder="Search..." className="rounded-md h-12 w-full border-1 px-1" />
+                        <button className="bg-blue-500 text-white shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md py-3 px-5 duration-200 hover:scale-95">Consultar</button>
+                        <button className="bg-green-500 text-white shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md py-3 px-5 duration-200 hover:scale-95">Filtros</button>
+                    </div>
+                    <div className="col-span-2 flex justify-around flex-row items-center border-r-1">
+                        <button onClick={async () => setSelected(1)} className={`shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md ${selected == 1 ? "bg-blue-600/80 text-white" : "bg-white text-black"} p-3 duration-300 h-full w-full hover:scale-95`}>Produtos</button>
+                        <button onClick={() => { setSelected(2); handleSearchType }} className={`shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md ${selected == 2 ? "bg-blue-600/80 text-white" : "bg-white text-black"} p-3 duration-300 h-full w-full hover:scale-95`}>Categorias</button>
+                        <button onClick={() => setSelected(3)} className={`shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md ${selected == 3 ? "bg-blue-600/80 text-white" : "bg-white text-black"} p-3 duration-300 h-full w-full hover:scale-95`}>Subcategorias</button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Categoria:</label>
-        <select
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2"
-          value={categoriaSelecionada}
-          onChange={e => setCategoriaSelecionada(e.target.value)}
-        >
-          <option value="">Selecione uma categoria</option>
-          {categorias.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Subcategoria:</label>
-        <select
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2"
-          value={subcategoriaSelecionada}
-          onChange={e => setSubcategoriaSelecionada(e.target.value)}
-          disabled={!categoriaSelecionada}
-        >
-          <option value="">Selecione uma subcategoria</option>
-          {subcategorias.map(sub => (
-            <option key={sub} value={sub}>{sub}</option>
-          ))}
-        </select>
-      </div>
+            <section className="border-1 min-h-15">
+                <div className=" min-h-15 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md border-b-1 border-blue-400 col-span-5 duration-200  grid grid-cols-6">
+                    <div className="border-r-1 col-span-2 flex justify-center items-center"><h1 className="text-2xl">Titulo do produto</h1></div>
+                    <div className="border-r-1 col-span-1 flex justify-center items-center"><h1 className="text-2xl">Cod. Referencia</h1></div>
+                    <div className="border-r-1 col-span-2 flex justify-center items-center"><h1 className="text-2xl">Foto</h1></div>
+                    <div className=" col-span-1 p-3 flex flex-col gap-2 flex justify-center items-center"><h1 className="text-2xl">Menu edicao</h1></div>
+                </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Título:</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={titulo}
-          onChange={e => setTitulo(e.target.value)}
-        />
-      </div>
+                <div className=" min-h-30 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md border-b-1 border-blue-400 col-span-5 duration-200  grid grid-cols-6">
+                    <div className="border-r-1 col-span-2"></div>
+                    <div className="border-r-1 col-span-1"></div>
+                    <div className="border-r-1 col-span-2"></div>
+                    <div className=" col-span-1 p-3 flex flex-col gap-2">
+                        <div className="flex gap-2">
+                            <input type="checkbox" name="activated" id="activated" />
+                            <label htmlFor="activated">Produto {true ? <span className="text-green-600">ativo</span> : <span className="text-red-600">desativado</span>}</label>
+                        </div>
+                        <div className="flex gap-3">
+                            <button className=" h-8 rounded-sm bg-green-300 px-4 border-1 border-green-800 hover:scale-95 duration-200">Editar</button>
+                            <button className=" h-8 rounded-sm bg-red-300 px-4 border-1 border-red-800">Excluir</button>
+                        </div>
+                    </div>
+                </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Subtítulo:</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={subtitulo}
-          onChange={e => setSubtitulo(e.target.value)}
-        />
-      </div>
+                {loading ? (
+                    <div><p>Loading</p></div>
+                ) : items.length === 0 ? (
+                    <div><p>Nenhum Resultado encontrado</p></div>
+                ) : (
+                    items.map((cats) => (
+                        <div className=" min-h-30 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl backdrop-brightness-125 backdrop-contrast-125 backdrop-saturate-150 rounded-md border-b-1 border-blue-400 col-span-5 duration-200  grid grid-cols-6">
+                            <div className="border-r-1 col-span-5">{cats.id}</div>
+                            <div className=" col-span-1 p-3 flex flex-col gap-2">
+                                <div className="flex gap-2">
+                                    <input type="checkbox" name="activated" id="activated" />
+                                    <label htmlFor="activated">Produto {true ? <span className="text-green-600">ativo</span> : <span className="text-red-600">desativado</span>}</label>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button className=" h-8 rounded-sm bg-green-300 px-4 border-1 border-green-800 hover:scale-95 duration-200">Editar</button>
+                                    <button className=" h-8 rounded-sm bg-red-300 px-4 border-1 border-red-800">Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )
+                }
 
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Preço (opcional):</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={preco}
-          onChange={e => setPreco(e.target.value)}
-          min={0}
-          step={0.01}
-          placeholder="Ex: 1999.90"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Tags (separadas por vírgula):</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={tags}
-          onChange={e => setTags(e.target.value)}
-          placeholder="Ex: Agitador, Digital, Laboratório"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Fornecedor:</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={fornecedor}
-          onChange={e => setFornecedor(e.target.value)}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">URL da Imagem:</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={imagem}
-          onChange={e => setImagem(e.target.value)}
-          placeholder="Cole o link da imagem do produto"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          className="mt-2 text-slate-100"
-          onChange={e => setImagemFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">URL do Vídeo (opcional):</label>
-        <input
-          type="text"
-          className="border border-slate-700 bg-slate-800 text-slate-100 w-full rounded-md p-2 focus:outline-blue-400 placeholder:text-slate-500"
-          value={video}
-          onChange={e => setVideo(e.target.value)}
-          placeholder="Cole o link do vídeo do produto (YouTube, etc)"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Descrição:</label>
-        <Editor key={descricao} content={descricao} onChange={setDescricao} />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-slate-200">Detalhes Técnicos:</label>
-        <Editor key={detalhes} content={detalhes} onChange={setDetalhes} />
-      </div>
-
-      <button
-        onClick={handleEnviar}
-        className="mt-6 px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-900 shadow-lg"
-      >
-        Enviar para Firebase
-      </button>
-    </div>
-  );
+            </section>
+        </main>
+    );
 }
