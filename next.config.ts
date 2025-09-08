@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.loccus.com.br',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'loccus.com.br',
+        pathname: '/**',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

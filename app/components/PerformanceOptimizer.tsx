@@ -18,8 +18,8 @@ export default function PerformanceOptimizer() {
       document.head.appendChild(link)
     })
 
-    // Add performance monitoring
-    if (typeof window !== 'undefined' && 'performance' in window) {
+    // Add performance monitoring (apenas em desenvolvimento)
+    if (typeof window !== 'undefined' && 'performance' in window && process.env.NODE_ENV === 'development') {
       window.addEventListener('load', () => {
         const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
         if (perfData) {

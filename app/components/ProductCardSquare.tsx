@@ -1,26 +1,33 @@
 import Image from "next/image";
 
-export default function ProductCard({name, image, subtitle}: {name: string, image: string, subtitle: string}) {
+export default function ProductCardSquare({name, image, subtitle}: {name: string, image: string, subtitle: string}) {
     const hasImage = typeof image === 'string' && image.trim().length > 0;
     
     return(
-        <div className="group relative w-64 min-w-[20rem] h-80 overflow-hidden rounded-2xl bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 shadow-lg shadow-blue-500/10 border border-blue-200/40 hover:shadow-2xl hover:shadow-blue-500/20 hover:scale-105 hover:-translate-y-2 transition-all duration-500 cursor-pointer flex flex-col">
+        <div className="group relative w-64 min-w-[20rem] h-80 overflow-hidden rounded-2xl bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 shadow-lg shadow-blue-500/10 border border-blue-200/40 hover:shadow-2xl hover:shadow-blue-500/20 hover:scale-105 hover:-translate-y-2 transition-all duration-500 cursor-pointer">
             
             {/* Efeito de brilho no hover */}
-            <div className="w-full absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out z-10" />
             
-            {/* Seção da imagem - QUADRADA */}
-            <div className="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+            {/* Seção da imagem - QUADRADA com altura fixa */}
+            <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
                 {hasImage ? (
-                    <Image 
-                        src={image} 
-                        alt={name} 
-                        quality={95} 
-                        fill 
-                        priority 
-                        className="object-cover transition-transform duration-500 group-hover:scale-110" 
-                        sizes="w-full 50vw, 25vw"
-                    />
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src={image} 
+                            alt={name} 
+                            quality={95} 
+                            width={200}
+                            height={200}
+                            className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110" 
+                            style={{
+                                width: 'auto',
+                                height: 'auto',
+                                maxWidth: '100%',
+                                maxHeight: '100%'
+                            }}
+                        />
+                    </div>
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
@@ -36,16 +43,17 @@ export default function ProductCard({name, image, subtitle}: {name: string, imag
             </div>
             
             {/* Separador elegante */}
-            <div className="mx-2 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent" />
-            {/* Conteúdo do card - altura flexível */}
-            <div className="flex-1 flex flex-col justify-center space-y-1 min-h-0 px-5 py-8">
+            <div className="mx-6 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent" />
+            
+            {/* Conteúdo do card */}
+            <div className="flex-1 flex flex-col justify-center px-6 py-4 space-y-2 min-h-0">
                 {/* Título do produto */}
-                <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-300">
+                <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2 leading-tight">
                     {name}
                 </h3>
                 
                 {/* Subtítulo */}
-                <p className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors duration-300">
+                <p className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 leading-relaxed">
                     {subtitle}
                 </p>
             </div>

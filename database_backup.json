@@ -1,0 +1,4239 @@
+{
+  "categorias" : {
+    "TEsteCat" : {
+      "activated" : true,
+      "active" : true
+    },
+    "Teste" : true,
+    "Teste2" : false,
+    "Testefnaldecategoria" : {
+      "active" : true,
+      "title" : "Teste fnal de categoria"
+    },
+    "outroTesteCate" : {
+      "active" : true,
+      "title" : "outroTESTEcat"
+    },
+    "teste4" : false,
+    "testedenovacategoria" : {
+      "active" : true
+    }
+  },
+  "filtros" : {
+    "suppliers" : {
+      "Loccus" : true,
+      "Revenda teste" : {
+        "active" : true,
+        "type" : "revenda"
+      },
+      "Sartorius" : true,
+      "TEste" : {
+        "active" : true,
+        "type" : "Revenda"
+      },
+      "TEste Final" : {
+        "active" : true,
+        "type" : "Revenda"
+      },
+      "Verus Científica" : true,
+      "Verus Teste" : {
+        "active" : true,
+        "type" : "representada"
+      }
+    },
+    "tags" : {
+      "Aquecimento" : true,
+      "Loccus" : {
+        "active" : true,
+        "color" : "#3b82f6"
+      },
+      "d" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "dfg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "dfh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "dhfg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "f" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fdh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fds" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fdsh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fgd" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fsdgsg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fsf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fsfg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "fsgf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gfd" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gfdf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gfdfgd" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gfdsf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gfgfs" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gr" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "gsfg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "h" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "hd" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "hdh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "hdhdg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "hgd" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "j" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "jet" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "jhte" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "rfh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "rh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "sds" : {
+        "active" : true,
+        "color" : "#5bff2e"
+      },
+      "sg" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "sgf" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "sh" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "teste" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      },
+      "w" : {
+        "active" : true,
+        "color" : "#3B82F6"
+      }
+    }
+  },
+  "produtos" : {
+    "-OXP54s12WLKcePK1HLd" : {
+      "active" : true,
+      "category" : "TEsteCat",
+      "description" : "<p><span style=\"color: #a55555\">descro</span></p>",
+      "imageUrl" : "https://static.wikia.nocookie.net/sst/images/4/42/Juggernog_logo.png/revision/latest?cb=20231212182313",
+      "price" : "",
+      "subcategory" : "",
+      "subtitle" : "MODELO A938DLA3",
+      "supplier" : "Loccus",
+      "tags" : [ "um", null, "Aquecimento", "Loccus" ],
+      "technicalInfo" : "aa",
+      "title" : "Teste de produto Loccus",
+      "updatedAt" : "2025-08-22T18:58:26.593Z",
+      "video" : ""
+    },
+    "-OXP6uPFAtn9-azT5F-W" : {
+      "active" : true,
+      "category" : "categoria2",
+      "description" : "<p>test</p>",
+      "imageUrl" : "",
+      "price" : "Solicite orcamento",
+      "subcategory" : "subcategoria1",
+      "subtitle" : "TSubu",
+      "supplier" : "Loccus",
+      "tags" : "TEste1, TEste2",
+      "technicalInfo" : "<p>ss</p>",
+      "title" : "TTitulo",
+      "video" : ""
+    },
+    "-OYD4J4Fw0spQTQrOAaD" : {
+      "active" : true,
+      "category" : "TEsteCat",
+      "description" : "<p>Sistema automatizado de eletroforese capilar, destinado à separação eletroforética, análise e quantificação de fragmentos de ácidos nucleicos em cartuchos. Baseado na eletroforese capilar em gel (CGE) para a detecção de fragmentos de DNA, ideal para rotinas laboratoriais de baixa demanda.</p><p><strong>AUTOMATIZE SUAS ANÁLISES DE DNA E RNA<br />GARANTA MAIS VELOCIDADE PARA SUA ELETROFORESE</strong></p><p>Mecanismo de detecção extremamente sensível e preciso, que dispensa o preparo de gel e utilização de corantes ou marcadores contaminantes. Visualização dos dados em eletroferograma e em formato de gel. Informações armazenadas em formato digital, facilitando análises posteriores, e totalmente customizável.</p><p>Permite análises como perfil de degradação do DNA genômico, análise de fragmentos para Sequenciamento de Nova Geração (NGS), triagem de perfil genético e polimorfismos de extensão de fragmento amplificado. Realiza análises de qualidade do RNA (RQN), expressão gênica, entre outros, e análise de proteínas (requer marcação).</p><p><strong>CARACTERÍSTICAS DO SISTEMA DE ELETROFORESE CAPILAR GELBOT:</strong></p><ul><li>Processo automatizado para até 8 amostras</li><li>Não há necessidade de preparação de gel</li><li>Altíssima sensibilidade: 0,1ng/μL</li><li>Resolução: 2pb a 4pb</li><li>Diversas opções de cartuchos com diferentes resoluções para otimizar as análises.</li><li>Visualização dos dados em eletroferograma e em formato de gel.</li><li>Software: dados digitais para análise qualitativa e quantitativa.</li><li>Custo competitivo para o sistema e consumíveis.</li></ul><p><strong>O Sistema automatizado de eletroforese capilar GELBOT EXPRESS atende as normas internacionais de segurança.</strong></p><p>Produto destinado exclusivamente à utilização em pesquisa científica.</p>",
+      "imageUrl" : "https://www.loccus.com.br/wp-content/uploads/2021/09/Gelbot-Site-Original.webp",
+      "price" : "",
+      "subcategory" : "",
+      "subtitle" : "GelBot Express",
+      "supplier" : "Loccus",
+      "tags" : [ "automação" ],
+      "technicalInfo" : "<table><thead><tr><th><strong>Especificações Técnicas</strong></th><th>GELBOT</th></tr></thead><tbody><tr><td><strong>Capacidade de amostras</strong></td><td>Até 96 amostras por corrida</td></tr><tr><td><strong>Compatibilidade</strong></td><td>Placas de 96 poços, tiras de PCR e microtubos de 0,2 mL</td></tr><tr><td><strong>Consumível</strong></td><td>Kit com cartucho descartável e reagentes</td></tr><tr><td><strong>Cartuchos</strong></td><td>DNA (qualitativo ou quantitativo), RNA e Proteína</td></tr><tr><td><strong>Resolução de separação / detecção</strong></td><td>Até 2–4 pb / detecção de até 0,1 ng/μL</td></tr><tr><td><strong>Detecção</strong></td><td>Fluorescência CE Multiplex<br />Excitação por LED (525 nm)<br />Emissão (590 nm)</td></tr><tr><td><strong>Tempo de análise</strong></td><td>2 a 7 minutos por amostra (dependendo do cartucho e/ou método)</td></tr><tr><td><strong>Controle do sistema</strong></td><td>Via software</td></tr><tr><td><strong>Conexão</strong></td><td>USB</td></tr><tr><td><strong>Requisitos mínimos do computador</strong></td><td>Processador 2,4 GHz (Dual Core), Windows a partir do XP com Service Pack<br />3, 2GB RAM, 1GB de espaço no HD, 2 portas USB 2.0</td></tr><tr><td><strong>Tensão</strong></td><td>Bivolt automático</td></tr><tr><td><strong>Dimensões (C x L x A)</strong></td><td>24 cm x 30 cm x 40 cm</td></tr><tr><td><strong>Peso</strong></td><td>15 kg</td></tr></tbody></table>",
+      "title" : "Sistema automatizado de eletroforese capilar",
+      "video" : ""
+    },
+    "-OZ5IJkJejxLbUMOOM6Z" : {
+      "active" : true,
+      "category" : "TEsteCat",
+      "description" : "<p>A automação do processo de extração de <strong>DNA</strong> e <strong>RNA</strong> garante praticidade para a rotina, diminui as chances de erro de pipetagem e ainda otimiza os protocolos de extração. Como resultado, é possível ter amostras mais puras e com melhor rendimento quando comparado ao processo realizado manualmente.</p><p>Sistema baseado na tecnologia de beads magnéticas. Dispensa acompanhamento pelo usuário durante a execução, permitindo processar de 1 a 16 amostras simultaneamente em cerca de 40 minutos.</p><p>O <strong>extrator e purificador de DNA e RNA</strong> EXTRACTA 16 ® é um sistema automatizado e realiza o procedimento de extração/ purificação utilizando beads magnéticas.</p><p>A plataforma é compatível com kits de extração/ purificação de diversos fabricantes.</p><ul><li><p><strong>Purificação totalmente automatizada do início ao fim!</strong></p></li><li><p><strong>EXTRAI DE 1 A 16 AMOSTRAS EM ATÉ 40 MINUTOS;</strong></p></li><li><p><strong>TECNOLOGIA DE PURIFICAÇÃO POR BEADS MAGNÉTICAS*</strong></p></li></ul><p>A automação do processo de extração de DNA/ RNA garante praticidade para a rotina, diminui as chances de erro de pipetagem e ainda otimiza os protocolos de extração. Como resultado, é possível ter amostras mais puras e com maior rendimento quando comparado ao processo realizado manualmente.</p><p>O <strong>extrator e purificador de DNA e RNA</strong> EXTRACTA 16 ® promove alto desempenho, versatilidade e praticidade. O <strong>Extrator e Purificador Automático de Ácidos Nucleicos</strong> EXTRACTA 16 ® permite processar até 16 amostras em cerca de 15-40 minutos, sem a necessidade de acompanhamento do usuário durante a execução. É capaz de utilizar procedimentos já consolidados para extração por beads magnéticas ou customizar protocolos próprios para o equipamento.</p><p><strong>APLICAÇÕES DO EXTRATOR E PURIFICADOR DE DNA E RNA</strong> EXTRACTA 16 ® <strong>:</strong></p><ul><li><p>Extração e purificação de DNA ou RNA de amostras biológicas de origem animal, vegetal, microbiana, fúngica e viral.</p></li><li><p>Isolamento de DNA de amostras forenses.</p></li><li><p>Extração de ácidos nucleicos de géis para aplicações pós-eletroforese (Clean up).</p></li></ul><p><strong>VANTAGENS DO EXTRATOR E PURIFICADOR DE DNA E RNA EXTRACTA 16</strong> ® :</p><ul><li><p>Permite otimizar protocolos e utilizar kits de extração por beads magnéticas.</p></li><li><p>Processador de imagem digital para qualidade e velocidade de processamento superiores.</p></li><li><p>Tela <em>touch</em> com software de fácil utilização.</p></li><li><p>Teclas de atalho para tornar fácil a criação, modificação e otimização de programas.</p></li><li><p>Lâmpada UV para evitar contaminação cruzada entre corridas.</p></li><li><p>Sistema de aquecimento rápido em 2 posições, tornando possíveis extrações, incubações e eluições em temperatura controlada.</p></li><li><p>Alarme sonoro que indica o final da purificação.</p></li><li><p>Consumíveis plásticos individuais para cada amostra, facilitando o preparo da corrida.</p></li><li><p>Simplifica o fluxo de trabalho, permitindo que o usuário realize outras tarefas enquanto o sistema trabalha automaticamente.</p></li></ul><p>*ESSE EQUIPAMENTO DEVE SER UTILIZADO COM KITS DE EXTRAÇÃO MAGNÉTICA, VENDIDOS SEPARADAMENTE.</p><p>O <strong>extrator e purificador de DNA e RNA</strong> EXTRACTA 16 ® é totalmente adequado às normas internacionais de segurança.<br>Produto destinado exclusivamente à utilização em pesquisa científica.</p>",
+      "imageUrl" : "https://www.loccus.com.br/wp-content/uploads/2024/01/Extracta16_Fechado_Baixa_v4.png",
+      "price" : "",
+      "subcategory" : "",
+      "subtitle" : "Extracta® 16",
+      "supplier" : "Loccus",
+      "tags" : [ "extrator de dna", "purificador de dna", "extrator de rna", "purificador de rna", "beads magnéticas", "automação", "extracta16", "robos-extracta", "extracao-e-purificacao-de-material-genetico", "automacao-da-extracao", "diagnostico-humano", "agro-de-precisao", "tipos-robos", "extracao-e-purificacao-de-acidos-nucleicos-e-proteinas" ],
+      "technicalInfo" : "<h2>Dados Técnicos</h2><p></p><table class=\"table table-bordered table-description table-responsive\">\n<thead>\n<tr class=\"tpurple\">\n<th colspan=\"2\">Especificações</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Capacidade de amostras</td>\n<td>1 a 16 amostras por corrida</td>\n</tr>\n<tr>\n<td>Número de hastes magnéticas</td>\n<td>16</td>\n</tr>\n<tr>\n<td>Volume de processamento</td>\n<td>50μL a 1.000μL.<br />\nOpcional: até 5.000μL (5mL)</td>\n</tr>\n<tr>\n<td>Tempo total da extração de 16 amostras</td>\n<td>15-40 minutos</td>\n</tr>\n<tr>\n<td>Kits compatíveis</td>\n<td>Kits de extração por beads magnéticas</td>\n</tr>\n<tr>\n<td>Compatibilidade</td>\n<td>Placas deepwell de 96 poços / strips</td>\n</tr>\n<tr>\n<td>Eficiência de coleta das beads magnéticas</td>\n<td>>95%</td>\n</tr>\n<tr>\n<td>Precisão (acurácia) da purificação</td>\n<td>>95% (em 100 cópias)</td>\n</tr>\n<tr>\n<td>Exaustor integrado</td>\n<td>Otimiza etapa de secagem do protocolo</td>\n</tr>\n<tr>\n<td>Temperatura de aquecimento em duas posições</td>\n<td>Ambiente a 120°C</td>\n</tr>\n<tr>\n<td>Alarme sonoro</td>\n<td>Sinaliza o final do protocolo</td>\n</tr>\n<tr>\n<td>Acuracidade da purificação</td>\n<td>>95% (em 100 cópias)</td>\n</tr>\n<tr>\n<td>Operação</td>\n<td>Tela colorida touchscreen de 4,3 polegadas</td>\n</tr>\n<tr>\n<td>Gerenciamento de protocolos</td>\n<td>Permite criar, editar, deletar e exportar protocolos</td>\n</tr>\n<tr>\n<td>Memória</td>\n<td>Até 100 programas (ilimitado ao exportar via USB)</td>\n</tr>\n<tr>\n<td>Comunicação</td>\n<td>2 portas USB-A e Bluetooth</td>\n</tr>\n<tr>\n<td>Controle de contaminação</td>\n<td>Esterilização por lâmpada UV</td>\n</tr>\n<tr>\n<td>Iluminação interna</td>\n<td>Lâmpada LED branca</td>\n</tr>\n<tr>\n<td>Alimentação</td>\n<td>AC 100-240V, 50/60Hz</td>\n</tr>\n<tr>\n<td>Potência máxima</td>\n<td>150W</td>\n</tr>\n<tr>\n<td>Dimensões externas (CxLxA)</td>\n<td>21cm x 26cm x 32cm</td>\n</tr>\n<tr>\n<td>Peso</td>\n<td>7kg</td>\n</tr>\n</tbody>\n</table>",
+      "title" : "Extrator e purificador de DNA e RNA",
+      "video" : "https://loccus.com.br/2324/wp-content/uploads/2023/11/Loccus-extracta-16-background.mp4"
+    },
+    "-OZFNehS9kk5HCNnQUW1" : {
+      "active" : true,
+      "categories" : [ "Teste fnal de categoria", "Teste fnal de categoria" ],
+      "category" : "Teste fnal de categoria",
+      "description" : "<p><b>PRÉ-LANÇAMENTO</b></p><p>O Librarian 340 é uma estação de trabalho para preparação de biblioteca para Sequenciamento de Próxima Geração (NGS), quantificação, segmentação multiplex e captura de hibridização.</p><p>Com o pipetador de alta precisão de 24 canais integrado com bloco fluorímetro e bloco de amplificação de PCR o equipamento garante resultados mais rápidos, precisos e confiáveis. Além disso, com dois braços robóticos, o equipamento alcança a verdadeira automação de preparação da biblioteca dentro da máquina, garantindo a operação simultânea de vários blocos sem intervenção manual durante todo o processo.</p><p>O design de 27 placas com pinça e empilhamento de placas permite uma preparação de biblioteca relativamente simples para 96 ​​amostras totalmente automatizada, enquanto para processos mais complexos como captura de hibridização é possível trabalhar com até 48 amostras.</p><p>Para maior segurança, o instrumento é equipado com luz UV-C e sistema de filtragem HEPA, proporcionando uma estação livre de contaminantes e conta ainda com Incubadora termoagitadora para aumentar o efeito de mistura.</p><p>Librarian 340 possui, software com design de interface simples e intuitivo que permite adicionar, ajustar e personalizar livremente o programa de acordo com as necessidades dos kits, blocos de placas e requisitos da aplicação.</p><p>*ESSE EQUIPAMENTO DEVE SER UTILIZADO COM REAGENTES VENDIDOS SEPARADAMENTE.</p><p>Equipamento de laboratório totalmente adequado às normas internacionais de segurança.</p><p>Computador incluso. Inclui treinamento e instalação no local. Assistência e suporte técnico permanente no Brasil.</p>",
+      "imageUrl" : "https://www.loccus.com.br/wp-content/uploads/2023/11/Librarian-340.2.png",
+      "paths" : [ {
+        "category" : "Teste fnal de categoria",
+        "displayName" : "Teste fnal de categoria > TEste finallllLLL",
+        "id" : "Teste fnal de categoria--OZFKMIUdhCki-a7cKsa-1756916450433",
+        "subcategory" : "-OZFKMIUdhCki-a7cKsa",
+        "subcategoryTitle" : "TEste finallllLLL"
+      }, {
+        "category" : "Teste fnal de categoria",
+        "displayName" : "Teste fnal de categoria",
+        "id" : "Teste fnal de categoria-none-1756916454767"
+      } ],
+      "price" : "",
+      "subcategories" : [ "-OZFKMIUdhCki-a7cKsa", "" ],
+      "subcategory" : "-OZFKMIUdhCki-a7cKsa",
+      "subtitle" : "Librarian 340",
+      "supplier" : "Loccus",
+      "tags" : [ "Teste" ],
+      "technicalInfo" : "<table width=\"600\"><tbody><tr><td style=\"text-align: center;\" colspan=\"2\" width=\"600\"><strong>Especificações</strong></td></tr><tr><td>Capacidade de processamento</td><td>1 a 96 amostras (dependendo do kit)</td></tr><tr><td>Quantidade de posições</td><td>27 posições padrão</td></tr><tr><td>Pipetador</td><td>200 μL; 24 canais (pode ser usado como único canal)</td></tr><tr><td rowspan=\"3\">Faixa de pipetagem</td><td> Ponteira de 20 μL: 0,520 μL</td></tr><tr><td> Ponteira de 50 μL: 1200 μL</td></tr><tr><td> Ponteira de 200 μL: 2200 μL</td></tr><tr><td>Volume mínimo de detecção</td><td>20 μL</td></tr><tr><td rowspan=\"5\">Exatidão da pipetagem</td><td> 0.5 μL: ≤12%</td></tr><tr><td> 1 μL: ≤5%</td></tr><tr><td> 20 μL: ≤2%</td></tr><tr><td> 100 μL: ≤1%</td></tr><tr><td> 200 μL: ≤1%</td></tr><tr><td rowspan=\"5\">Precisão da pipetagem</td><td> 0.5 μL: ±20%</td></tr><tr><td> 1 μL: ±12%</td></tr><tr><td> 20 μL: ±2%</td></tr><tr><td> 100 μL: ±1%</td></tr><tr><td> 200 μL: ±1%</td></tr><tr><td rowspan=\"3\">Bloco de controle de temperatura</td><td> Faixa: 4~105 °C</td></tr><tr><td> Precisão: ±0,5 °C</td></tr><tr><td> Uniformidade: ±0,5 °C</td></tr><tr><td>Volume de eluição</td><td>501000 μL</td></tr><tr><td>Controle de temperatura</td><td>4~105 °C</td></tr><tr><td>Acurácia da temperatura</td><td>@55 °C: ≤0,5 °C</td></tr><tr><td>Uniformidade da temperatura</td><td>@55 °C: CV ≤1 °C</td></tr><tr><td rowspan=\"4\">Bloco de amplificação genética</td><td> Faixa de temperatura:</td></tr><tr><td>Tampa térmica: +30 °C~+120 °C; bloco: +4 °C~+99 °C</td></tr><tr><td> Uniformidade: ≤0,7 °C</td></tr><tr><td> Precisão: ≤±0,3 °C</td></tr><tr><td>Faixa de detecção de fluorescência</td><td>0,4 ng~100 ng</td></tr><tr><td>Módulo magnético</td><td>Anel magnético para 96 poços</td></tr><tr><td>Esterilização</td><td>Luz UV</td></tr><tr><td>Filtro</td><td>HEPA</td></tr><tr><td>Canais de pipetagem</td><td>24</td></tr><tr><td>Controle de usuário</td><td>Sim</td></tr><tr><td>Operação</td><td>Software para computador</td></tr><tr><td>Gerenciamento</td><td>Software integrado</td></tr><tr><td>Porta de comunicação</td><td>Porta USB</td></tr><tr><td>Alimentação</td><td>100~240 VAC, 50/60 Hz</td></tr><tr><td>Potência máxima</td><td>1200 W</td></tr><tr><td>Dimensões (CxLxA)</td><td>1420 x 790 x 800 mm</td></tr></tbody></table>",
+      "title" : "Sistema Automatizado de Construção de Biblioteca de NGS",
+      "video" : ""
+    },
+    "-OZFRUaqHFH68Caf2vRw" : {
+      "active" : true,
+      "categories" : [ "Teste fnal de categoria" ],
+      "category" : "Teste fnal de categoria",
+      "description" : "<p><b>PRÉ-LANÇAMENTO</b></p>\n<p>O Librarian 340 é uma estação de trabalho para preparação de biblioteca para Sequenciamento de Próxima Geração (NGS), quantificação, segmentação multiplex e captura de hibridização.</p>\n<p>Com o pipetador de alta precisão de 24 canais integrado com bloco fluorímetro e bloco de amplificação de PCR o equipamento garante resultados mais rápidos, precisos e confiáveis. Além disso, com dois braços robóticos, o equipamento alcança a verdadeira automação de preparação da biblioteca dentro da máquina, garantindo a operação simultânea de vários blocos sem intervenção manual durante todo o processo.</p>\n<p>O design de 27 placas com pinça e empilhamento de placas permite uma preparação de biblioteca relativamente simples para 96 ​​amostras totalmente automatizada, enquanto para processos mais complexos como captura de hibridização é possível trabalhar com até 48 amostras.</p>\n<p>Para maior segurança, o instrumento é equipado com luz UV-C e sistema de filtragem HEPA, proporcionando uma estação livre de contaminantes e conta ainda com Incubadora termoagitadora para aumentar o efeito de mistura.</p>\n<p>Librarian 340 possui, software com design de interface simples e intuitivo que permite adicionar, ajustar e personalizar livremente o programa de acordo com as necessidades dos kits, blocos de placas e requisitos da aplicação.</p>\n<p>&nbsp;</p>\n<p>*ESSE EQUIPAMENTO DEVE SER UTILIZADO COM REAGENTES VENDIDOS SEPARADAMENTE.</p>\n<p>&nbsp;</p>\n<p>Equipamento de laboratório totalmente adequado às normas internacionais de segurança.</p>\n<p>Computador incluso. Inclui treinamento e instalação no local. Assistência e suporte técnico permanente no Brasil.</p>",
+      "imageUrl" : "https://www.loccus.com.br/wp-content/uploads/2023/11/Librarian-340.1.jpg",
+      "paths" : [ {
+        "category" : "Teste fnal de categoria",
+        "displayName" : "Teste fnal de categoria > TEste finallllLLL",
+        "id" : "Teste fnal de categoria--OZFKMIUdhCki-a7cKsa-1756917526118",
+        "subcategory" : "-OZFKMIUdhCki-a7cKsa",
+        "subcategoryTitle" : "TEste finallllLLL"
+      } ],
+      "price" : "",
+      "subcategories" : [ "-OZFKMIUdhCki-a7cKsa" ],
+      "subcategory" : "-OZFKMIUdhCki-a7cKsa",
+      "subtitle" : "Librarian 340",
+      "supplier" : "Loccus",
+      "technicalInfo" : "<table style=\"min-width: 399px\"><colgroup><col style=\"width: 374px\"><col style=\"min-width: 25px\"></colgroup><tbody><tr><td colspan=\"2\" rowspan=\"1\" colwidth=\"374,0\"><p><strong>Especificações</strong></p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Capacidade de processamento</p></td><td colspan=\"1\" rowspan=\"1\"><p>1 a 96 amostras (dependendo do kit)</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Quantidade de posições</p></td><td colspan=\"1\" rowspan=\"1\"><p>27 posições padrão</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Pipetador</p></td><td colspan=\"1\" rowspan=\"1\"><p>200 μL; 24 canais (pode ser usado como único canal)</p></td></tr><tr><td colspan=\"1\" rowspan=\"3\" colwidth=\"374\"><p>Faixa de pipetagem</p></td><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Ponteira de 20 μL: 0,520 μL</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Ponteira de 50 μL: 1200 μL</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Ponteira de 200 μL: 2200 μL</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Volume mínimo de detecção</p></td><td colspan=\"1\" rowspan=\"1\"><p>20 μL</p></td></tr><tr><td colspan=\"1\" rowspan=\"5\" colwidth=\"374\"><p>Exatidão da pipetagem</p></td><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;0.5 μL: ≤12%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;1 μL: ≤5%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;20 μL: ≤2%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;100 μL: ≤1%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;200 μL: ≤1%</p></td></tr><tr><td colspan=\"1\" rowspan=\"5\" colwidth=\"374\"><p>Precisão da pipetagem</p></td><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;0.5 μL: ±20%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;1 μL: ±12%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;20 μL: ±2%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;100 μL: ±1%</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;200 μL: ±1%</p></td></tr><tr><td colspan=\"1\" rowspan=\"3\" colwidth=\"374\"><p>Bloco de controle de temperatura</p></td><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Faixa: 4~105 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Precisão: ±0,5 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Uniformidade: ±0,5 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Volume de eluição</p></td><td colspan=\"1\" rowspan=\"1\"><p>501000 μL</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Controle de temperatura</p></td><td colspan=\"1\" rowspan=\"1\"><p>4~105 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Acurácia da temperatura</p></td><td colspan=\"1\" rowspan=\"1\"><p>@55 °C: ≤0,5 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Uniformidade da temperatura</p></td><td colspan=\"1\" rowspan=\"1\"><p>@55 °C: CV ≤1 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"4\" colwidth=\"374\"><p>Bloco de amplificação genética</p></td><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Faixa de temperatura:</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>Tampa térmica: +30 °C~+120 °C; bloco: +4 °C~+99 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Uniformidade: ≤0,7 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\"><p>&nbsp;Precisão: ≤±0,3 °C</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Faixa de detecção de fluorescência</p></td><td colspan=\"1\" rowspan=\"1\"><p>0,4 ng~100 ng</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Módulo magnético</p></td><td colspan=\"1\" rowspan=\"1\"><p>Anel magnético para 96 poços</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Esterilização</p></td><td colspan=\"1\" rowspan=\"1\"><p>Luz UV</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Filtro</p></td><td colspan=\"1\" rowspan=\"1\"><p>HEPA</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Canais de pipetagem</p></td><td colspan=\"1\" rowspan=\"1\"><p>24</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Controle de usuário</p></td><td colspan=\"1\" rowspan=\"1\"><p>Sim</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Operação</p></td><td colspan=\"1\" rowspan=\"1\"><p>Software para computador</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Gerenciamento</p></td><td colspan=\"1\" rowspan=\"1\"><p>Software integrado</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Porta de comunicação</p></td><td colspan=\"1\" rowspan=\"1\"><p>Porta USB</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Alimentação</p></td><td colspan=\"1\" rowspan=\"1\"><p>100~240 VAC, 50/60 Hz</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Potência máxima</p></td><td colspan=\"1\" rowspan=\"1\"><p>1200 W</p></td></tr><tr><td colspan=\"1\" rowspan=\"1\" colwidth=\"374\"><p>Dimensões (CxLxA)</p></td><td colspan=\"1\" rowspan=\"1\"><p>1420 x 790 x 800 mm</p></td></tr></tbody></table>",
+      "title" : "Sistema Automatizado de Construção de Biblioteca de NGS",
+      "video" : ""
+    },
+    "TEsteCat" : {
+      "active" : true
+    },
+    "categoria1" : {
+      "active" : false,
+      "produtoFora" : {
+        "imagem" : "https://i.pinimg.com/736x/ac/d5/06/acd506146d6ee275899b1b55d37e183d.jpg",
+        "price" : 0,
+        "title" : "Centrifuga"
+      },
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria2" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria3" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria4" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria5" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria6" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria7" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria8" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    },
+    "categoria9" : {
+      "subcategoria0" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria1" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria2" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria3" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria4" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria5" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria6" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria7" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria8" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "subcategoria9" : {
+        "produto0" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto1" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto2" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto3" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto4" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto5" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto6" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto7" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto8" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "produto9" : {
+          "price" : 0,
+          "title" : "teste"
+        },
+        "type" : 1
+      },
+      "type" : 2
+    }
+  },
+  "subcategorias" : {
+    "-OZ5Pwiv9TQlo8WfK9tt" : {
+      "active" : true,
+      "categoria" : "testedenovacategoria",
+      "id" : "-OZ5Pwiv9TQlo8WfK9tt",
+      "title" : "teste subcategoria nova id",
+      "titleID" : "testesubcategorianovaid"
+    },
+    "-OZFKMIUdhCki-a7cKsa" : {
+      "active" : true,
+      "categoria" : "Teste fnal de categoria",
+      "title" : "TEste finallllLLL"
+    },
+    "cat1" : {
+      "activated" : true,
+      "active" : true,
+      "categoria" : "TEsteCat",
+      "titulo" : "ca1titulo"
+    }
+  }
+}
+

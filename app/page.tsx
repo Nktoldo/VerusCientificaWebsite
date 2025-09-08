@@ -5,7 +5,6 @@ import { verusData } from "@/public/data/meta/verusData";
 import { useEffect } from "react";
 import Script from "next/script";
 import NavBar from "./components/NavBar";
-
 export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash) {
@@ -114,6 +113,9 @@ export default function Home() {
             Fornecemos equipamentos e produtos de alta qualidade para laboratórios,
             garantindo precisão e confiabilidade em suas pesquisas e análises.
           </p>
+          
+
+          
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/produtos"
