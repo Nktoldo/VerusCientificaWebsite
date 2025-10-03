@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import * as firebaseFunctions from '@/lib/databaseFunctions';
 import { logger } from '@/lib/logger';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 type SearchResult = {
   id: string;
@@ -29,6 +30,7 @@ type SearchFilters = {
 
 export function AdvancedSearch() {
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300); // 300ms de delay
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -64,7 +66,7 @@ export function AdvancedSearch() {
           tags: tags.length 
         });
       } catch (error) {
-        logger.error('Erro ao carregar dados dos filtros', error);
+        logger.error('Erro ao carregar dados dos filtros', { error: error instanceof Error ? error.message : String(error) });
       }
     };
 
@@ -73,17 +75,13 @@ export function AdvancedSearch() {
 
   // Busca automática enquanto digita (com debounce)
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (query.trim()) {
-        performSearch(query);
-      } else {
-        setResults([]);
-        setShowResults(false);
-      }
-    }, 300); // 300ms de debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [query, filters]);
+    if (debouncedQuery.trim()) {
+      performSearch(debouncedQuery);
+    } else {
+      setResults([]);
+      setShowResults(false);
+    }
+  }, [debouncedQuery, filters]);
 
   // Fechar resultados ao clicar fora
   useEffect(() => {
@@ -127,7 +125,7 @@ export function AdvancedSearch() {
         resultsCount: sortedResults.length 
       });
     } catch (error) {
-      logger.error('Erro na busca', error);
+      logger.error('Erro na busca', { error: error instanceof Error ? error.message : String(error) });
       setResults([]);
     } finally {
       setLoading(false);

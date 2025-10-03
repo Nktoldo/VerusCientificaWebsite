@@ -6,41 +6,44 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TagPicker } from "../components/TagPicker";
 import { writeSupplierData, writeTagsData } from "@/lib/databaseFunctions";
-type Item = { id: string, title?: string, img?: string, active?: boolean, category?: string }
+import { useRequireAdmin, useAuth } from "@/app/hooks/useAuth";
+type Item = { id: string, title?: string, img?: string, active?: boolean, category?: string , subtitle?: string}
 
 export default function editor() {
     const router = useRouter();
-    const [selected, setSelected] = useState<0 |1 | 2 | 3>(0);
+    const { user, loading, isAdmin } = useRequireAdmin();
+    const { logout } = useAuth();
+    const [selected, setSelected] = useState<0 | 1 | 2 | 3>(1);
     const [items, setItems] = useState<Item[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [dataLoading, setDataLoading] = useState(false);
     const [modal, showModal] = useState(false);
     const [modalType, setModalType] = useState<"tags" | "fornecedor" | "categoria" | "subcategoria">("tags");
     const [tagsSelecionadas, setTagsSelecionadas] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
-    const [existingTags, setExistingTags] = useState<{[key: string]: {active: boolean, color: string}}>({});
-    const [existingSuppliers, setExistingSuppliers] = useState<{[key: string]: {active: boolean, type: string}}>({});
+    const [existingTags, setExistingTags] = useState<{ [key: string]: { active: boolean, color: string } }>({});
+    const [existingSuppliers, setExistingSuppliers] = useState<{ [key: string]: { active: boolean, type: string } }>({});
     const [fornecedorSelecionado, setFornecedorSelecionado] = useState<string>("");
     const [supplierType, setSupplierType] = useState<"Representada" | "Revenda">("Representada");
-    const [tagColors, setTagColors] = useState<{[key: string]: string}>({});
+    const [tagColors, setTagColors] = useState<{ [key: string]: string }>({});
     const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>("");
     const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState<string>("");
     const [categoriasDisponiveis, setCategoriasDisponiveis] = useState<string[]>([]);
+
 
     useEffect(() => {
         if (modal) {
             getTags().then((tags) => {
                 setTags(tags);
-                console.log(tags);
             })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                 });
         }
     }, []);
 
     useEffect(() => {
         const run = async () => {
-            setLoading(true);
+            setDataLoading(true);
             try {
                 let productsData: Item[] = [];
                 if (selected == 1) {
@@ -52,13 +55,20 @@ export default function editor() {
                                         id: prods[i].id,
                                         title: prods[i].title,
                                         img: prods[i].imageUrl,
-                                        active: !!prods[i].active
+                                        active: !!prods[i].active,
+                                        subtitle: prods[i].subtitle
                                     });
                                 }
                             }
+                            // Ordenar alfabeticamente por título
+                            productsData.sort((a, b) => {
+                                const titleA = (a.title || '').toLowerCase();
+                                const titleB = (b.title || '').toLowerCase();
+                                return titleA.localeCompare(titleB);
+                            });
                         })
                         .catch(err => {
-                            console.log(err)
+                            console.error(err)
                         })
                     setItems(productsData);
                 } else if (selected === 2) {
@@ -72,10 +82,16 @@ export default function editor() {
                                     active: cat.active
                                 })
                             })
+                            // Ordenar alfabeticamente por título
+                            categoryList.sort((a, b) => {
+                                const titleA = (a.title || '').toLowerCase();
+                                const titleB = (b.title || '').toLowerCase();
+                                return titleA.localeCompare(titleB);
+                            });
                             setItems(categoryList);
                         })
                         .catch((err) => {
-                            console.log(err);
+                            console.error(err);
                         });
                 } else if (selected === 3) {
                     let data = await getSubCategories({ category: "none" })
@@ -89,23 +105,46 @@ export default function editor() {
                                     active: cat.active
                                 })
                             })
+                            // Ordenar alfabeticamente por título
+                            categoryList.sort((a, b) => {
+                                const titleA = (a.title || '').toLowerCase();
+                                const titleB = (b.title || '').toLowerCase();
+                                return titleA.localeCompare(titleB);
+                            });
                             setItems(categoryList);
                         })
                         .catch((err) => {
-                            console.log(err);
+                            console.error(err);
                         });
 
                 } else {
                     setItems([]);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
             } finally {
-                setLoading(false);
+                setDataLoading(false);
             }
         };
         run();
     }, [selected]);
+
+    // Mostrar tela de carregamento enquanto verifica autenticação
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-300 mx-auto mb-4"></div>
+                    <p className="text-slate-200 text-lg">Verificando autenticação...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Se não for admin, não mostrar nada (já foi redirecionado)
+    if (!isAdmin) {
+        return null;
+    }
 
     const handleEdit = (productId: string) => {
         if (selected === 1) {
@@ -120,21 +159,20 @@ export default function editor() {
             if (tagsSnapshot.exists()) {
                 const tagsData = tagsSnapshot.val();
                 const tagsList = Object.keys(tagsData);
-                const tagsInfo: {[key: string]: {active: boolean, color: string}} = {};
-                
+                const tagsInfo: { [key: string]: { active: boolean, color: string } } = {};
+
                 tagsList.forEach(tag => {
                     tagsInfo[tag] = {
                         active: tagsData[tag].active !== false, // padrão true se não especificado
                         color: tagsData[tag].color || '#3B82F6'
                     };
                 });
-                
+
                 setTags(tagsList);
                 setExistingTags(tagsInfo);
-                console.log('Tags carregadas:', tagsInfo);
             }
         } catch (err) {
-            console.log('Erro ao carregar tags:', err);
+            console.error('Erro ao carregar tags:', err);
         }
     }
 
@@ -144,20 +182,19 @@ export default function editor() {
             if (suppliersSnapshot.exists()) {
                 const suppliersData = suppliersSnapshot.val();
                 const suppliersList = Object.keys(suppliersData);
-                const suppliersInfo: {[key: string]: {active: boolean, type: string}} = {};
-                
+                const suppliersInfo: { [key: string]: { active: boolean, type: string } } = {};
+
                 suppliersList.forEach(supplier => {
                     suppliersInfo[supplier] = {
                         active: suppliersData[supplier].active !== false, // padrão true se não especificado
                         type: suppliersData[supplier].type || 'Representada'
                     };
                 });
-                
+
                 setExistingSuppliers(suppliersInfo);
-                console.log('Fornecedores carregados:', suppliersInfo);
             }
         } catch (err) {
-            console.log('Erro ao carregar fornecedores:', err);
+            console.error('Erro ao carregar fornecedores:', err);
         }
     }
 
@@ -169,9 +206,8 @@ export default function editor() {
                 categoryList.push(cat.title);
             });
             setCategoriasDisponiveis(categoryList);
-            console.log('Categorias carregadas:', categoryList);
         } catch (err) {
-            console.log('Erro ao carregar categorias:', err);
+            console.error('Erro ao carregar categorias:', err);
         }
     }
 
@@ -188,17 +224,17 @@ export default function editor() {
                             &times;
                         </button>
                         <h2 className="text-xl font-bold mb-4 text-green-700">
-                            {modalType === "tags" ? "Criar Tags" : 
-                             modalType === "fornecedor" ? "Criar Fornecedor" :
-                             modalType === "categoria" ? "Criar Categoria" :
-                             "Criar Subcategoria"}
+                            {modalType === "tags" ? "Criar Tags" :
+                                modalType === "fornecedor" ? "Criar Fornecedor" :
+                                    modalType === "categoria" ? "Criar Categoria" :
+                                        "Criar Subcategoria"}
                         </h2>
                         <div className="flex flex-col gap-4">
                             <div>
                                 {modalType === "tags" && (
-                                    <TagPicker 
-                                        options={tags} 
-                                        value={tagsSelecionadas} 
+                                    <TagPicker
+                                        options={tags}
+                                        value={tagsSelecionadas}
                                         onChange={(newTags) => {
                                             setTagsSelecionadas(newTags);
                                             // Capturar cores das novas tags
@@ -211,33 +247,32 @@ export default function editor() {
                                             setTagColors(newColors);
                                         }}
                                         onColorChange={(tag, color) => {
-                                            console.log(`Cor da tag ${tag} mudou para: ${color}`);
                                             setTagColors(prev => ({
                                                 ...prev,
                                                 [tag]: color
                                             }));
                                         }}
-                                        select={false} 
+                                        select={false}
                                     />
                                 )}
                                 {modalType === "categoria" && (
                                     <div className="flex flex-col gap-2">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Nome da categoria..." 
-                                            value={categoriaSelecionada} 
-                                            onChange={(e) => setCategoriaSelecionada(e.target.value)} 
+                                        <input
+                                            type="text"
+                                            placeholder="Nome da categoria..."
+                                            value={categoriaSelecionada}
+                                            onChange={(e) => setCategoriaSelecionada(e.target.value)}
                                             className="rounded-md h-12 w-full border border-slate-700 bg-slate-800 text-slate-100 px-3 placeholder:text-slate-500 focus:outline-blue-400"
                                         />
                                     </div>
                                 )}
                                 {modalType === "subcategoria" && (
                                     <div className="flex flex-col gap-2">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Nome da subcategoria..." 
-                                            value={subcategoriaSelecionada} 
-                                            onChange={(e) => setSubcategoriaSelecionada(e.target.value)} 
+                                        <input
+                                            type="text"
+                                            placeholder="Nome da subcategoria..."
+                                            value={subcategoriaSelecionada}
+                                            onChange={(e) => setSubcategoriaSelecionada(e.target.value)}
                                             className="rounded-md h-12 w-full border border-slate-700 bg-slate-800 text-slate-100 px-3 placeholder:text-slate-500 focus:outline-blue-400"
                                         />
                                         <select
@@ -254,38 +289,34 @@ export default function editor() {
                                 )}
                                 {modalType === "fornecedor" && (
                                     <div className="flex flex-col gap-2">
-                                        <input type="text" placeholder="Nome do fornecedor..." value={fornecedorSelecionado} onChange={(e) => setFornecedorSelecionado(e.target.value)} className="rounded-md h-12 w-full border border-slate-700 bg-slate-800 text-slate-100 px-3 placeholder:text-slate-500 focus:outline-blue-400"/>
+                                        <input type="text" placeholder="Nome do fornecedor..." value={fornecedorSelecionado} onChange={(e) => setFornecedorSelecionado(e.target.value)} className="rounded-md h-12 w-full border border-slate-700 bg-slate-800 text-slate-100 px-3 placeholder:text-slate-500 focus:outline-blue-400" />
                                         <div className="flex gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => setSupplierType("Representada")}
-                                                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all duration-200 font-medium text-sm ${
-                                                    supplierType === "Representada"
-                                                        ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/25 transform scale-105"
-                                                        : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:scale-[1.02]"
-                                                }`}
+                                                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all duration-200 font-medium text-sm ${supplierType === "Representada"
+                                                    ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/25 transform scale-105"
+                                                    : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:scale-[1.02]"
+                                                    }`}
                                             >
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className={`w-3 h-3 rounded-full ${
-                                                        supplierType === "Representada" ? "bg-white" : "bg-slate-400"
-                                                    }`}></div>
+                                                    <div className={`w-3 h-3 rounded-full ${supplierType === "Representada" ? "bg-white" : "bg-slate-400"
+                                                        }`}></div>
                                                     <span>Representada</span>
                                                 </div>
                                             </button>
-                                            
+
                                             <button
                                                 type="button"
                                                 onClick={() => setSupplierType("Revenda")}
-                                                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all duration-200 font-medium text-sm ${
-                                                    supplierType === "Revenda"
-                                                        ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/25 transform scale-105"
-                                                        : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:scale-[1.02]"
-                                                }`}
+                                                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all duration-200 font-medium text-sm ${supplierType === "Revenda"
+                                                    ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/25 transform scale-105"
+                                                    : "bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500 hover:scale-[1.02]"
+                                                    }`}
                                             >
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className={`w-3 h-3 rounded-full ${
-                                                        supplierType === "Revenda" ? "bg-white" : "bg-slate-400"
-                                                    }`}></div>
+                                                    <div className={`w-3 h-3 rounded-full ${supplierType === "Revenda" ? "bg-white" : "bg-slate-400"
+                                                        }`}></div>
                                                     <span>Revenda</span>
                                                 </div>
                                             </button>
@@ -307,7 +338,7 @@ export default function editor() {
                                             // Recarregar lista de itens se estiver na aba de categorias
                                             if (selected === 2) {
                                                 const run = async () => {
-                                                    setLoading(true);
+                                                    setDataLoading(true);
                                                     try {
                                                         await getCategories()
                                                             .then(cats => {
@@ -322,12 +353,12 @@ export default function editor() {
                                                                 setItems(categoryList);
                                                             })
                                                             .catch((err) => {
-                                                                console.log(err);
+                                                                console.error(err);
                                                             });
                                                     } catch (error) {
-                                                        console.log(error);
+                                                        console.error(error);
                                                     } finally {
-                                                        setLoading(false);
+                                                        setDataLoading(false);
                                                     }
                                                 };
                                                 run();
@@ -353,7 +384,7 @@ export default function editor() {
                                             // Recarregar subcategorias existentes se estiver na aba de subcategorias
                                             if (selected === 3) {
                                                 const run = async () => {
-                                                    setLoading(true);
+                                                    setDataLoading(true);
                                                     try {
                                                         let data = await getSubCategories({ category: "none" })
                                                             .then(cats => {
@@ -369,12 +400,12 @@ export default function editor() {
                                                                 setItems(categoryList);
                                                             })
                                                             .catch((err) => {
-                                                                console.log(err);
+                                                                console.error(err);
                                                             });
                                                     } catch (error) {
-                                                        console.log(error);
+                                                        console.error(error);
                                                     } finally {
-                                                        setLoading(false);
+                                                        setDataLoading(false);
                                                     }
                                                 };
                                                 run();
@@ -398,12 +429,11 @@ export default function editor() {
                                     <button
                                         className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded transition"
                                         onClick={async () => {
-                                            console.log(tagsSelecionadas);
                                             for (let tag of tagsSelecionadas) {
-                                                await writeTagsData({ 
-                                                    title: tag, 
+                                                await writeTagsData({
+                                                    title: tag,
                                                     color: tagColors[tag] || '#3B82F6',
-                                                    active: true 
+                                                    active: true
                                                 });
                                             }
                                             // Limpar após criação
@@ -416,7 +446,7 @@ export default function editor() {
                                 )}
                             </div>
                         </div>
-                        
+
                         {/* Lista de tags existentes */}
                         {modalType === "tags" && Object.keys(existingTags).length > 0 && (
                             <div className="mt-6 border-t border-slate-700 pt-4">
@@ -426,7 +456,7 @@ export default function editor() {
                                         <div key={tagName} className="flex items-center justify-between p-3 bg-slate-800 rounded-md border border-slate-700">
                                             <div className="flex items-center gap-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div 
+                                                    <div
                                                         className="w-4 h-4 rounded-full border border-slate-600"
                                                         style={{ backgroundColor: tagInfo.color }}
                                                         title={`Cor atual: ${tagInfo.color}`}
@@ -445,12 +475,11 @@ export default function editor() {
                                                             // Enviar para banco apenas quando perder foco
                                                             const newColor = e.target.value;
                                                             try {
-                                                                await writeTagsData({ 
-                                                                    title: tagName, 
-                                                                    color: newColor, 
-                                                                    active: tagInfo.active 
+                                                                await writeTagsData({
+                                                                    title: tagName,
+                                                                    color: newColor,
+                                                                    active: tagInfo.active
                                                                 });
-                                                                console.log(`Cor da tag ${tagName} alterada para: ${newColor}`);
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar cor da tag:', error);
                                                                 // Reverter em caso de erro
@@ -468,10 +497,10 @@ export default function editor() {
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <label className="flex items-center gap-2 text-sm">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        className="accent-blue-600" 
-                                                        checked={tagInfo.active} 
+                                                    <input
+                                                        type="checkbox"
+                                                        className="accent-blue-600"
+                                                        checked={tagInfo.active}
                                                         onChange={async (e) => {
                                                             const checked = e.target.checked;
                                                             try {
@@ -480,12 +509,12 @@ export default function editor() {
                                                                     ...prev,
                                                                     [tagName]: { ...prev[tagName], active: checked }
                                                                 }));
-                                                                
+
                                                                 // Atualizar no banco de dados
-                                                                await changeItemState({ 
-                                                                    id: tagName, 
-                                                                    type: "filtros/tags", 
-                                                                    state: checked 
+                                                                await changeItemState({
+                                                                    id: tagName,
+                                                                    type: "filtros/tags",
+                                                                    state: checked
                                                                 });
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar estado da tag:', error);
@@ -495,13 +524,13 @@ export default function editor() {
                                                                     [tagName]: { ...prev[tagName], active: !checked }
                                                                 }));
                                                             }
-                                                        }} 
+                                                        }}
                                                     />
                                                     <span className={tagInfo.active ? "text-green-500" : "text-red-500"}>
                                                         {tagInfo.active ? "Ativa" : "Inativa"}
                                                     </span>
                                                 </label>
-                                                
+
                                                 <button
                                                     onClick={async () => {
                                                         if (confirm(`Tem certeza que deseja deletar a tag "${tagName}"?`)) {
@@ -511,7 +540,6 @@ export default function editor() {
                                                                 const newTags = { ...existingTags };
                                                                 delete newTags[tagName];
                                                                 setExistingTags(newTags);
-                                                                console.log(`Tag "${tagName}" deletada com sucesso`);
                                                             } catch (error) {
                                                                 console.error('Erro ao deletar tag:', error);
                                                                 alert('Erro ao deletar tag. Tente novamente.');
@@ -545,10 +573,10 @@ export default function editor() {
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <label className="flex items-center gap-2 text-sm">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        className="accent-blue-600" 
-                                                        checked={supplierInfo.active} 
+                                                    <input
+                                                        type="checkbox"
+                                                        className="accent-blue-600"
+                                                        checked={supplierInfo.active}
                                                         onChange={async (e) => {
                                                             const checked = e.target.checked;
                                                             try {
@@ -557,12 +585,12 @@ export default function editor() {
                                                                     ...prev,
                                                                     [supplierName]: { ...prev[supplierName], active: checked }
                                                                 }));
-                                                                
+
                                                                 // Atualizar no banco de dados
-                                                                await changeItemState({ 
-                                                                    id: supplierName, 
-                                                                    type: "filtros/suppliers", 
-                                                                    state: checked 
+                                                                await changeItemState({
+                                                                    id: supplierName,
+                                                                    type: "filtros/suppliers",
+                                                                    state: checked
                                                                 });
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar estado do fornecedor:', error);
@@ -572,13 +600,13 @@ export default function editor() {
                                                                     [supplierName]: { ...prev[supplierName], active: !checked }
                                                                 }));
                                                             }
-                                                        }} 
+                                                        }}
                                                     />
                                                     <span className={supplierInfo.active ? "text-green-500" : "text-red-500"}>
                                                         {supplierInfo.active ? "Ativo" : "Inativo"}
                                                     </span>
                                                 </label>
-                                                
+
                                                 <button
                                                     onClick={async () => {
                                                         if (confirm(`Tem certeza que deseja deletar o fornecedor "${supplierName}"?`)) {
@@ -588,7 +616,6 @@ export default function editor() {
                                                                 const newSuppliers = { ...existingSuppliers };
                                                                 delete newSuppliers[supplierName];
                                                                 setExistingSuppliers(newSuppliers);
-                                                                console.log(`Fornecedor "${supplierName}" deletado com sucesso`);
                                                             } catch (error) {
                                                                 console.error('Erro ao deletar fornecedor:', error);
                                                                 alert('Erro ao deletar fornecedor. Tente novamente.');
@@ -606,7 +633,7 @@ export default function editor() {
                                 </div>
                             </div>
                         )}
-                        
+
                         {/* Botão para fechar modal */}
                         <div className="mt-6 flex justify-end">
                             <button
@@ -621,49 +648,62 @@ export default function editor() {
             )}
             <div className="w-full pt-10 p-6 flex flex-col gap-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-b-2xl shadow-2xl border border-slate-700">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-bold text-blue-300">Painel do Editor</h1>
-                    <div className="flex gap-2 flex-wrap">
-                        <button onClick={async () => { showModal(true); setModalType("categoria"); await searchCategories()}} className="bg-purple-800 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded transition border border-purple-800 shadow">
+                    <div className="flex gap-2 flex-wrap items-center justify-between w-full">
+                        <div className="flex items-center flex-wrap gap-3">
+                            <h1 className="text-3xl font-bold text-blue-300">Painel do Editor</h1>
+                            {user && (
+                                <div className="flex items-center gap-3 mr-4">
+                                    <button
+                                        onClick={logout}
+                                        className="bg-red-600 hover:bg-red-700 text-white font-semibold px-3 py-1 rounded transition text-sm"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center flex-wrap gap-3">
+                        <button onClick={async () => { showModal(true); setModalType("categoria"); await searchCategories() }} className="bg-purple-800 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded transition border border-purple-800 shadow">
                             + Nova Categoria
                         </button>
-                        <button onClick={async () => { showModal(true); setModalType("subcategoria"); await searchCategories()}} className="bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded transition border border-indigo-800 shadow">
+                        <button onClick={async () => { showModal(true); setModalType("subcategoria"); await searchCategories() }} className="bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded transition border border-indigo-800 shadow">
                             + Nova Subcategoria
                         </button>
-                        <button onClick={async () => { showModal(true); setModalType("fornecedor"); await searchSuppliers()}} className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition border border-blue-800 shadow">
+                        <button onClick={async () => { showModal(true); setModalType("fornecedor"); await searchSuppliers() }} className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition border border-blue-800 shadow">
                             + Novo Fornecedor
                         </button>
-                        <button onClick={async () => { showModal(true); setModalType("tags"); await searchTags()}} className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition border border-blue-800 shadow">
+                        <button onClick={async () => { showModal(true); setModalType("tags"); await searchTags() }} className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition border border-blue-800 shadow">
                             + Nova Tag
                         </button>
                         <a href="/editor/criar" className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition border border-green-800 shadow">
                             + Novo Produto
                         </a>
+                        </div>
                     </div>
                 </div>
 
-                <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div className="md:col-span-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="w-full flex justify-end gap-4 px-10">
+                    {/* <div className="md:col-span-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input type="text" placeholder="Buscar..." className="rounded-md h-12 w-full border border-slate-700 bg-slate-800 text-slate-100 px-3 placeholder:text-slate-500 focus:outline-blue-400" />
                         <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md h-12 px-5 border border-blue-900 shadow">Consultar</button>
                         <button className="bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-md h-12 px-5 border border-slate-700 shadow">Filtros</button>
-                    </div>
-                    <div className="md:col-span-2 grid grid-cols-3 gap-2">
-                        <button onClick={() => setSelected(1)} className={`rounded-md h-12 border ${selected === 1 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Produtos</button>
-                        <button onClick={() => setSelected(2)} className={`rounded-md h-12 border ${selected === 2 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Categorias</button>
-                        <button onClick={() => setSelected(3)} className={`rounded-md h-12 border ${selected === 3 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Subcategorias</button>
-                    </div>
+                    </div> */}
+                    <button onClick={() => setSelected(1)} className={`w-full rounded-md h-12 border ${selected === 1 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Produtos</button>
+                    <button onClick={() => setSelected(2)} className={`w-full rounded-md h-12 border ${selected === 2 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Categorias</button>
+                    <button onClick={() => setSelected(3)} className={`w-full rounded-md h-12 border ${selected === 3 ? "bg-blue-600/80 text-white border-blue-900" : "bg-slate-800 text-slate-200 border-slate-700"} hover:scale-[0.99] duration-150`}>Subcategorias</button>
+
                 </div>
             </div>
 
             <section className="min-h-15 mt-6 overflow-x-auto">
                 <div className="hidden md:grid md:grid-cols-6 items-center rounded-md border border-slate-700 bg-slate-900/60 text-slate-200">
                     <div className="col-span-2 p-3 md:border-r border-slate-700"><h2 className="text-sm font-semibold tracking-wide uppercase text-slate-400">Título</h2></div>
-                    <div className="col-span-1 p-3 md:border-r border-slate-700"><h2 className="text-sm font-semibold tracking-wide uppercase text-slate-400">{selected === 3 ? "Categoria" : "Código"}</h2></div>
+                    <div className="col-span-1 p-3 md:border-r border-slate-700"><h2 className="text-sm font-semibold tracking-wide uppercase text-slate-400">{selected === 3 ? "Categoria" : selected === 1 ? "Modelo" :"Código"}</h2></div>
                     <div className="col-span-2 p-3 md:border-r border-slate-700"><h2 className="text-sm font-semibold tracking-wide uppercase text-slate-400">Imagem</h2></div>
                     <div className="col-span-1 p-3 text-center"><h2 className="text-sm font-semibold tracking-wide uppercase text-slate-400">Ações</h2></div>
                 </div>
 
-                {loading ? (
+                {dataLoading ? (
                     <div className="mt-4 grid gap-3">
                         <div className="h-16 rounded-md border border-slate-700 bg-slate-800 animate-pulse" />
                         <div className="h-16 rounded-md border border-slate-700 bg-slate-800 animate-pulse" />
@@ -680,8 +720,8 @@ export default function editor() {
                                     {item.title ?? item.id}
                                 </div>
                                 <div className="md:col-span-1 p-3 md:border-r border-slate-700">
-                                    <span className="md:hidden block text-xs text-slate-400 mb-1">{selected === 3 ? "Categoria" : "Código"}</span>
-                                    {selected === 3 ? item.category : item.id || "— "}
+                                    <span className="md:hidden block text-xs text-slate-400 mb-1">{selected === 3 ? "Categoria" : selected === 1 ? "Modelo" :"Código"}</span>
+                                    {selected === 3 ? item.category : selected === 1 ? item.subtitle : item.id || "— "}
                                 </div>
                                 <div className="md:col-span-2 p-3 md:border-r border-slate-700">
                                     <span className="md:hidden block text-xs text-slate-400 mb-1">Imagem</span>
@@ -708,8 +748,6 @@ export default function editor() {
                                                     });
                                             } else if (selected == 2) {
                                                 if (item.id) {
-                                                    console.log("Categoria:::", item);
-                                                    console.log("Categoria", item.id);
                                                     changeItemState({ id: item.id, type: "categorias", state: checked })
                                                         .catch(() => {
                                                             setItems(prev =>
@@ -738,7 +776,7 @@ export default function editor() {
                                         >
                                             Editar
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={async () => {
                                                 const itemName = item.title || item.id;
                                                 if (confirm(`Tem certeza que deseja deletar ${selected === 1 ? 'o produto' : selected === 2 ? 'a categoria' : 'a subcategoria'} "${itemName}"?`)) {
@@ -747,13 +785,12 @@ export default function editor() {
                                                         if (selected === 1) type = "produtos";
                                                         else if (selected === 2) type = "categorias";
                                                         else type = "subcategorias";
-                                                        
+
                                                         await deleteItem({ id: item.id || item.title || "", type });
-                                                        
+
                                                         // Remover da lista local
                                                         setItems(prev => prev.filter(p => p.id !== item.id && p.title !== item.title));
-                                                        
-                                                        console.log(`${selected === 1 ? 'Produto' : selected === 2 ? 'Categoria' : 'Subcategoria'} "${itemName}" deletado com sucesso`);
+
                                                     } catch (error) {
                                                         console.error('Erro ao deletar item:', error);
                                                         alert('Erro ao deletar item. Tente novamente.');
@@ -764,7 +801,7 @@ export default function editor() {
                                         >
                                             Excluir
                                         </button>
-                                        
+
                                     </div>
                                 </div>
                             </div>

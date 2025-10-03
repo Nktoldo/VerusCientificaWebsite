@@ -11,6 +11,24 @@
     ],
     "frameworksBackend": {
       "region": "us-central1"
-    }
+    },
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "index, follow"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "https://www.veruscientifica.com.br/:splat",
+        "type": 301
+      }
+    ]
   }
 }

@@ -7,7 +7,7 @@ export default function PerformanceOptimizer() {
     // Preload critical resources
     const preloadLinks = [
       { rel: 'preload', href: '/assets/logo.png', as: 'image' },
-      { rel: 'preload', href: '/manifest.json', as: 'application/json' },
+      { rel: 'preload', href: '/manifest.json', as: 'fetch' },
     ]
 
     preloadLinks.forEach(({ rel, href, as }) => {
@@ -23,8 +23,6 @@ export default function PerformanceOptimizer() {
       window.addEventListener('load', () => {
         const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
         if (perfData) {
-          console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart)
-          console.log('DOM Content Loaded:', perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart)
         }
       })
     }

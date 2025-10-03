@@ -5,8 +5,10 @@ import { verusData } from "@/public/data/meta/verusData";
 import { useEffect } from "react";
 import Script from "next/script";
 import NavBar from "./components/NavBar";
+
 export default function Home() {
   useEffect(() => {
+    // Apenas scroll suave para hash - URL canônica definida no layout
     if (typeof window !== "undefined" && window.location.hash) {
       const el = document.getElementById(window.location.hash.replace("#", ""));
       if (el) {
@@ -17,14 +19,16 @@ export default function Home() {
     }
   }, []);
 
+ 
+
   // Dados estruturados para SEO
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Verus Científica",
     "description": "Fornecemos equipamentos e produtos de alta qualidade para laboratórios no Rio Grande do Sul",
-    "url": "https://veruscientifica.com.br",
-    "logo": "https://veruscientifica.com.br/assets/logo.png",
+    "url": "https://www.veruscientifica.com.br",
+    "logo": "https://www.veruscientifica.com.br/assets/logo.png",
     "address": {
       "@type": "PostalAddress",
       "addressRegion": "Rio Grande do Sul",
@@ -49,6 +53,13 @@ export default function Home() {
             "@type": "Product",
             "name": "PCR Tempo Real",
             "description": "Equipamentos de PCR Tempo Real para laboratórios"
+          },
+          "price": "Sob consulta",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "Verus Científica"
           }
         },
         {
@@ -57,6 +68,13 @@ export default function Home() {
             "@type": "Product",
             "name": "Eletroforeses",
             "description": "Equipamentos de eletroforese para laboratórios"
+          },
+          "price": "Sob consulta",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "Verus Científica"
           }
         },
         {
@@ -65,6 +83,13 @@ export default function Home() {
             "@type": "Product",
             "name": "Incubadoras de CO2",
             "description": "Incubadoras de CO2 para laboratórios"
+          },
+          "price": "Sob consulta",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "Verus Científica"
           }
         }
       ]

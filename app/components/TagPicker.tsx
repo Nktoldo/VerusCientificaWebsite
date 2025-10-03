@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+
+
 export function TagPicker({
     options,
     select,
@@ -24,9 +26,46 @@ export function TagPicker({
     const [newTagColor, setNewTagColor] = useState('#3B82F6');
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [tagColors, setTagColors] = useState<{[key: string]: string}>({});
-  
+    const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
 
+    // Fechar seletor de cores ao clicar fora
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (activeColorPicker) {
+          const target = event.target as Element;
+          // Não fechar se clicou dentro do seletor de cores
+          if (!target.closest('.color-selector-popup')) {
+            setActiveColorPicker(null);
+          }
+        }
+      };
+
+      if (activeColorPicker) {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }
+    }, [activeColorPicker]);
   
+    // Paleta de cores predefinida (8 cores, 2 tons cada)
+    const colorPalette = [
+      { name: 'Azul Claro', value: '#60A5FA' },
+      { name: 'Azul Escuro', value: '#1E40AF' },
+      { name: 'Vermelho Claro', value: '#F87171' },
+      { name: 'Vermelho Escuro', value: '#B91C1C' },
+      { name: 'Roxo Claro', value: '#A78BFA' },
+      { name: 'Roxo Escuro', value: '#6B21A8' },
+      { name: 'Rosa Claro', value: '#F472B6' },
+      { name: 'Rosa Escuro', value: '#BE185D' },
+      { name: 'Verde Claro', value: '#4ADE80' },
+      { name: 'Verde Escuro', value: '#15803D' },
+      { name: 'Cinza Claro', value: '#9CA3AF' },
+      { name: 'Cinza Escuro', value: '#374151' },
+      { name: 'Laranja Claro', value: '#FB923C' },
+      { name: 'Laranja Escuro', value: '#C2410C' },
+      { name: 'Amarelo Claro', value: '#FBBF24' },
+      { name: 'Amarelo Escuro', value: '#D97706' },
+    ];
+
     // Garantir que options e value sejam sempre arrays
     const safeOptions = Array.isArray(options) ? options : [];
     const safeValue = Array.isArray(value) ? value : [];
@@ -110,6 +149,45 @@ export function TagPicker({
     // chips visíveis + contador
     const visiveis = safeValue.slice(0, maxChips);
     const escondidas = Math.max(0, safeValue.length - visiveis.length);
+
+    // Componente de seletor de cores minimalista
+    const ColorSelector = ({ currentColor, onColorChange, isOpen, onToggle }: {
+      currentColor: string;
+      onColorChange: (color: string) => void;
+      isOpen: boolean;
+      onToggle: () => void;
+    }) => (
+      <div className="relative">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          className="w-6 h-6 rounded border border-slate-600 cursor-pointer hover:border-slate-400 transition-colors"
+          style={{ backgroundColor: currentColor }}
+          title="Escolher cor"
+        />
+        {isOpen && (
+          <div className="color-selector-popup absolute top-8 left-0 z-50 bg-slate-800 border border-slate-600 rounded-lg p-3 shadow-xl">
+            <div className="grid grid-cols-4 gap-2 w-32">
+              {colorPalette.map((color) => (
+                <button
+                  key={color.value}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onColorChange(color.value);
+                    onToggle();
+                  }}
+                  className="w-6 h-6 rounded border border-slate-500 hover:border-white hover:scale-110 transition-all duration-200"
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   
     return (
       <div className="w-full">
@@ -144,11 +222,9 @@ export function TagPicker({
                   )}
                 </span>
                 {!select && onColorChange && (
-                  <input
-                    type="color"
-                    value={tagColors[tag] || '#3B82F6'}
-                    onChange={(e) => {
-                      const newColor = e.target.value;
+                  <ColorSelector
+                    currentColor={tagColors[tag] || '#3B82F6'}
+                    onColorChange={(newColor) => {
                       // Atualizar estado local imediatamente
                       setTagColors(prev => ({
                         ...prev,
@@ -157,8 +233,8 @@ export function TagPicker({
                       // Notificar componente pai
                       onColorChange(tag, newColor);
                     }}
-                    className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
-                    title={`Cor para ${tag}`}
+                    isOpen={activeColorPicker === tag}
+                    onToggle={() => setActiveColorPicker(activeColorPicker === tag ? null : tag)}
                   />
                 )}
               </div>

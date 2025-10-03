@@ -10,8 +10,8 @@ type Category = {
 type ProductPath = {
   id: string;
   category: string;
-  subcategory?: string; // Agora será o ID da subcategoria
-  subcategoryTitle?: string; // Título da subcategoria para exibição
+  subcategory: string; // ID da subcategoria (sempre string, nunca undefined)
+  subcategoryTitle: string; // Título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
 
@@ -134,8 +134,8 @@ export function PathPicker({
       const newPath: ProductPath = {
         id: `${tempCategory}-${tempSubcategory || 'none'}-${Date.now()}`,
         category: category.title,
-        subcategory: subcategory?.id, // Salvar o ID da subcategoria
-        subcategoryTitle: subcategory?.title, // Salvar o título para exibição
+        subcategory: subcategory?.id || "", // Salvar o ID da subcategoria (sempre string)
+        subcategoryTitle: subcategory?.title || "", // Salvar o título para exibição (sempre string)
         displayName: subcategory ? `${category.title} > ${subcategory.title}` : category.title
       };
 

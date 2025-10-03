@@ -10,19 +10,20 @@ import { db } from '@/lib/firebase.mjs';
 import { GoogleGenAI } from "@google/genai";
 import { TagPicker } from '@/app/components/TagPicker';
 import { PathPicker } from '@/app/components/PathPicker';
+import { useRequireAdmin } from '@/app/hooks/useAuth';
 
 type Item = { id: string, title?: string, img?: string, active?: boolean, category?: string }
 
 type ProductPath = {
   id: string;
   category: string;
-  subcategory?: string; // ID da subcategoria
-  subcategoryTitle?: string; // Título da subcategoria para exibição
+  subcategory: string; // ID da subcategoria (sempre string, nunca undefined)
+  subcategoryTitle: string; // Título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
 
 const ai = new GoogleGenAI({
-  apiKey: "AIzaSyDF26FD1kHIX0SgdLear-3VYuIGLcVJDDM"
+  apiKey: process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY || ""
 });
 
 async function getHTMLFromUrl(url: string) {
@@ -41,6 +42,7 @@ async function getHTMLFromUrl(url: string) {
 export default function Formulario() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, loading, isAdmin } = useRequireAdmin();
   const editProductId = searchParams.get('edit');
   const isEditing = !!editProductId;
 
@@ -94,12 +96,12 @@ export default function Formulario() {
           // Caso contrário, criar caminhos a partir dos dados antigos
           if (product.categories && Array.isArray(product.categories)) {
             product.categories.forEach((category: string, index: number) => {
-              const subcategory = product.subcategories && product.subcategories[index] ? product.subcategories[index] : undefined;
+              const subcategory = product.subcategories && product.subcategories[index] ? product.subcategories[index] : "";
               paths.push({
                 id: `legacy-${index}-${Date.now()}`,
                 category: category,
-                subcategory: subcategory, // Pode ser ID ou título (dados antigos)
-                subcategoryTitle: subcategory, // Para compatibilidade
+                subcategory: subcategory || "", // Sempre string, nunca undefined
+                subcategoryTitle: subcategory || "", // Sempre string, nunca undefined
                 displayName: subcategory ? `${category} > ${subcategory}` : category
               });
             });
@@ -107,8 +109,8 @@ export default function Formulario() {
             paths.push({
               id: `legacy-single-${Date.now()}`,
               category: product.category,
-              subcategory: product.subcategory, // Pode ser ID ou título (dados antigos)
-              subcategoryTitle: product.subcategory, // Para compatibilidade
+              subcategory: product.subcategory || "", // Sempre string, nunca undefined
+              subcategoryTitle: product.subcategory || "", // Sempre string, nunca undefined
               displayName: product.subcategory ? `${product.category} > ${product.subcategory}` : product.category
             });
           }
@@ -126,7 +128,8 @@ export default function Formulario() {
       }
     } catch (error) {
       console.error('Erro ao carregar dados do produto:', error);
-      alert('Erro ao carregar dados do produto para edição.');
+      // Usar toast ou notificação em vez de alert
+      console.error('Erro ao carregar dados do produto:', error);
     }
   };
 
@@ -167,7 +170,7 @@ export default function Formulario() {
           video: video
         });
 
-        alert('Produto atualizado com sucesso!');
+        // Produto atualizado com sucesso - implementar toast
         router.push('/editor');
       } else {
         // Criar novo produto
@@ -189,22 +192,23 @@ export default function Formulario() {
           video: video
         });
 
-        console.log('Produto enviado com sucesso!');
         // Limpar formulário
-        // setTitulo('');
-        // setSubtitulo('');
-        // setPreco('');
-        // setImagem('');
-        // setVideo('');
-        // setDescricao('');
-        // setDetalhes('');
+        setTitulo('');
+        setSubtitulo('');
+        setPreco('');
+        setImagem('');
+        setVideo('');
+        setDescricao('');
+        setDetalhes('');
         // setFornecedor('');
-        // setTagsSelecionadas([]);
-        // setProductPaths([]);
+        setTagsSelecionadas([]);
+        setProductPaths([]);
+        setImagemFile(null);
       }
     } catch (error) {
       console.error('Erro ao enviar produto:', error);
-      alert('Erro ao enviar produto. Verifique o console para mais detalhes.');
+      // Erro ao enviar produto - implementar toast de erro
+      console.error('Erro ao enviar produto:', error);
     }
   };
 
@@ -291,13 +295,29 @@ export default function Formulario() {
   const [iaLink, setIaLink] = useState("");
   const [iaMensagem, setIaMensagem] = useState("");
 
+  // Mostrar tela de carregamento enquanto verifica autenticação
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-300 mx-auto mb-4"></div>
+          <p className="text-slate-200 text-lg">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Se não for admin, não mostrar nada (já foi redirecionado)
+  if (!isAdmin) {
+    return null;
+  }
+
   async function handleEnviarIA() {
     const html = await getHTMLFromUrl(iaLink);
     if (!html) {
       alert('Não foi possível obter o HTML da URL informada.');
       return;
     } else {
-      console.log(html);
     }
 
     const prompt = `Você é um especialista em extração de dados de produtos. Sua tarefa é analisar EXCLUSIVAMENTE o HTML fornecido e extrair informações específicas.
@@ -317,7 +337,6 @@ FORMATO DE SAÍDA (JSON):
 {
   "titulo": "string - nome principal do produto",
   "subtitulo": "string - modelo do produto (se diferente do título)",
-  "tags": "string - palavras-chave separadas por vírgula",
   "fornecedor": "string - marca ou fabricante",
   "imagem": "string - URL direta da imagem principal",
   "video": "string - URL do YouTube (se houver iframe)",
@@ -332,7 +351,6 @@ REGRAS ESPECÍFICAS:
 4. VÍDEO: Extrair apenas o ID do YouTube de iframes
 5. DESCRIÇÃO: Manter formatação original com <p>, <br>, <b>, <i> - NÃO incluir títulos como "Descrição:", "Características:" ou similares
 6. DETALHES: Converter especificações para tabela HTML - NÃO incluir títulos como "Informações Técnicas:", "Especificações:" ou similares
-7. TAGS: Extrair palavras-chave relevantes do conteúdo
 
 VALIDAÇÃO FINAL:
 Antes de responder, verifique:
@@ -445,12 +463,12 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
               Cancelar
             </button>
           )}
-          <button
+          {/* <button
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition"
             onClick={() => setShowIAModal(true)}
           >
             IA Assistent
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -609,7 +627,7 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
         <Editor content={detalhes} onChange={setDetalhes} />
       </div>
 
-      <button onClick={handleEnviar} className="mt-6 px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-900 shadow-lg w-full sm:w-auto">
+      <button onClick={() => {handleEnviar(); window.scrollTo({ top: 0, behavior: 'smooth'})}} className="mt-6 px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-900 shadow-lg w-full sm:w-auto">
         {isEditing ? 'Atualizar Produto' : 'Enviar para Firebase'}
       </button>
     </div>

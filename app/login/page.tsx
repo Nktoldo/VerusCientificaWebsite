@@ -1,18 +1,14 @@
 'use client';
 
 import { auth } from '@/lib/firebase.mjs';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 function LoginPage() {
     const [hasError, setHasError] = useState(false);
     const router = useRouter();
-    async function handleGoogleLogin() {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        router.push('/editor');
-    }
+    
     async function handleEmailLogin() {
         const email = (document.getElementById('email') as HTMLInputElement).value
         const password = (document.getElementById('password') as HTMLInputElement).value
@@ -20,7 +16,8 @@ function LoginPage() {
         .then((resultado) => {router.push('/editor');})
         .catch((error) => {
             setHasError(true);
-            alert("Usuario ou senha incorreto!\n\nCodigo de erro:\n" + error)
+            console.error("Erro de login:", error);
+            // Em vez de alert, você pode implementar um toast ou notificação
         })
     }
     return (
@@ -39,9 +36,7 @@ function LoginPage() {
             </div>
 
             <button onClick={handleEmailLogin} className={`${hasError ? 'bg-red-600' : 'bg-blue-800'} text-white rounded-md shadow-xl w-30 h-10 duration-200 hover:scale-95`}>Log-In</button>
-            <button onClick={handleGoogleLogin} className='rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.2)] p-2'>
-                <img className='h-10' src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" alt="google logo" />
-            </button>
+           
             </section>
         </main>
     )

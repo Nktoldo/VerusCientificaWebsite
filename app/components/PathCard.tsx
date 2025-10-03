@@ -1,12 +1,13 @@
 interface PathCardProps {
     name: string;
     variant?: 'neon' | 'laboratory' | 'modern' | 'floating' | 'gradient-3d' | 'minimal-dark' | 'glassmorphism' | 'neon-glow' | 'carbon' | 'crystal';
+    onClick?: () => void;
 }
 
-export default function PathCard({ name, variant = 'modern' }: PathCardProps) {
+export default function PathCard({ name, variant = 'modern', onClick }: PathCardProps) {
     // Option 1: Modern (Clean & Contemporary)
     const ModernButton = () => (
-        <div className="relative group">
+        <div className="relative group" onClick={onClick}>
             <div className="
                 relative w-80 h-15
                 bg-gradient-to-r from-slate-100 via-white to-slate-50

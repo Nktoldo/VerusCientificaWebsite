@@ -13,12 +13,10 @@ function generateLinkID({ title }: { title: string }) {
 // Script para migrar subcategorias existentes para a nova estrutura com push
 export async function migrateSubcategoriesToNewStructure() {
   try {
-    console.log("Iniciando migração de subcategorias para nova estrutura...");
     
     // Buscar todas as subcategorias existentes
     const snapshot = await get(ref(db, "subcategorias"));
     if (!snapshot.exists()) {
-      console.log("Nenhuma subcategoria encontrada para migração");
       return;
     }
 
@@ -32,7 +30,6 @@ export async function migrateSubcategoriesToNewStructure() {
         
         // Verificar se já tem a nova estrutura
         if (subcategoriaData.id && subcategoriaData.titleID) {
-          console.log(`Subcategoria ${oldKey} já possui nova estrutura`);
           continue;
         }
 
@@ -53,7 +50,6 @@ export async function migrateSubcategoriesToNewStructure() {
         // Remover estrutura antiga
         await remove(ref(db, `subcategorias/${oldKey}`));
 
-        console.log(`Subcategoria ${oldKey} migrada para ${newID}`);
         migratedCount++;
 
       } catch (error) {
@@ -62,7 +58,6 @@ export async function migrateSubcategoriesToNewStructure() {
       }
     }
 
-    console.log(`Migração de subcategorias concluída! ${migratedCount} subcategorias migradas, ${errorCount} erros`);
     
   } catch (error) {
     console.error("Erro durante a migração de subcategorias:", error);
@@ -72,12 +67,10 @@ export async function migrateSubcategoriesToNewStructure() {
 // Script para migrar produtos existentes para a nova estrutura de múltiplas categorias
 export async function migrateProductsToMultipleCategories() {
   try {
-    console.log("Iniciando migração de produtos para múltiplas categorias...");
     
     // Buscar todos os produtos
     const snapshot = await get(ref(db, "produtos"));
     if (!snapshot.exists()) {
-      console.log("Nenhum produto encontrado para migração");
       return;
     }
 
@@ -91,7 +84,6 @@ export async function migrateProductsToMultipleCategories() {
         
         // Verificar se o produto já tem a nova estrutura
         if (productData.categories && Array.isArray(productData.categories)) {
-          console.log(`Produto ${productId} já possui estrutura de múltiplas categorias`);
           continue;
         }
 
@@ -105,7 +97,6 @@ export async function migrateProductsToMultipleCategories() {
           subcategories: subcategories
         });
 
-        console.log(`Produto ${productId} migrado com sucesso`);
         migratedCount++;
 
       } catch (error) {
@@ -114,7 +105,6 @@ export async function migrateProductsToMultipleCategories() {
       }
     }
 
-    console.log(`Migração concluída! ${migratedCount} produtos migrados, ${errorCount} erros`);
     
   } catch (error) {
     console.error("Erro durante a migração:", error);
@@ -124,12 +114,10 @@ export async function migrateProductsToMultipleCategories() {
 // Script para atualizar referências de categorias
 export async function updateCategoryReferences() {
   try {
-    console.log("Atualizando referências de categorias...");
     
     // Buscar todas as categorias
     const categoriesSnapshot = await get(ref(db, "categorias"));
     if (!categoriesSnapshot.exists()) {
-      console.log("Nenhuma categoria encontrada");
       return;
     }
 
@@ -165,14 +153,12 @@ export async function updateCategoryReferences() {
           produtos: produtoIds
         });
 
-        console.log(`Categoria ${categoryName} atualizada com ${produtoIds.length} produtos`);
 
       } catch (error) {
         console.error(`Erro ao atualizar categoria ${categoryName}:`, error);
       }
     }
 
-    console.log("Atualização de referências concluída!");
     
   } catch (error) {
     console.error("Erro durante a atualização de referências:", error);
@@ -181,11 +167,9 @@ export async function updateCategoryReferences() {
 
 // Função para executar toda a migração
 export async function runFullMigration() {
-  console.log("=== INICIANDO MIGRAÇÃO COMPLETA ===");
   
   await migrateSubcategoriesToNewStructure();
   await migrateProductsToMultipleCategories();
   await updateCategoryReferences();
   
-  console.log("=== MIGRAÇÃO COMPLETA FINALIZADA ===");
 }

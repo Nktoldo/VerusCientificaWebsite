@@ -2,9 +2,7 @@ import { ref, set, update, onValue, get, child, push, orderByChild, equalTo, que
 import { db } from './firebase.mjs';
 import { storage } from './firebase.mjs';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getStorage } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { logger } from './logger';
 import { searchCache, type SearchFilters as CacheSearchFilters, type SearchResult as CacheSearchResult } from './searchCache';
 
@@ -12,8 +10,8 @@ import { searchCache, type SearchFilters as CacheSearchFilters, type SearchResul
 type ProductPath = {
   id: string;
   category: string;
-  subcategory?: string; // ID da subcategoria
-  subcategoryTitle?: string; // Título da subcategoria para exibição
+  subcategory: string; // ID da subcategoria (sempre string, nunca undefined)
+  subcategoryTitle: string; // Título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
 
@@ -44,6 +42,13 @@ type Categoria = {
   category?: string,
   active: boolean
 }
+
+type Tag = {
+  id: string;
+  title: string;
+  color: string;
+  active: boolean;
+};
 
 // criacao de usuarios
 export function writeUserData(name: string, email: string, password: string, admin: boolean) {
@@ -98,50 +103,78 @@ export async function writeProductData({
 }) {
 
   // se nao houver categoria selecionada, evita que produto seja criado na raiz da pagina de produtos
-  if (!category) {
+  if (!category && paths.length === 0) {
     alert("Erro ao cadastrar produto, necessario selecionar categoria/subcategoria primeiro")
+    return;
+  }
+
+  // NOVA ESTRUTURA: Usar paths se disponível, senão criar a partir dos campos antigos
+  let finalPaths: ProductPath[] = [];
+  
+  if (paths.length > 0) {
+    // Usar paths fornecidos (nova estrutura)
+    finalPaths = paths;
   } else {
-    // Preparar arrays de categorias e subcategorias
+    // Criar paths a partir dos campos antigos (compatibilidade)
     const categoriesArray = categories.length > 0 ? Array.from(new Set(categories)) : [category];
     const subcategoriesArray = subcategories.length > 0 ? Array.from(new Set(subcategories.filter(sub => sub && sub !== ""))) : (subcategory && subcategory !== "" ? [subcategory] : []);
 
-    // Limpar valores undefined dos paths antes de enviar
-    const cleanPaths = paths.map(path => ({
-      id: path.id,
-      category: path.category,
-      ...(path.subcategory && { subcategory: path.subcategory }),
-      ...(path.subcategoryTitle && { subcategoryTitle: path.subcategoryTitle }),
-      displayName: path.displayName
-    }));
-
-    const productData: any = {
-      title: title,
-      subtitle: subtitle,
-      description: description,
-      technicalInfo: technicalInfo,
-      category: category,
-      subcategory: !subcategory ? "" : subcategory,
-      imageUrl: imageUrl,
-      price: price,
-      tags: tags,
-      supplier: supplier,
-      active: true,
-      video: !video ? "" : video
-    };
-
-    // Só adicionar arrays se há múltiplas categorias/subcategorias
-    if (categoriesArray.length > 1) {
-      productData.categories = categoriesArray;
-    }
+    // Se tem subcategorias, criar um path para cada combinação categoria-subcategoria
     if (subcategoriesArray.length > 0) {
-      productData.subcategories = subcategoriesArray;
+      categoriesArray.forEach(cat => {
+        subcategoriesArray.forEach(subcat => {
+          finalPaths.push({
+            id: `${cat}-${subcat}-${Date.now()}`,
+            category: cat,
+            subcategory: subcat,
+            subcategoryTitle: subcat, // Para compatibilidade com dados antigos
+            displayName: `${cat} > ${subcat}`
+          });
+        });
+      });
+    } else {
+      // Se não tem subcategorias, criar paths só com categoria
+      categoriesArray.forEach(cat => {
+        finalPaths.push({
+          id: `${cat}-none-${Date.now()}`,
+          category: cat,
+          subcategory: "", // Garantir que não seja undefined
+          subcategoryTitle: "", // Garantir que não seja undefined
+          displayName: cat
+        });
+      });
     }
-    if (cleanPaths.length > 1) {
-      productData.paths = cleanPaths;
-    }
-
-    push(ref(db, `produtos`), productData);
   }
+
+  // Extrair categorias e subcategorias únicas dos paths
+  const uniqueCategories = [...new Set(finalPaths.map(path => path.category))];
+  const uniqueSubcategories = [...new Set(finalPaths.map(path => path.subcategory).filter(sub => sub && sub !== ""))];
+
+  const productData: any = {
+    title: title,
+    subtitle: subtitle,
+    description: description,
+    technicalInfo: technicalInfo,
+    imageUrl: imageUrl,
+    price: price,
+    tags: tags,
+    supplier: supplier,
+    active: true,
+    video: !video ? "" : video,
+    
+    // NOVA ESTRUTURA: Salvar paths completos
+    paths: finalPaths,
+    
+    // Arrays para compatibilidade e busca rápida
+    categories: uniqueCategories,
+    subcategories: uniqueSubcategories,
+    
+    // Campos legados para compatibilidade (usar primeiro path como principal)
+    category: finalPaths.length > 0 ? finalPaths[0].category : category,
+    subcategory: finalPaths.length > 0 ? (finalPaths[0].subcategory || "") : subcategory
+  };
+
+  push(ref(db, `produtos`), productData);
 }
 
 // cria e edita categorias
@@ -156,17 +189,40 @@ export async function writeCategoryData({ title }: { title: string }) {
 
 // cria e edita subcategorias
 export async function writeSubcategoryData({ title, category }: { title: string, category: string }) {
-  // Usar push para permitir subcategorias com mesmo nome em categorias diferentes
-  const subcategoriaRef = push(ref(db, 'subcategorias'));
-  const subcategoriaID = subcategoriaRef.key;
-  
-  await set(subcategoriaRef, {
-    title: title, 
-    categoria: category, // Sempre usar "categoria" para consistência
-    active: true
-  });
-  
-  return subcategoriaID;
+  try {
+    // Primeiro, verificar se já existe uma subcategoria com o mesmo nome na mesma categoria
+    const subcategoriasSnapshot = await get(ref(db, 'subcategorias'));
+    
+    if (subcategoriasSnapshot.exists()) {
+      const subcategorias = subcategoriasSnapshot.val();
+      
+      // Procurar por subcategoria existente com mesmo título e categoria
+      for (const [key, subcategoria] of Object.entries(subcategorias)) {
+        const subcat = subcategoria as any;
+        if (subcat.title === title && subcat.categoria === category) {
+          console.log(`ℹ️ Subcategoria "${title}" já existe na categoria "${category}"`);
+          return key; // Retornar o ID da subcategoria existente
+        }
+      }
+    }
+    
+    // Se não existe, criar nova subcategoria
+    const subcategoriaRef = push(ref(db, 'subcategorias'));
+    const subcategoriaID = subcategoriaRef.key;
+    
+    await set(subcategoriaRef, {
+      id: subcategoriaID,
+      title: title, 
+      categoria: category,
+      active: true
+    });
+    
+    console.log(`✅ Nova subcategoria "${title}" criada na categoria "${category}"`);
+    return subcategoriaID;
+  } catch (error) {
+    console.error('❌ Erro ao criar subcategoria:', error);
+    throw error;
+  }
 }
 
 // cria e edita fornecedores
@@ -236,14 +292,14 @@ export async function buscarProdutos({ category, subcategory }: { category: stri
           }
         }
       } catch (e) {
-        console.log("Não foi possível buscar título da categoria:", e);
+        console.error("Não foi possível buscar título da categoria:", e);
       }
 
       // Buscar todos os produtos e filtrar no cliente (mais flexível)
       const snapshot = await get(ref(db, "produtos"));
       
       if (!snapshot.exists()) {
-        console.log("Nenhum produto encontrado no banco");
+        console.error("Nenhum produto encontrado no banco");
         return [];
       }
 
@@ -256,87 +312,80 @@ export async function buscarProdutos({ category, subcategory }: { category: stri
           let categoriaMatch = false;
           let subcategoriaMatch = true; // Default true se não há subcategoria
 
-          // Verificar categoria principal (compatibilidade) - tanto por ID quanto por título
-          if (item.category === category || item.category === categoryTitle) {
-            categoriaMatch = true;
-          }
-          
-          // Verificar array de categorias (nova estrutura)
-          if (item.categories && Array.isArray(item.categories) && item.categories.includes(category)) {
-            categoriaMatch = true;
-          }
-
-          // Verificar paths (nova estrutura)
+          // NOVA ESTRUTURA: Verificar paths primeiro (mais confiável)
           if (item.paths && Array.isArray(item.paths)) {
-            const pathMatch = item.paths.some((path: any) => path.category === category);
-            if (pathMatch) {
+            const matchingPaths = item.paths.filter((path: any) => {
+              const categoryMatches = path.category === category || path.category === categoryTitle;
+              if (!categoryMatches) return false;
+              
+              // Se há subcategoria especificada, verificar se o path tem essa subcategoria
+              if (subcategory) {
+                return path.subcategory === subcategory || path.subcategoryTitle === subcategory;
+              }
+              
+              // Se não há subcategoria especificada, só mostrar paths que não têm subcategoria
+              return !path.subcategory || path.subcategory === "";
+            });
+            
+            if (matchingPaths.length > 0) {
+              categoriaMatch = true;
+              subcategoriaMatch = true;
+            }
+          } else {
+            // ESTRUTURA LEGADA: Verificar campos antigos
+            // Verificar categoria principal (compatibilidade) - tanto por ID quanto por título
+            if (item.category === category || item.category === categoryTitle) {
               categoriaMatch = true;
             }
-          }
-          
-          if (categoriaMatch) {
-            // Se há subcategoria especificada, verificar se o produto pertence a ela
-            if (subcategory) {
-              subcategoriaMatch = false;
-              
-              // Verificar subcategoria principal (compatibilidade)
-              if (item.subcategory === subcategory) {
-                subcategoriaMatch = true;
-              }
-              
-              // Verificar array de subcategorias (nova estrutura)
-              if (item.subcategories && Array.isArray(item.subcategories) && item.subcategories.includes(subcategory)) {
-                subcategoriaMatch = true;
-              }
-
-              // Verificar paths (nova estrutura)
-              if (item.paths && Array.isArray(item.paths)) {
-                const pathMatch = item.paths.some((path: any) => 
-                  path.subcategory === subcategory || path.subcategoryTitle === subcategory
-                );
-                if (pathMatch) {
+            
+            // Verificar array de categorias (nova estrutura)
+            if (item.categories && Array.isArray(item.categories) && item.categories.includes(category)) {
+              categoriaMatch = true;
+            }
+            
+            if (categoriaMatch) {
+              // Se há subcategoria especificada, verificar se o produto pertence a ela
+              if (subcategory) {
+                subcategoriaMatch = false;
+                
+                // Verificar subcategoria principal (compatibilidade)
+                if (item.subcategory === subcategory) {
                   subcategoriaMatch = true;
                 }
-              }
-            } else {
-              // Se não há subcategoria especificada, só mostrar produtos que estão APENAS na categoria
-              // (não em subcategorias específicas)
-              const temSubcategoria = (() => {
-                // Verificar se tem subcategoria na estrutura legada
-                if (item.subcategory && item.subcategory !== "") return true;
                 
-                // Verificar se tem subcategorias no array
-                if (item.subcategories && Array.isArray(item.subcategories)) {
-                  return item.subcategories.some((sub: any) => sub && sub !== "");
+                // Verificar array de subcategorias (nova estrutura)
+                if (item.subcategories && Array.isArray(item.subcategories) && item.subcategories.includes(subcategory)) {
+                  subcategoriaMatch = true;
                 }
-                
-                // Verificar se tem subcategoria nos paths
-                if (item.paths && Array.isArray(item.paths)) {
-                  return item.paths.some((path: any) => path.subcategory && path.subcategory !== "");
-                }
-                
-                return false;
-              })();
-              
-              console.log(`🔍 Produto ${item.title}: temSubcategoria = ${temSubcategoria}`);
-              
-              // Se o produto tem subcategoria, não mostrar na categoria pai
-              if (temSubcategoria) {
-                subcategoriaMatch = false;
-                console.log(`❌ Produto ${item.title} tem subcategoria, não será mostrado na categoria pai`);
               } else {
-                console.log(`✅ Produto ${item.title} será mostrado na categoria pai`);
+                // Se não há subcategoria especificada, só mostrar produtos que estão APENAS na categoria
+                // (não em subcategorias específicas)
+                const temSubcategoria = (() => {
+                  // Verificar se tem subcategoria na estrutura legada
+                  if (item.subcategory && item.subcategory !== "") return true;
+                  
+                  // Verificar se tem subcategorias no array
+                  if (item.subcategories && Array.isArray(item.subcategories)) {
+                    return item.subcategories.some((sub: any) => sub && sub !== "");
+                  }
+                  
+                  return false;
+                })();
+                
+                // Se o produto tem subcategoria, não mostrar na categoria pai
+                if (temSubcategoria) {
+                  subcategoriaMatch = false;
+                }
               }
             }
+          }
 
-            if (subcategoriaMatch) {
-              produtos.push({ id: key, ...item });
-            }
+          if (categoriaMatch && subcategoriaMatch) {
+            produtos.push({ id: key, ...item });
           }
         }
       });
 
-      console.log("Produtos encontrados:", produtos);
       return produtos;
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
@@ -347,25 +396,85 @@ export async function buscarProdutos({ category, subcategory }: { category: stri
   return [];
 }
 
-// busca produtos de uma categoria específica usando referências diretas (mais eficiente)
+// busca produtos de uma categoria específica usando NOVA ESTRUTURA
 export async function buscarProdutosPorCategoria(category: string): Promise<Product[]> {
-  console.log("Buscando produtos da categoria:", category);
 
   try {
-    // Usar a função buscarProdutos que funciona corretamente
-    const produtos = await buscarProdutos({ category, subcategory: "" });
-    console.log("Produtos carregados:", produtos);
+    // Buscar o título da categoria pelo ID para compatibilidade
+    let categoryTitle = category;
+    try {
+      const categorySnapshot = await get(ref(db, `categorias/${category}`));
+      if (categorySnapshot.exists()) {
+        const categoryData = categorySnapshot.val();
+        if (categoryData && categoryData.title) {
+          categoryTitle = categoryData.title;
+        }
+      }
+    } catch (e) {
+      console.log("Não foi possível buscar título da categoria:", e);
+    }
+
+    // Buscar todos os produtos e filtrar usando nova estrutura
+    const snapshot = await get(ref(db, "produtos"));
+    
+    if (!snapshot.exists()) {
+      console.error("❌ Nenhum produto encontrado no banco");
+      return [];
+    }
+
+    const dados = snapshot.val();
+    const produtos: Product[] = [];
+
+    Object.entries(dados).forEach(([key, item]: [string, any]) => {
+      if (item.active === true) {
+        let belongsToCategory = false;
+
+        // NOVA ESTRUTURA: Verificar paths primeiro (mais confiável)
+        if (item.paths && Array.isArray(item.paths)) {
+          const matchingPaths = item.paths.filter((path: any) => {
+            const categoryMatches = path.category === category || path.category === categoryTitle;
+            // Só mostrar produtos que estão APENAS na categoria (sem subcategoria)
+            return categoryMatches && (!path.subcategory || path.subcategory === "");
+          });
+          
+          if (matchingPaths.length > 0) {
+            belongsToCategory = true;
+          }
+        } else {
+          // ESTRUTURA LEGADA: Verificar campos antigos
+          // Verificar array "categorias" (produtos SEM subcategoria)
+          if (item.categories && Array.isArray(item.categories)) {
+            if (item.categories.includes(category) || item.categories.includes(categoryTitle)) {
+              belongsToCategory = true;
+            }
+          }
+
+          // COMPATIBILIDADE: Verificar estrutura legada
+          if (item.category === category || item.category === categoryTitle) {
+            // Só incluir se não tem subcategoria
+            if (!item.subcategory || item.subcategory === "") {
+              belongsToCategory = true;
+            }
+          }
+        }
+
+        if (belongsToCategory) {
+          produtos.push({ id: key, ...item });
+        } else {
+        }
+      }
+    });
+
     return produtos;
 
   } catch (error) {
-    console.error("Erro ao buscar produtos da categoria:", error);
+    console.error("❌ Erro ao buscar produtos da categoria:", error);
     return [];
   }
 }
 
 // busca produtos que pertencem a múltiplas categorias
 export async function buscarProdutosPorMultiplasCategorias(categories: string[]): Promise<Product[]> {
-  console.log("Buscando produtos das categorias:", categories);
 
   if (categories.length === 0) return [];
 
@@ -396,7 +505,6 @@ export async function buscarProdutosPorMultiplasCategorias(categories: string[])
       }
     });
 
-    console.log("Produtos encontrados em múltiplas categorias:", produtos);
     return produtos;
 
   } catch (error) {
@@ -407,7 +515,6 @@ export async function buscarProdutosPorMultiplasCategorias(categories: string[])
 
 // busca produtos que pertencem a múltiplas subcategorias
 export async function buscarProdutosPorMultiplasSubcategorias(subcategories: string[]): Promise<Product[]> {
-  console.log("Buscando produtos das subcategorias:", subcategories);
 
   if (subcategories.length === 0) return [];
 
@@ -438,7 +545,6 @@ export async function buscarProdutosPorMultiplasSubcategorias(subcategories: str
       }
     });
 
-    console.log("Produtos encontrados em múltiplas subcategorias:", produtos);
     return produtos;
 
   } catch (error) {
@@ -475,7 +581,6 @@ export async function atualizarEstruturaCategoria(categoryName: string) {
         produtos: produtoIds
       });
 
-      console.log(`Categoria ${categoryName} atualizada com ${produtoIds.length} produtos`);
       return produtoIds;
     }
 
@@ -486,13 +591,74 @@ export async function atualizarEstruturaCategoria(categoryName: string) {
   }
 }
 
+// Função melhorada para buscar tags com cores
+export async function getTagsWithColors(): Promise<Tag[]> {
+  try {
+    const snapshot = await get(ref(db, "filtros/tags"));
+    if (!snapshot.exists()) return [];
+
+    const tags: Tag[] = [];
+    snapshot.forEach((child) => {
+      const data = child.val();
+      if (typeof data === 'object' && data !== null) {
+        tags.push({
+          id: child.key,
+          title: child.key,
+          color: data.color || "#3B82F6",
+          active: data.active !== false
+        });
+      } else if (data === true) {
+        // Tags legadas (apenas boolean true)
+        tags.push({
+          id: child.key,
+          title: child.key,
+          color: "#3B82F6", // Cor padrão
+          active: true
+        });
+      }
+    });
+
+    return tags;
+  } catch (error) {
+    console.error("Erro ao buscar tags com cores:", error);
+    return [];
+  }
+}
+
 export async function getTags(): Promise<string[]> {
-  let tagsList: string[] = [];
-  let snapshot = await get(ref(db, "filtros/tags"));
-  snapshot.forEach(tag => {
-    tagsList.push(tag.key);
-  });
-  return tagsList;
+  const tags = await getTagsWithColors();
+  return tags.map(tag => tag.title);
+}
+
+// Função para buscar cor de uma tag específica
+export async function getTagColor(tagName: string): Promise<string> {
+  try {
+    const snapshot = await get(ref(db, `filtros/tags/${tagName}`));
+    if (!snapshot.exists()) return "#3B82F6";
+
+    const data = snapshot.val();
+    if (typeof data === 'object' && data !== null) {
+      return data.color || "#3B82F6";
+    }
+    
+    return "#3B82F6"; // Cor padrão
+  } catch (error) {
+    console.error("Erro ao buscar cor da tag:", error);
+    return "#3B82F6";
+  }
+}
+
+// Função para atualizar cor de uma tag
+export async function updateTagColor(tagName: string, color: string): Promise<void> {
+  try {
+    await update(ref(db, `filtros/tags/${tagName}`), {
+      color: color,
+      active: true
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar cor da tag:", error);
+    throw error;
+  }
 }
 
 export async function getSuppleiers(): Promise<string[]> {
@@ -510,7 +676,7 @@ export async function getCategories(): Promise<Categoria[]> {
   let snapshot = await get(ref(db, "categorias"))
   snapshot.forEach(element => {
     const value = element.val();
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && value.active !== false) {
       // Se não tem título, usar o ID como título
       const title = value.title || element.key || 'Categoria sem nome';
       categoriasList.push({
@@ -534,7 +700,6 @@ export function normalizeKey(input: string): string {
 
 // pega subcategorias passando a categoria como parametro
 export async function getSubCategories({ category }: { category: string }): Promise<Categoria[]> {
-  console.log("Buscando subcategorias para categoria:", category);
   let subCategoriasList: Categoria[] = [];
 
   try {
@@ -554,7 +719,7 @@ export async function getSubCategories({ category }: { category: string }): Prom
           }
         }
       } catch (e) {
-        console.log("Não foi possível buscar título da categoria:", e);
+        console.error("Não foi possível buscar título da categoria:", e);
       }
 
       Object.entries(all).forEach(([key, val]: [string, any]) => {
@@ -575,7 +740,6 @@ export async function getSubCategories({ category }: { category: string }): Prom
         }
       });
 
-      console.log("Subcategorias encontradas:", subCategoriasList);
     } else {
       // Buscar todas as subcategorias
       Object.entries(all).forEach(([key, val]: [string, any]) => {
@@ -602,7 +766,6 @@ export async function getSubCategories({ category }: { category: string }): Prom
 
 // busca subcategorias por titleID (para uso geral no site)
 export async function getSubCategoriesByTitleID(titleID: string): Promise<Categoria[]> {
-  console.log("Buscando subcategorias por titleID:", titleID);
   let subCategoriasList: Categoria[] = [];
 
   const snapshot = await get(ref(db, "subcategorias"));
@@ -621,13 +784,11 @@ export async function getSubCategoriesByTitleID(titleID: string): Promise<Catego
     }
   });
 
-  console.log("Subcategorias encontradas por titleID:", subCategoriasList);
   return subCategoriasList;
 }
 
 // busca uma subcategoria específica por ID único (para links específicos)
 export async function getSubCategoryByID(id: string): Promise<Categoria | null> {
-  console.log("Buscando subcategoria por ID:", id);
   
   const snapshot = await get(ref(db, `subcategorias/${id}`));
   if (!snapshot.exists()) {
@@ -930,7 +1091,7 @@ export async function globalSearch({ query, filters }: { query: string, filters:
     return results;
 
   } catch (error) {
-    logger.error('Erro na busca global', error);
+    logger.error('Erro na busca global', { error: String(error) });
     return [];
   }
 }
@@ -961,6 +1122,7 @@ export async function getProducts(): Promise<Product[]> {
       .map(([id, value]: [string, any]) => ({
         id,
         title: value.title,
+        subtitle: value.subtitle,
         img: value.imageUrl,
         active: value.active,
         category: value.categoria,
@@ -995,11 +1157,9 @@ export async function getProductById({ id }: { id: string }): Promise<Product | 
 // altera estado do produto(active)
 export async function changeItemState({ id, type, state }: { id: string, type: string, state: boolean }): Promise<void> {
   try {
-    console.log(`alterando ${id} ${type} ${state}`);
     await update(ref(db, `${type}/${id}`), { active: state });
-    console.log("Mudanca de estado concluida com sucesso!");
   } catch (err) {
-    console.log(`Erro ao alterar estado do produto\n\nCod de Erro:\n${err}`);
+    console.error(`Erro ao alterar estado do produto\n\nCod de Erro:\n${err}`);
   }
 }
 
@@ -1037,39 +1197,75 @@ export async function updateProductData(productId: string, {
 }) {
 
   // se nao houver categoria selecionada, evita que produto seja atualizado
-  if (!category) {
+  if (!category && paths.length === 0) {
     throw new Error("Erro ao atualizar produto, necessario selecionar categoria/subcategoria primeiro");
   }
 
   try {
-    // Preparar arrays de categorias e subcategorias
-    const categoriesArray = categories.length > 0 ? Array.from(new Set(categories)) : [category];
-    const subcategoriesArray = subcategories.length > 0 ? Array.from(new Set(subcategories.filter(sub => sub && sub !== ""))) : (subcategory && subcategory !== "" ? [subcategory] : []);
+    // NOVA ESTRUTURA: Usar paths se disponível, senão criar a partir dos campos antigos
+    let finalPaths: ProductPath[] = [];
+    
+    if (paths.length > 0) {
+      // Usar paths fornecidos (nova estrutura)
+      finalPaths = paths;
+    } else {
+      // Criar paths a partir dos campos antigos (compatibilidade)
+      const categoriesArray = categories.length > 0 ? Array.from(new Set(categories)) : [category];
+      const subcategoriesArray = subcategories.length > 0 ? Array.from(new Set(subcategories.filter(sub => sub && sub !== ""))) : (subcategory && subcategory !== "" ? [subcategory] : []);
 
-    // Limpar valores undefined dos paths antes de enviar
-    const cleanPaths = paths.map(path => ({
-      id: path.id,
-      category: path.category,
-      ...(path.subcategory && { subcategory: path.subcategory }),
-      ...(path.subcategoryTitle && { subcategoryTitle: path.subcategoryTitle }),
-      displayName: path.displayName
-    }));
+      // Se tem subcategorias, criar um path para cada combinação categoria-subcategoria
+      if (subcategoriesArray.length > 0) {
+        categoriesArray.forEach(cat => {
+          subcategoriesArray.forEach(subcat => {
+            finalPaths.push({
+              id: `${cat}-${subcat}-${Date.now()}`,
+              category: cat,
+              subcategory: subcat,
+              subcategoryTitle: subcat, // Para compatibilidade com dados antigos
+              displayName: `${cat} > ${subcat}`
+            });
+          });
+        });
+      } else {
+        // Se não tem subcategorias, criar paths só com categoria
+        categoriesArray.forEach(cat => {
+          finalPaths.push({
+            id: `${cat}-none-${Date.now()}`,
+            category: cat,
+            subcategory: "", // Garantir que não seja undefined
+            subcategoryTitle: "", // Garantir que não seja undefined
+            displayName: cat
+          });
+        });
+      }
+    }
+
+    // Extrair categorias e subcategorias únicas dos paths
+    const uniqueCategories = [...new Set(finalPaths.map(path => path.category))];
+    const uniqueSubcategories = [...new Set(finalPaths.map(path => path.subcategory).filter(sub => sub && sub !== ""))];
 
     await update(ref(db, `produtos/${productId}`), {
       title: title,
       subtitle: subtitle,
       description: description,
       technicalInfo: technicalInfo,
-      category: category, // Mantido para compatibilidade
-      subcategory: !subcategory ? "" : subcategory, // Mantido para compatibilidade
-      categories: categoriesArray, // Nova estrutura
-      subcategories: subcategoriesArray, // Nova estrutura
-      paths: cleanPaths, // Nova estrutura para caminhos completos (sem undefined)
       imageUrl: imageUrl,
       price: price,
       tags: tags,
       supplier: supplier,
       video: !video ? "" : video,
+      
+      // NOVA ESTRUTURA: Salvar paths completos
+      paths: finalPaths,
+      
+      // Arrays para compatibilidade e busca rápida
+      categories: uniqueCategories,
+      subcategories: uniqueSubcategories,
+      
+      // Campos legados para compatibilidade (usar primeiro path como principal)
+      category: finalPaths.length > 0 ? finalPaths[0].category : category,
+      subcategory: finalPaths.length > 0 ? (finalPaths[0].subcategory || "") : subcategory,
+      
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
@@ -1082,11 +1278,9 @@ export async function updateProductData(productId: string, {
 // deleta um item do banco de dados
 export async function deleteItem({ id, type }: { id: string, type: string }): Promise<void> {
   try {
-    console.log(`deletando ${id} de ${type}`);
     await remove(ref(db, `${type}/${id}`));
-    console.log("Item deletado com sucesso!");
   } catch (err) {
-    console.log(`Erro ao deletar item
+    console.error(`Erro ao deletar item
 
 Cod de Erro:
 ${err}`);

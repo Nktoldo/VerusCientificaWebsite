@@ -1,6 +1,11 @@
 import React from "react";
-import Image from "next/image";
 import NavBar from "../components/NavBar";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://www.veruscientifica.com.br/produtos' },
+};
+
 export default function ProdutosPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-16 bg-gray-50 pt-34">
