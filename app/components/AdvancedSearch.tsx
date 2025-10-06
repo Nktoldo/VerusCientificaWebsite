@@ -260,17 +260,6 @@ export function AdvancedSearch() {
           </div>
           
           <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 transition-colors border-l border-gray-200"
-            title="Filtros"
-          >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
-            </svg>
-          </button>
-          
-          <button
             type="submit"
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
           >
@@ -280,64 +269,6 @@ export function AdvancedSearch() {
           </button>
         </div>
       </form>
-
-      {/* Painel de Filtros */}
-      {showFilters && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Fornecedores */}
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-2">Marcas</h3>
-              <div className="max-h-32 overflow-y-auto space-y-1">
-                {availableSuppliers.map(supplier => (
-                  <label key={supplier} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={filters.suppliers.includes(supplier)}
-                      onChange={() => toggleFilter('suppliers', supplier)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{supplier}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-2">Características</h3>
-              <div className="max-h-32 overflow-y-auto space-y-1">
-                {availableTags.map(tag => (
-                  <label key={tag} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={filters.tags.includes(tag)}
-                      onChange={() => toggleFilter('tags', tag)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{tag}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
-            <button
-              onClick={clearFilters}
-              className="text-sm text-gray-600 hover:text-gray-800"
-            >
-              Limpar Filtros
-            </button>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Aplicar
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Resultados da Busca */}
       {showResults && results.length > 0 && (

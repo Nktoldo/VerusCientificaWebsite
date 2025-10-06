@@ -1,185 +1,224 @@
 'use client'
 import { useEffect, useState } from "react";
-import PathCard from "../../components/PathCard";
 import ProductCard from "../../components/ProductCard";
 import { AdvancedSearch } from "../../components/AdvancedSearch";
 import { useRouter, useParams } from "next/navigation";
 import ProductsPage from "../../components/ProductPage";
 import * as firebaseFunctions from "@/lib/databaseFunctions";
-import { generateCanonicalUrl } from "@/lib/canonicalUtils";
 
 type Product = {
   id: string;
-  subtitle: string;
-  imageUrl: string;
-  technicalInfo: string;
-  video: string;
-  description: string;
-  supplier: string;
-  tags: string[] | Record<string, string>;
+  subtitle?: string;
+  imageUrl?: string;
+  technicalInfo?: string;
+  video?: string;
+  description?: string;
+  supplier?: string;
+  tags?: string[] | Record<string, string>;
   title: string;
-  price: string;
-  category: string;
-  subcategory: string;
+  price?: string;
+  category?: string;
+  subcategory?: string;
   active: boolean;
 };
 
-type Item = { id: string, title?: string, img?: string, active?: boolean, value?: any };
+type CategoryWithSubcategories = {
+  id: string;
+  title: string;
+  active: boolean;
+  subcategories: Array<{
+    id: string;
+    title: string;
+    active: boolean;
+  }>;
+  directProducts: Product[];
+};
+
 type KVItem = { key: string; value: any };
 
-function isKV(item: Item | KVItem): item is KVItem {
+function isKV(item: any): item is KVItem {
   return 'key' in item && 'value' in item;
 }
 
-export default function Produtos() {
+export default function ProdutosBlocks() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
   const slugParam = (params?.slug ?? []) as string[];
   const slug = Array.isArray(slugParam) ? slugParam : [slugParam];
 
-  // URL canônica definida no layout com metadados server-side
-
-  // Normaliza subcategoria para uma chave string (id > title)
-  const subcatKey = (sc: any): string =>
-    typeof sc === "string" ? sc : String(sc?.id ?? sc?.title ?? "");
-
-  // Função para verificar se um slug corresponde a uma subcategoria
-  const isSubcategorySlug = (subcategories: any[], slug: string): boolean => {
-    return subcategories.some((sc) => {
-      // Verificar por ID
-      if (sc.id === slug) return true;
-      // Verificar por título
-      if (sc.title === slug) return true;
-      // Verificar por titleID se existir
-      if (sc.titleID === slug) return true;
-      return false;
-    });
-  };
-
-  const [items, setItems] = useState<(Item | KVItem)[]>([]);
+  const [categories, setCategories] = useState<CategoryWithSubcategories[]>([]);
+  const [subcategoryProducts, setSubcategoryProducts] = useState<Product[]>([]);
+  const [currentCategory, setCurrentCategory] = useState<string>('');
+  const [currentSubcategory, setCurrentSubcategory] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setItems([]); // Limpar itens anteriores
       try {
         if (slug.length === 0) {
-          // Buscar categorias principais — SUA LÓGICA MANTIDA
-          const categories = await firebaseFunctions.getCategories();
-          const itemsList: Item[] = (categories ?? [])
-            .filter((c: any) => c?.active)
-            .map((c: any) => ({
-              id: c.id,
-              title: c.title,
-              img: "/assets/folderVerus.pdf", // Imagem padrão para categorias
-              active: c.active
-            }))
-            // Ordenar alfabeticamente por título
-            .sort((a, b) => {
-              const titleA = (a.title || '').toLowerCase();
-              const titleB = (b.title || '').toLowerCase();
-              return titleA.localeCompare(titleB);
-            });
-          setItems(itemsList);
+          // Página principal - mostrar todas as categorias em blocos
+          const categoriesData = await firebaseFunctions.getCategories();
+          const categoriesWithSubcategories: CategoryWithSubcategories[] = [];
+
+          for (const category of categoriesData) {
+            if (category.active) {
+              // Buscar subcategorias da categoria
+              const subcategories = await firebaseFunctions.getSubCategories({ 
+                category: category.id 
+              });
+
+              categoriesWithSubcategories.push({
+                id: category.id,
+                title: category.title,
+                active: category.active,
+                subcategories: (subcategories || []).filter((s: any) => s?.active),
+                directProducts: [] // Não vamos mais mostrar produtos diretos
+              });
+            }
+          }
+
+          // Ordenar categorias alfabeticamente
+          categoriesWithSubcategories.sort((a, b) => 
+            a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+          );
+
+          setCategories(categoriesWithSubcategories);
+          setCurrentCategory('');
+          setCurrentSubcategory('');
         } else if (slug.length === 1) {
-          // Buscar subcategorias da categoria
-          const subcategories = await firebaseFunctions.getSubCategories({ category: slug[0] });
-          
-          // Buscar produtos diretamente na categoria (sem subcategoria)
-          const productsInCategory = await firebaseFunctions.buscarProdutos({ 
-            category: slug[0], 
-            subcategory: "" 
+          // Página de categoria específica - mostrar blocos das subcategorias
+          const categoryId = slug[0];
+          const subcategories = await firebaseFunctions.getSubCategories({ 
+            category: categoryId 
           });
-          
-          const itemsList: (Item | KVItem)[] = [];
-          
-          // Adicionar subcategorias
-          const subcategoryItems: Item[] = (subcategories ?? [])
-            .filter((s: any) => s?.active)
-            .map((s: any) => ({
-              id: s.id,
-              title: s.title,
-              img: "/assets/folderVerus.pdf", // Imagem padrão para subcategorias
-              active: s.active
-            }))
-            // Ordenar alfabeticamente por título
-            .sort((a, b) => {
-              const titleA = (a.title || '').toLowerCase();
-              const titleB = (b.title || '').toLowerCase();
-              return titleA.localeCompare(titleB);
-            });
-          
-          // Adicionar produtos diretos na categoria
-          const productItems: KVItem[] = (productsInCategory ?? [])
-            .filter((p: any) => p?.active)
-            .map((p: any) => ({
-              key: p.id,
-              value: p
-            }))
-            // Ordenar alfabeticamente por título do produto
-            .sort((a, b) => {
-              const titleA = (a.value.title || '').toLowerCase();
-              const titleB = (b.value.title || '').toLowerCase();
-              return titleA.localeCompare(titleB);
-            });
-          
-          // Combinar subcategorias e produtos
-          itemsList.push(...subcategoryItems, ...productItems);
-          setItems(itemsList);
+
+          const categoryWithSubcategories: CategoryWithSubcategories = {
+            id: categoryId,
+            title: '', // Será preenchido depois
+            active: true,
+            subcategories: (subcategories || []).filter((s: any) => s?.active),
+            directProducts: [] // Não vamos mais mostrar produtos diretos
+          };
+
+          // Buscar nome da categoria
+          const categoriesData = await firebaseFunctions.getCategories();
+          const category = categoriesData.find((c: any) => c.id === categoryId);
+          if (category) {
+            categoryWithSubcategories.title = category.title;
+          }
+
+          setCategories([categoryWithSubcategories]);
+          setCurrentCategory(categoryId);
+          setCurrentSubcategory('');
         } else if (slug.length === 2) {
-          // Buscar produtos da subcategoria
+          // Página de subcategoria - mostrar produtos
+          const categoryId = slug[0];
+          const subcategoryId = slug[1];
+          
           const products = await firebaseFunctions.buscarProdutos({ 
-            category: slug[0], 
-            subcategory: slug[1] 
+            category: categoryId, 
+            subcategory: subcategoryId 
           });
-          const itemsList: KVItem[] = (products ?? [])
-            .filter((p: any) => p?.active)
-            .map((p: any) => ({
-              key: p.id,
-              value: p
-            }))
-            // Ordenar alfabeticamente por título do produto
-            .sort((a, b) => {
-              const titleA = (a.value.title || '').toLowerCase();
-              const titleB = (b.value.title || '').toLowerCase();
-              return titleA.localeCompare(titleB);
-            });
-          setItems(itemsList);
+
+          setSubcategoryProducts((products || []).filter((p: any) => p?.active));
+          setCurrentCategory(categoryId);
+          setCurrentSubcategory(subcategoryId);
         } else if (slug.length === 3) {
           // Página de produto individual
           const product = await firebaseFunctions.getProductById({ id: slug[2] });
           if (product && product.active) {
-            setItems([{ key: product.id, value: product }]);
+            setSubcategoryProducts([product]);
           } else {
-            setItems([]);
+            setSubcategoryProducts([]);
           }
+          setCurrentCategory(slug[0]);
+          setCurrentSubcategory(slug[1]);
         } else {
-          // Slug muito longo - não encontrado
-          setItems([]);
+          setCategories([]);
+          setSubcategoryProducts([]);
         }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        setItems([]);
+        setCategories([]);
+        setSubcategoryProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    // Só executa se o slug mudar
     if (slug.length >= 0) {
       fetchData();
     }
   }, [slug.join('/')]);
 
-  const handlePathClick = (key: string) => {
-    const newSlug = [...slug, key];
-    router.push(`/products/${newSlug.join("/")}`);
+  const handleSubcategoryClick = (categoryId: string, subcategoryId: string) => {
+    router.push(`/products/${categoryId}/${subcategoryId}`);
   };
 
-  const handleProductClick = (key: string) => {
-    const newSlug = [...slug, key];
-    router.push(`/products/${newSlug.join("/")}`);
+  const handleCategoryClick = async (categoryId: string) => {
+    setLoading(true);
+    try {
+      // Buscar todas as subcategorias da categoria
+      const subcategories = await firebaseFunctions.getSubCategories({ 
+        category: categoryId 
+      });
+
+      // Buscar produtos de todas as subcategorias
+      const allProducts: Product[] = [];
+      
+      for (const subcategory of subcategories || []) {
+        if (subcategory.active) {
+          const products = await firebaseFunctions.buscarProdutos({ 
+            category: categoryId, 
+            subcategory: subcategory.id 
+          });
+          
+          // Adicionar a subcategoria a cada produto
+          const productsWithSubcategory = (products || []).filter((p: any) => p?.active).map((p: any) => ({
+            ...p,
+            subcategory: subcategory.id // Garantir que cada produto tenha sua subcategoria
+          }));
+          
+          allProducts.push(...productsWithSubcategory);
+        }
+      }
+
+      // Ordenar produtos alfabeticamente
+      allProducts.sort((a, b) => 
+        (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase())
+      );
+
+      setSubcategoryProducts(allProducts);
+      setCurrentCategory(categoryId);
+      setCurrentSubcategory('');
+      setCategories([]); // Limpar categorias para mostrar produtos
+    } catch (error) {
+      console.error("Erro ao buscar produtos da categoria:", error);
+      setSubcategoryProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProductClick = (productId: string) => {
+    if (currentCategory && currentSubcategory) {
+      // Produto de subcategoria específica
+      router.push(`/products/${currentCategory}/${currentSubcategory}/${productId}`);
+    } else if (currentCategory && slug.length === 0) {
+      // Produto da categoria (quando clicou no título da categoria)
+      // Encontrar o produto na lista para obter sua subcategoria
+      const product = subcategoryProducts.find(p => p.id === productId);
+      if (product && product.subcategory) {
+        router.push(`/products/${currentCategory}/${product.subcategory}/${productId}`);
+      } else {
+        // Se não tem subcategoria, tentar acessar diretamente
+        router.push(`/products/${currentCategory}/${productId}`);
+      }
+    } else if (currentCategory) {
+      // Fallback
+      router.push(`/products/${currentCategory}/${productId}`);
+    }
   };
 
   const handleBack = () => {
@@ -187,16 +226,8 @@ export default function Produtos() {
     router.push(newSlug.length > 0 ? `/products/${newSlug.join("/")}` : "/products");
   };
 
-  // Checa com segurança se é uma página de produto (1 item e possui value.supplier)
-  const first = items[0] as any;
-  const isProduct =
-    items.length === 1 &&
-    first &&
-    typeof first === "object" &&
-    "value" in first &&
-    first.value &&
-    typeof first.value === "object" &&
-    "supplier" in first.value;
+  // Checa se é uma página de produto individual
+  const isProduct = slug.length === 3 && subcategoryProducts.length === 1;
 
   if (loading) {
     return (
@@ -207,7 +238,7 @@ export default function Produtos() {
   }
 
   if (isProduct) {
-    const product = (items[0] as KVItem).value as Product;
+    const product = subcategoryProducts[0] as Product;
     
     // Verificações de segurança para evitar erros
     const safeTags = (() => {
@@ -236,23 +267,28 @@ export default function Produtos() {
   return (
     <div className="w-full min-h-screen py-4 sm:py-6 md:py-10 px-4 sm:px-6 md:px-10 flex flex-col">
       {/* Barra de Pesquisa */}
-      <div className="w-full px-4 mb-4">
+      <div className="w-full px-4 mb-6">
         <AdvancedSearch />
       </div>
 
-      {slug.length > 0 && (
-        <button 
-          onClick={handleBack} 
-          className="flex w-min items-center gap-2 px-4 py-2 text-sm sm:text-base text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors duration-200 mb-2 sm:mb-4"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Voltar
-        </button>
+      {/* Breadcrumb */}
+      {(slug.length > 0 || (currentCategory && subcategoryProducts.length > 0)) && (
+        <div className="w-full px-4 mb-6">
+          <button 
+            onClick={currentCategory && subcategoryProducts.length > 0 && slug.length === 0 ? 
+              () => window.location.reload() : 
+              handleBack
+            } 
+            className="flex items-center gap-2 px-4 py-2 text-sm sm:text-base text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            {currentCategory && subcategoryProducts.length > 0 && slug.length === 0 ? 'Voltar às Categorias' : 'Voltar'}
+          </button>
+        </div>
       )}
 
-      {/* Container responsivo com grid */}
       <div className="w-full max-w-7xl mx-auto">
         {/* Loading indicator */}
         {loading && (
@@ -264,34 +300,65 @@ export default function Produtos() {
           </div>
         )}
 
-        {/* Seção de caminhos (categorias ou subcategorias) */}
-        {!loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 sm:gap-x-10 lg:gap-x-12 xl:gap-x-16 gap-y-4 sm:gap-y-5 lg:gap-y-6 xl:gap-y-6 px-4 mb-6 sm:mb-8 justify-items-center">
-          {items.map((item) => {
-            if (isKV(item)) {
-              return (
-                <ProductCard
-                  key={item.key}
-                  name={item.value.title}
-                  subtitle={item.value.subtitle}
-                  image={item.value.imageUrl}
-                  onClick={() => handleProductClick(item.key)}
-                />
-              );
-            } else {
-              return (
-                <PathCard
-                  key={item.id}
-                  name={item.title || ""}
-                  onClick={() => handlePathClick(item.id)}
-                />
-              );
-            }
-          })}
+        {/* Layout para Categorias */}
+        {!loading && slug.length <= 1 && categories.length > 0 && (
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+            {categories.map((category) => (
+              <div key={category.id} className="break-inside-avoid bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                {/* Cabeçalho da Categoria */}
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3">
+                  <button
+                    onClick={() => handleCategoryClick(category.id)}
+                    className="text-left w-full hover:bg-blue-800/20 rounded p-1 -m-1 transition-colors duration-200"
+                  >
+                    <h2 className="text-lg font-bold">{category.title}</h2>
+                    <p className="text-blue-100 text-xs mt-1">
+                      Clique para ver todos os produtos
+                    </p>
+                  </button>
+                </div>
+
+                {/* Subcategorias */}
+                {category.subcategories.length > 0 && (
+                  <div className="p-3 space-y-1">
+                    {category.subcategories.map((subcategory) => (
+                      <button
+                        key={subcategory.id}
+                        onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
+                        className="block w-full text-left p-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors duration-200"
+                      >
+                        {subcategory.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
-        {items.length === 0 && !loading && (
+        {/* Layout de Produtos para Subcategoria ou Categoria */}
+        {!loading && subcategoryProducts.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              {slug.length >= 2 ? 'Produtos' : `Todos os Produtos da Categoria`}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
+              {subcategoryProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  name={product.title ?? ''}
+                  subtitle={product.subtitle ?? ''}
+                  image={product.imageUrl ?? ''}
+                  onClick={() => handleProductClick(product.id)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Estado Vazio */}
+        {!loading && categories.length === 0 && subcategoryProducts.length === 0 && (
           <div className="text-center py-12">
             <div className="mb-6">
               <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,7 +372,6 @@ export default function Produtos() {
               </p>
             </div>
             
-            {/* Sugestões de navegação */}
             <div className="max-w-2xl mx-auto">
               <p className="text-sm text-gray-600 mb-4">Enquanto isso, explore outras categorias:</p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -328,13 +394,6 @@ export default function Produtos() {
           </div>
         )}
       </div>
-      
-      {/* Meta tag noindex para páginas vazias */}
-      {items.length === 0 && !loading && (
-        <head>
-          <meta name="robots" content="noindex, follow" />
-        </head>
-      )}
     </div>
   );
 }
