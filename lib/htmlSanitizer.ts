@@ -1,17 +1,17 @@
-// Utilitário para sanitização de HTML
+// utilitário para sanitização de HTML
 export function sanitizeHtml(html: string): string {
   if (!html) return '';
   
-  // Lista de tags permitidas
+  // lista de tags permitidas
   const allowedTags = [
     'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'span'
   ];
   
-  // Lista de atributos permitidos
+  // lista de atributos permitidos
   const allowedAttributes = ['class', 'style'];
   
-  // Remover scripts e eventos perigosos
+  // remove scripts e eventos perigosos
   let sanitized = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
@@ -20,7 +20,7 @@ export function sanitizeHtml(html: string): string {
     .replace(/vbscript:/gi, '')
     .replace(/data:/gi, '');
   
-  // Remover tags não permitidas
+  // remove tags não permitidas
   const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^<>]*>/g;
   sanitized = sanitized.replace(tagRegex, (match, tagName) => {
     const lowerTagName = tagName.toLowerCase();
@@ -33,7 +33,7 @@ export function sanitizeHtml(html: string): string {
   return sanitized;
 }
 
-// Função para validar se o HTML é seguro
+// valida se o HTML é seguro
 export function isHtmlSafe(html: string): boolean {
   if (!html) return true;
   

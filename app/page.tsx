@@ -8,7 +8,7 @@ import NavBar from "./components/NavBar";
 
 export default function Home() {
   useEffect(() => {
-    // Apenas scroll suave para hash - URL canônica definida no layout
+    // apenas scroll suave para hash - URL canônica definida no layout
     if (typeof window !== "undefined" && window.location.hash) {
       const el = document.getElementById(window.location.hash.replace("#", ""));
       if (el) {
@@ -21,7 +21,7 @@ export default function Home() {
 
  
 
-  // Dados estruturados para SEO
+  // dados estruturados para SEO
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -99,7 +99,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <NavBar />
-      {/* Dados estruturados para SEO */}
+      {/* dados estruturados para SEO */}
       <Script
         id="structured-data"
         type="application/ld+json"
@@ -108,7 +108,7 @@ export default function Home() {
         }}
       />
 
-      {/* Hero Section */}
+      {/* hero section */}
       <section className="relative min-h-screen py-25 md:py-25 flex items-center justify-center overflow-hidden">
         {/* Background with overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-blue-800/70 to-cyan-700/80 z-10"></div>
@@ -119,7 +119,7 @@ export default function Home() {
           }}
         ></div>
 
-        {/* Content */}
+        {/* content */}
         <div className="relative z-20 text-center text-white px-15 max-w-6xl mx-auto">
           <div className="mb-8">
             <Image
@@ -157,7 +157,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* scroll indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
           <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
             <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
@@ -165,7 +165,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* about section */}
       <section id="sobre" className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -198,11 +198,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Representadas Section Title */}
+      {/* representadas section title */}
       <section id="representadas" className="py-10 bg-gradient-to-r from-blue-50 to-cyan-50 scroll-mt-24">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-blue-900 mb-2">
-            Representadas Oficiais
+            Representadas oficiais
           </h2>
           <p className="text-lg text-blue-700 max-w-5xl mx-auto">
             Conheça nossas principais representadas e descubra as melhores soluções para seu laboratório.
@@ -210,15 +210,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Loccus Representative Section */}
+      {/* loccus representative section */}
       <section
         id="linhas"
         className="py-20 relative overflow-hidden scroll-mt-24"
       >
-        {/* Animated background with laboratory theme */}
+        {/* animated background with laboratory theme */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 opacity-90"></div>
 
-        {/* Floating laboratory icons */}
+        {/* floating laboratory icons */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 text-4xl animate-bounce">🧪</div>
           <div className="absolute top-20 right-20 text-3xl animate-pulse">⚖️</div>
@@ -230,7 +230,7 @@ export default function Home() {
           <div className="absolute top-2/3 right-1/3 text-3xl animate-pulse">🧫</div>
         </div>
 
-        {/* Geometric patterns */}
+        {/* geometric patterns */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-32 h-32 border-2 border-white rotate-45"></div>
           <div className="absolute top-20 right-0 w-24 h-24 border-2 border-white rounded-full"></div>
@@ -297,14 +297,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sartorius Representative Section */}
+      {/* sartorius representative section */}
       <section
         id="sartorius"
         className="py-20 relative overflow-hidden scroll-mt-24"
       >
-        {/* Animated background with laboratory theme */}
+        {/* animated background with laboratory theme */}
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-600 via-yellow-400 to-cyan-300 opacity-90"></div>
-        {/* Floating laboratory icons */}
+        {/* floating laboratory icons */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-10 left-10 text-4xl animate-bounce">⚖️</div>
           <div className="absolute top-20 right-20 text-3xl animate-pulse">🧬</div>
@@ -315,7 +315,7 @@ export default function Home() {
           <div className="absolute bottom-1/3 left-1/3 text-2xl animate-bounce">🌡️</div>
           <div className="absolute top-2/3 right-1/3 text-3xl animate-pulse">⚗️</div>
         </div>
-        {/* Geometric patterns */}
+        {/* geometric patterns */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-32 h-32 border-2 border-yellow-400 rotate-45"></div>
           <div className="absolute top-20 right-0 w-24 h-24 border-2 border-yellow-400 rounded-full"></div>
@@ -324,7 +324,7 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Imagem Sartorius à esquerda em telas md+ */}
+            {/* imagem sartorius à esquerda em telas md+ */}
             <div className="relative order-1 md:order-1">
               <div className="p-8">
                 <div className="flex justify-center  items-center flex-col text-center">
@@ -341,7 +341,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            {/* Texto Sartorius à direita em telas md+ */}
+            {/* texto sartorius à direita em telas md+ */}
             <div className="order-2 md:order-2">
               <div className="mb-6">
                 <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
@@ -381,7 +381,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* features section */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">

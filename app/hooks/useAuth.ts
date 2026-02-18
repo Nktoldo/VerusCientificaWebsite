@@ -25,7 +25,7 @@ export function useAuth() {
       await signOut(auth);
       router.push('/login');
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      // ignora erro (falha silenciosa)
     }
   };
 
@@ -37,7 +37,7 @@ export function useAuth() {
   };
 }
 
-// Hook para proteger rotas que requerem autenticação
+// protege rotas que requerem autenticação
 export function useRequireAuth(redirectTo: string = '/login') {
   const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
@@ -51,7 +51,7 @@ export function useRequireAuth(redirectTo: string = '/login') {
   return { user, loading, isAdmin };
 }
 
-// Hook para proteger rotas que requerem admin
+// protege rotas que requerem admin
 export function useRequireAdmin(redirectTo: string = '/login') {
   const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
@@ -61,7 +61,7 @@ export function useRequireAdmin(redirectTo: string = '/login') {
       if (!user) {
         router.push(redirectTo);
       } else if (!isAdmin) {
-        router.push('/unauthorized'); // Redirecionar para página de acesso negado
+        router.push('/unauthorized'); // redireciona para página de acesso negado
       }
     }
   }, [user, loading, isAdmin, router, redirectTo]);

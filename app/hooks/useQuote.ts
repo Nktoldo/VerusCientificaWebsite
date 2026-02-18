@@ -17,7 +17,7 @@ export function useQuote() {
   const [products, setProducts] = useState<QuoteProduct[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Carregar produtos do localStorage na inicialização
+  // carregar produtos do localStorage na inicialização
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedProducts = localStorage.getItem('quoteProducts');
@@ -25,14 +25,13 @@ export function useQuote() {
         try {
           setProducts(JSON.parse(savedProducts));
         } catch (error) {
-          console.error('Erro ao carregar produtos do localStorage:', error);
         }
       }
       setIsLoaded(true);
     }
   }, []);
 
-  // Salvar produtos no localStorage sempre que mudar
+  // salvar produtos no localStorage sempre que mudar
   useEffect(() => {
     if (isLoaded && typeof window !== 'undefined') {
       localStorage.setItem('quoteProducts', JSON.stringify(products));
@@ -41,10 +40,10 @@ export function useQuote() {
 
   const addProduct = (product: QuoteProduct) => {
     setProducts(prev => {
-      // Verificar se o produto já existe
+      // verificar se o produto já existe
       const exists = prev.some(p => p.id === product.id);
       if (exists) {
-        return prev; // Não adicionar se já existe
+        return prev; // não adicionar se já existe
       }
       return [...prev, product];
     });

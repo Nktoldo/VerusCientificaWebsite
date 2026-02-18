@@ -8,7 +8,7 @@ export default function Footer() {
         <footer className="bg-gray-900 text-white">
             <div className="max-w-6xl mx-auto px-4 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* Company Info */}
+                    {/* info da empresa */}
                     <div className="md:col-span-2">
                         <div className="flex items-center gap-3 mb-4">
                             <Image
@@ -17,6 +17,7 @@ export default function Footer() {
                                 width={40}
                                 height={40}
                                 className="rounded-lg"
+                                style={{ width: 'auto', height: 'auto' }}
                             />
                             <h3 className="text-xl font-bold">{verusData.title}</h3>
                         </div>
@@ -25,13 +26,13 @@ export default function Footer() {
                             oferecendo equipamentos de última geração e produtos de alta qualidade.
                         </p>
                         <div className="flex space-x-4">
-                            {/* Instagram */}
+                            {/* instagram */}
                             <a href="https://www.instagram.com/veruscientifica/" className="text-gray-400 hover:text-white transition-colors">
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm4.25 3.25a5.25 5.25 0 1 1 0 10.5 5.25 5.25 0 0 1 0-10.5zm0 1.5a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5zm5.25.75a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                 </svg>
                             </a>
-                            {/* LinkedIn */}
+                            {/* linkedin - ainda nao tem */}
                             {/* <a href="#" className="text-gray-400 hover:text-white transition-colors">
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -40,7 +41,7 @@ export default function Footer() {
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* links rápidos */}
                     <div>
                         <h4 className="text-lg font-semibold mb-4">Links Rápidos</h4>
                         <ul className="space-y-2">
@@ -67,7 +68,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
+                    {/* info de contato */}
                     <div>
                         <h4 className="text-lg font-semibold mb-4">Contato</h4>
                         <div className="space-y-2 text-gray-300">
@@ -78,7 +79,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Google Maps */}
+                {/* google maps */}
                 <div className="mt-12">
                     <h4 className="text-lg font-semibold mb-4 text-center">Nossa Localização</h4>
                     <div className="w-full h-64 rounded-lg overflow-hidden shadow-lg">
@@ -94,7 +95,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
+                {/* bottom bar */}
                 <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
                     <p>&copy; 2025 {verusData.title}. Todos os direitos reservados.</p>
                 </div>

@@ -1,6 +1,5 @@
 /**
- * Sistema de cache inteligente para busca
- * Reduz chamadas desnecessárias ao Firebase e melhora performance
+ * sistema de cache para busca; reduz chamadas ao Firebase e melhora performance
  */
 
 interface CacheItem<T> {
@@ -37,20 +36,20 @@ interface SearchResult {
 
 class SearchCache {
   private cache = new Map<string, CacheItem<SearchResult[]>>();
-  private maxSize = 100; // Máximo de itens no cache
-  private defaultTTL = 5 * 60 * 1000; // 5 minutos em produção, 1 minuto em desenvolvimento
+  private maxSize = 100; // máximo de itens no cache
+  private defaultTTL = 5 * 60 * 1000; // 5 min em produção, 1 min em desenvolvimento
   private hits = 0;
   private misses = 0;
 
   constructor() {
-    // Limpar cache periodicamente
+    // limpa cache periodicamente
     if (typeof window !== 'undefined') {
-      setInterval(() => this.cleanup(), 60000); // Limpar a cada minuto
+      setInterval(() => this.cleanup(), 60000); // a cada minuto
     }
   }
 
   private generateKey(query: string, filters: SearchFilters): string {
-    // Criar chave única baseada na query e filtros
+    // cria chave única baseada na query e filtros
     const filterString = JSON.stringify({
       types: filters.types.sort(),
       categories: filters.categories.sort(),
@@ -64,7 +63,7 @@ class SearchCache {
 
   private isExpired(item: CacheItem<SearchResult[]>): boolean {
     const now = Date.now();
-    const ttl = process.env.NODE_ENV === 'development' ? 60000 : this.defaultTTL; // 1 min em dev, 5 min em prod
+    const ttl = process.env.NODE_ENV === 'development' ? 60000 : this.defaultTTL; // 1 min dev, 5 min prod
     return now - item.timestamp > ttl;
   }
 
@@ -72,14 +71,14 @@ class SearchCache {
     const now = Date.now();
     const entries = Array.from(this.cache.entries());
     
-    // Remover itens expirados
+    // remove itens expirados
     entries.forEach(([key, item]) => {
       if (this.isExpired(item)) {
         this.cache.delete(key);
       }
     });
 
-    // Se ainda estiver muito grande, remover os menos usados
+    // se ainda estiver grande, remove os menos usados
     if (this.cache.size > this.maxSize) {
       const sortedEntries = entries
         .filter(([_, item]) => !this.isExpired(item))
@@ -105,7 +104,7 @@ class SearchCache {
       return null;
     }
 
-    // Incrementar hits e atualizar timestamp
+    // incrementa hits e atualiza timestamp
     item.hits++;
     item.timestamp = Date.now();
     this.hits++;
@@ -116,19 +115,19 @@ class SearchCache {
   set(query: string, filters: SearchFilters, data: SearchResult[]): void {
     const key = this.generateKey(query, filters);
     
-    // Limpar cache se estiver muito grande
+    // limpa cache se estiver muito grande
     if (this.cache.size >= this.maxSize) {
       this.cleanup();
     }
 
     this.cache.set(key, {
-      data: [...data], // Clonar array para evitar mutação
+      data: [...data], // clona array para evitar mutação
       timestamp: Date.now(),
       hits: 0
     });
   }
 
-  // Método para invalidar cache quando dados são atualizados
+  // invalida cache quando dados são atualizados
   invalidate(pattern?: string): void {
     if (!pattern) {
       this.cache.clear();
@@ -143,7 +142,7 @@ class SearchCache {
     });
   }
 
-  // Método para obter estatísticas do cache
+  // retorna estatísticas do cache
   getStats() {
     return {
       size: this.cache.size,
@@ -153,7 +152,7 @@ class SearchCache {
     };
   }
 
-  // Método para limpar cache manualmente
+  // limpa cache manualmente
   clear(): void {
     this.cache.clear();
     this.hits = 0;
@@ -161,8 +160,8 @@ class SearchCache {
   }
 }
 
-// Exportar instância singleton
+// instância singleton do cache de busca
 export const searchCache = new SearchCache();
 
-// Exportar tipos
+// tipos exportados para uso externo
 export type { SearchFilters, SearchResult };

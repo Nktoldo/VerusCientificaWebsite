@@ -57,28 +57,34 @@ export default function ProdutosBlocks() {
       setLoading(true);
       try {
         if (slug.length === 0) {
-          // Página principal - mostrar todas as categorias em blocos
+          // página principal - mostrar todas as categorias em blocos
           const categoriesData = await firebaseFunctions.getCategories();
+          
+          if (!categoriesData || categoriesData.length === 0) {
+            setCategories([]);
+            return;
+          }
+          
           const categoriesWithSubcategories: CategoryWithSubcategories[] = [];
 
           for (const category of categoriesData) {
-            if (category.active) {
-              // Buscar subcategorias da categoria
+            if (category && category.active) {
+              // buscar subcategorias da categoria
               const subcategories = await firebaseFunctions.getSubCategories({ 
                 category: category.id 
               });
 
               categoriesWithSubcategories.push({
                 id: category.id,
-                title: category.title,
+                title: category.title || 'Categoria sem título',
                 active: category.active,
                 subcategories: (subcategories || []).filter((s: any) => s?.active),
-                directProducts: [] // Não vamos mais mostrar produtos diretos
+                directProducts: [] // não vamos mais mostrar produtos diretos
               });
             }
           }
 
-          // Ordenar categorias alfabeticamente
+          // ordenar categorias alfabeticamente
           categoriesWithSubcategories.sort((a, b) => 
             a.title.toLowerCase().localeCompare(b.title.toLowerCase())
           );
@@ -87,34 +93,51 @@ export default function ProdutosBlocks() {
           setCurrentCategory('');
           setCurrentSubcategory('');
         } else if (slug.length === 1) {
-          // Página de categoria específica - mostrar blocos das subcategorias
+          // página de categoria específica - mostrar blocos das subcategorias
           const categoryId = slug[0];
+          
+          if (!categoryId) {
+            setCategories([]);
+            return;
+          }
+          
           const subcategories = await firebaseFunctions.getSubCategories({ 
             category: categoryId 
           });
 
           const categoryWithSubcategories: CategoryWithSubcategories = {
             id: categoryId,
-            title: '', // Será preenchido depois
+            title: '', // será preenchido depois
             active: true,
             subcategories: (subcategories || []).filter((s: any) => s?.active),
-            directProducts: [] // Não vamos mais mostrar produtos diretos
+            directProducts: [] // não vamos mais mostrar produtos diretos
           };
 
-          // Buscar nome da categoria
+          // buscar nome da categoria
           const categoriesData = await firebaseFunctions.getCategories();
-          const category = categoriesData.find((c: any) => c.id === categoryId);
-          if (category) {
-            categoryWithSubcategories.title = category.title;
+          if (categoriesData && categoriesData.length > 0) {
+            const category = categoriesData.find((c: any) => c.id === categoryId);
+            if (category) {
+              categoryWithSubcategories.title = category.title || 'Categoria sem título';
+            } else {
+              // categoria não encontrada
+              setCategories([]);
+              return;
+            }
           }
 
           setCategories([categoryWithSubcategories]);
           setCurrentCategory(categoryId);
           setCurrentSubcategory('');
         } else if (slug.length === 2) {
-          // Página de subcategoria - mostrar produtos
+          // página de subcategoria - mostrar produtos
           const categoryId = slug[0];
           const subcategoryId = slug[1];
+          
+          if (!categoryId || !subcategoryId) {
+            setSubcategoryProducts([]);
+            return;
+          }
           
           const products = await firebaseFunctions.buscarProdutos({ 
             category: categoryId, 
@@ -125,8 +148,15 @@ export default function ProdutosBlocks() {
           setCurrentCategory(categoryId);
           setCurrentSubcategory(subcategoryId);
         } else if (slug.length === 3) {
-          // Página de produto individual
-          const product = await firebaseFunctions.getProductById({ id: slug[2] });
+          // página de produto individual
+          const productId = slug[2];
+          
+          if (!productId) {
+            setSubcategoryProducts([]);
+            return;
+          }
+          
+          const product = await firebaseFunctions.getProductById({ id: productId });
           if (product && product.active) {
             setSubcategoryProducts([product]);
           } else {
@@ -139,7 +169,6 @@ export default function ProdutosBlocks() {
           setSubcategoryProducts([]);
         }
       } catch (error) {
-        console.error("Erro ao buscar dados:", error);
         setCategories([]);
         setSubcategoryProducts([]);
       } finally {
@@ -147,24 +176,22 @@ export default function ProdutosBlocks() {
       }
     };
 
-    if (slug.length >= 0) {
-      fetchData();
-    }
+    fetchData();
   }, [slug.join('/')]);
 
   const handleSubcategoryClick = (categoryId: string, subcategoryId: string) => {
-    router.push(`/products/${categoryId}/${subcategoryId}`);
+    router.push(`/produtos/${categoryId}/${subcategoryId}`);
   };
 
   const handleCategoryClick = async (categoryId: string) => {
     setLoading(true);
     try {
-      // Buscar todas as subcategorias da categoria
+      // buscar todas as subcategorias da categoria
       const subcategories = await firebaseFunctions.getSubCategories({ 
         category: categoryId 
       });
 
-      // Buscar produtos de todas as subcategorias
+      // buscar produtos de todas as subcategorias
       const allProducts: Product[] = [];
       
       for (const subcategory of subcategories || []) {
@@ -174,17 +201,17 @@ export default function ProdutosBlocks() {
             subcategory: subcategory.id 
           });
           
-          // Adicionar a subcategoria a cada produto
+          // adicionar a subcategoria a cada produto
           const productsWithSubcategory = (products || []).filter((p: any) => p?.active).map((p: any) => ({
             ...p,
-            subcategory: subcategory.id // Garantir que cada produto tenha sua subcategoria
+            subcategory: subcategory.id // garantir que cada produto tenha sua subcategoria
           }));
           
           allProducts.push(...productsWithSubcategory);
         }
       }
 
-      // Ordenar produtos alfabeticamente
+      // ordenar produtos alfabeticamente
       allProducts.sort((a, b) => 
         (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase())
       );
@@ -192,9 +219,8 @@ export default function ProdutosBlocks() {
       setSubcategoryProducts(allProducts);
       setCurrentCategory(categoryId);
       setCurrentSubcategory('');
-      setCategories([]); // Limpar categorias para mostrar produtos
+      setCategories([]); // limpar categorias para mostrar produtos
     } catch (error) {
-      console.error("Erro ao buscar produtos da categoria:", error);
       setSubcategoryProducts([]);
     } finally {
       setLoading(false);
@@ -203,30 +229,30 @@ export default function ProdutosBlocks() {
 
   const handleProductClick = (productId: string) => {
     if (currentCategory && currentSubcategory) {
-      // Produto de subcategoria específica
-      router.push(`/products/${currentCategory}/${currentSubcategory}/${productId}`);
+      // produto de subcategoria específica
+      router.push(`/produtos/${currentCategory}/${currentSubcategory}/${productId}`);
     } else if (currentCategory && slug.length === 0) {
-      // Produto da categoria (quando clicou no título da categoria)
-      // Encontrar o produto na lista para obter sua subcategoria
+      // produto da categoria (quando clicou no título da categoria)
+      // encontrar o produto na lista para obter sua subcategoria
       const product = subcategoryProducts.find(p => p.id === productId);
       if (product && product.subcategory) {
-        router.push(`/products/${currentCategory}/${product.subcategory}/${productId}`);
+        router.push(`/produtos/${currentCategory}/${product.subcategory}/${productId}`);
       } else {
-        // Se não tem subcategoria, tentar acessar diretamente
-        router.push(`/products/${currentCategory}/${productId}`);
+        // se não tem subcategoria, tentar acessar diretamente
+        router.push(`/produtos/${currentCategory}/${productId}`);
       }
     } else if (currentCategory) {
-      // Fallback
-      router.push(`/products/${currentCategory}/${productId}`);
+      // fallback
+      router.push(`/produtos/${currentCategory}/${productId}`);
     }
   };
 
   const handleBack = () => {
     const newSlug = slug.slice(0, -1);
-    router.push(newSlug.length > 0 ? `/products/${newSlug.join("/")}` : "/products");
+    router.push(newSlug.length > 0 ? `/produtos/${newSlug.join("/")}` : "/produtos");
   };
 
-  // Checa se é uma página de produto individual
+  // checa se é uma página de produto individual
   const isProduct = slug.length === 3 && subcategoryProducts.length === 1;
 
   if (loading) {
@@ -240,7 +266,7 @@ export default function ProdutosBlocks() {
   if (isProduct) {
     const product = subcategoryProducts[0] as Product;
     
-    // Verificações de segurança para evitar erros
+    // verificações de segurança para evitar erros
     const safeTags = (() => {
       if (!product.tags) return [];
       if (Array.isArray(product.tags)) return product.tags;
@@ -266,12 +292,12 @@ export default function ProdutosBlocks() {
 
   return (
     <div className="w-full min-h-screen py-4 sm:py-6 md:py-10 px-4 sm:px-6 md:px-10 flex flex-col">
-      {/* Barra de Pesquisa */}
+      {/* barra de pesquisa */}
       <div className="w-full px-4 mb-6">
         <AdvancedSearch />
       </div>
 
-      {/* Breadcrumb */}
+      {/* breadcrumb */}
       {(slug.length > 0 || (currentCategory && subcategoryProducts.length > 0)) && (
         <div className="w-full px-4 mb-6">
           <button 
@@ -290,7 +316,7 @@ export default function ProdutosBlocks() {
       )}
 
       <div className="w-full max-w-7xl mx-auto">
-        {/* Loading indicator */}
+        {/* loading indicator */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <div className="flex flex-col items-center">
@@ -300,12 +326,12 @@ export default function ProdutosBlocks() {
           </div>
         )}
 
-        {/* Layout para Categorias */}
+        {/* layout para categorias */}
         {!loading && slug.length <= 1 && categories.length > 0 && (
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
             {categories.map((category) => (
               <div key={category.id} className="break-inside-avoid bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* Cabeçalho da Categoria */}
+                {/* cabeçalho da categoria */}
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3">
                   <button
                     onClick={() => handleCategoryClick(category.id)}
@@ -318,7 +344,7 @@ export default function ProdutosBlocks() {
                   </button>
                 </div>
 
-                {/* Subcategorias */}
+                {/* subcategorias */}
                 {category.subcategories.length > 0 && (
                   <div className="p-3 space-y-1">
                     {category.subcategories.map((subcategory) => (
@@ -337,7 +363,7 @@ export default function ProdutosBlocks() {
           </div>
         )}
 
-        {/* Layout de Produtos para Subcategoria ou Categoria */}
+        {/* layout de produtos para subcategoria ou categoria */}
         {!loading && subcategoryProducts.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -357,7 +383,7 @@ export default function ProdutosBlocks() {
           </div>
         )}
 
-        {/* Estado Vazio */}
+        {/* estado vazio */}
         {!loading && categories.length === 0 && subcategoryProducts.length === 0 && (
           <div className="text-center py-12">
             <div className="mb-6">
@@ -376,7 +402,7 @@ export default function ProdutosBlocks() {
               <p className="text-sm text-gray-600 mb-4">Enquanto isso, explore outras categorias:</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 <button
-                  onClick={() => router.push('/products')}
+                  onClick={() => router.push('/produtos')}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Ver Todas as Categorias

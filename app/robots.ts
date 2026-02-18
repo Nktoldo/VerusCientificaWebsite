@@ -1,4 +1,4 @@
-// app/robots.ts
+// define regras do robots.txt para crawlers
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {

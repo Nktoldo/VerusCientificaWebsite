@@ -4,14 +4,14 @@ type Category = {
   id: string;
   title: string;
   active?: boolean;
-  category?: string; // Para subcategorias, indica a qual categoria pertence
+  category?: string; // para subcategorias, indica a qual categoria pertence
 };
 
 type ProductPath = {
   id: string;
   category: string;
-  subcategory: string; // ID da subcategoria (sempre string, nunca undefined)
-  subcategoryTitle: string; // Título da subcategoria para exibição (sempre string, nunca undefined)
+  subcategory: string; // id da subcategoria (sempre string, nunca undefined)
+  subcategoryTitle: string; // título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
 
@@ -37,32 +37,32 @@ export function PathPicker({
   const [categoriesHoverIndex, setCategoriesHoverIndex] = useState(0);
   const [subcategoriesHoverIndex, setSubcategoriesHoverIndex] = useState(0);
   
-  // Estados para o caminho sendo construído
+  // estados para o caminho sendo construído
   const [tempCategory, setTempCategory] = useState<string>('');
   const [tempSubcategory, setTempSubcategory] = useState<string>('');
   const [availableSubcategories, setAvailableSubcategories] = useState<Category[]>([]);
   
-  // Refs para detectar cliques fora dos dropdowns
+  // refs para detectar cliques fora dos dropdowns
   const categoriesRef = useRef<HTMLDivElement>(null);
   const subcategoriesRef = useRef<HTMLDivElement>(null);
 
-  // Garantir que os arrays sejam sempre válidos
+  // garantir que os arrays sejam sempre válidos
   const safeCategories = Array.isArray(categories) ? categories : [];
   const safeSubcategories = Array.isArray(subcategories) ? subcategories : [];
   const safeSelectedPaths = Array.isArray(selectedPaths) ? selectedPaths : [];
 
-  // Filtrar categorias baseado na query
+  // filtrar categorias baseado na query
   const filteredCategories = categoriesQuery
     ? safeCategories.filter((cat) =>
         cat.title.toLowerCase().includes(categoriesQuery.trim().toLowerCase())
       )
     : safeCategories;
 
-  // Filtrar subcategorias baseado na query E na categoria temporária selecionada
+  // filtrar subcategorias baseado na query E na categoria temporária selecionada
   const filteredSubcategories = (() => {
     let filtered = availableSubcategories;
     
-    // Aplicar filtro de busca se houver query
+    // aplicar filtro de busca se houver query
     if (subcategoriesQuery) {
       filtered = filtered.filter((subcat) =>
         subcat.title.toLowerCase().includes(subcategoriesQuery.trim().toLowerCase())
@@ -72,7 +72,7 @@ export function PathPicker({
     return filtered;
   })();
 
-  // Atualizar subcategorias disponíveis quando categoria temporária muda
+  // atualizar subcategorias disponíveis quando categoria temporária muda
   useEffect(() => {
     if (tempCategory) {
       const filtered = safeSubcategories.filter((subcat) => {
@@ -85,11 +85,11 @@ export function PathPicker({
     } else {
       setAvailableSubcategories([]);
     }
-    // Limpar subcategoria temporária quando categoria muda
+    // limpar subcategoria temporária quando categoria muda
     setTempSubcategory('');
   }, [tempCategory, safeSubcategories]);
 
-  // Detectar cliques fora dos dropdowns para fechá-los
+  // detectar cliques fora dos dropdowns para fechá-los
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
@@ -134,12 +134,12 @@ export function PathPicker({
       const newPath: ProductPath = {
         id: `${tempCategory}-${tempSubcategory || 'none'}-${Date.now()}`,
         category: category.title,
-        subcategory: subcategory?.id || "", // Salvar o ID da subcategoria (sempre string)
-        subcategoryTitle: subcategory?.title || "", // Salvar o título para exibição (sempre string)
+        subcategory: subcategory?.id || "", // id da subcategoria (sempre string)
+        subcategoryTitle: subcategory?.title || "", // título para exibição
         displayName: subcategory ? `${category.title} > ${subcategory.title}` : category.title
       };
 
-      // Verificar se o caminho já existe
+      // verifica se o caminho já existe
       const pathExists = safeSelectedPaths.some(path => 
         path.category === newPath.category && path.subcategory === newPath.subcategory
       );
@@ -148,7 +148,7 @@ export function PathPicker({
         onPathsChange([...safeSelectedPaths, newPath]);
       }
 
-      // Limpar seleções temporárias
+      // limpar seleções temporárias
       setTempCategory('');
       setTempSubcategory('');
       setAvailableSubcategories([]);

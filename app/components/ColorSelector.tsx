@@ -1,4 +1,4 @@
-// app/components/ColorSelector.tsx
+// seletor de cor para o editor
 import { useState, useEffect } from "react";
 
 const colorPalette = [

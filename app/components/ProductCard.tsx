@@ -1,4 +1,4 @@
-// app/components/ProductCard.tsx - Versão com proporção 4:3
+// card de produto com proporção 4:3
 import { useState } from "react";
 
 export default function ProductCard({name, image, subtitle, onClick}: {name: string, image: string, subtitle: string, onClick?: () => void}) {
@@ -13,14 +13,14 @@ export default function ProductCard({name, image, subtitle, onClick}: {name: str
             onClick={onClick}
         >
             
-            {/* Efeito de brilho no hover */}
+            {/* efeito de brilho no hover */}
             <div className="w-full absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out z-10" />
             
-            {/* Seção da imagem - PROPORÇÃO 4:3 */}
+            {/* seção da imagem - PROPORÇÃO 4:3 */}
             <div className="relative w-full h-3/4 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3 sm:p-4 lg:p-6">
                 {hasImage ? (
                     <>
-                        {/* Loading indicator */}
+                        {/* indicador de carregamento */}
                         {imageLoading && (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -61,7 +61,7 @@ export default function ProductCard({name, image, subtitle, onClick}: {name: str
                 )}
             </div>
             
-            {/* Resto do componente permanece igual */}
+            {/* resto do componente permanece igual */}
             <div className="mx-2 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent" />
             <div className="flex-1 flex flex-col justify-center space-y-1 min-h-0 px-4 sm:px-5 lg:px-6 py-3 sm:py-4 lg:py-5">
                 <div className="h-8 flex items-center">

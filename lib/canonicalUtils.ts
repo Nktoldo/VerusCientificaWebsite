@@ -1,30 +1,20 @@
-// Utilitários para geração de URLs canônicas
 
 const BASE_URL = 'https://www.veruscientifica.com.br';
 
-/**
- * Gera URL canônica para páginas de produtos dinâmicas
- */
 export function generateCanonicalUrl(slug: string[]): string {
   if (!slug || slug.length === 0) {
-    return `${BASE_URL}/products`;
+    return `${BASE_URL}/produtos`;
   }
   
-  return `${BASE_URL}/products/${slug.join('/')}`;
+  return `${BASE_URL}/produtos/${slug.join('/')}`;
 }
 
-/**
- * Gera URL canônica para páginas estáticas
- */
+
 export function generateStaticCanonicalUrl(path: string): string {
-  // Remove barra inicial se existir
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return `${BASE_URL}/${cleanPath}`;
 }
 
-/**
- * Gera metadados com URL canônica para páginas de produtos
- */
 export function generateProductMetadata(slug: string[], title?: string, description?: string) {
   const canonicalUrl = generateCanonicalUrl(slug);
   
@@ -43,9 +33,6 @@ export function generateProductMetadata(slug: string[], title?: string, descript
   };
 }
 
-/**
- * Gera metadados com URL canônica para páginas estáticas
- */
 export function generateStaticMetadata(path: string, title?: string, description?: string) {
   const canonicalUrl = generateStaticCanonicalUrl(path);
   
@@ -63,6 +50,3 @@ export function generateStaticMetadata(path: string, title?: string, description
     }
   };
 }
-
-
-

@@ -13,10 +13,10 @@ export async function cleanDuplicateSubcategories() {
     }
 
     const subcategorias = subcategoriasSnapshot.val();
-    const seen = new Map<string, string>(); // Map<"title-category", "key">
+    const seen = new Map<string, string>(); // mapeia "title-category" para key
     const duplicates: string[] = [];
 
-    // Identificar duplicatas (manter a primeira, marcar as outras para remoção)
+    // identifica duplicatas (mantém a primeira, marca as outras para remoção)
     for (const [key, subcategoria] of Object.entries(subcategorias)) {
       const subcat = subcategoria as any;
       const identifier = `${subcat.title}-${subcat.categoria}`;
@@ -30,7 +30,7 @@ export async function cleanDuplicateSubcategories() {
       }
     }
 
-    // Remover duplicatas
+    // remove duplicatas do banco
     for (const duplicateKey of duplicates) {
       await remove(ref(db, `subcategorias/${duplicateKey}`));
       console.log(`🗑️ Removida subcategoria duplicada: ${duplicateKey}`);

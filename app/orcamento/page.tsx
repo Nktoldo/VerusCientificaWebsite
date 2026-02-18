@@ -24,12 +24,11 @@ export default function OrcamentoPage() {
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [showProductReminder, setShowProductReminder] = useState(false);
 
-    // Funções para auto-save
+    // funções para auto-save
     const saveFormData = (data: typeof formData) => {
         try {
             localStorage.setItem('orcamentoFormData', JSON.stringify(data));
         } catch (error) {
-            console.error('Erro ao salvar dados do formulário:', error);
         }
     };
 
@@ -40,7 +39,6 @@ export default function OrcamentoPage() {
                 return JSON.parse(savedData);
             }
         } catch (error) {
-            console.error('Erro ao carregar dados do formulário:', error);
         }
         return null;
     };
@@ -49,7 +47,6 @@ export default function OrcamentoPage() {
         try {
             localStorage.removeItem('orcamentoFormData');
         } catch (error) {
-            console.error('Erro ao limpar dados do formulário:', error);
         }
     };
 
@@ -60,7 +57,7 @@ export default function OrcamentoPage() {
             [name]: value
         };
         setFormData(newFormData);
-        // Auto-save após cada mudança
+        // auto-save após cada mudança
         saveFormData(newFormData);
     };
 
@@ -85,7 +82,7 @@ export default function OrcamentoPage() {
             if (result.success) {
                 setSubmitSuccess(true);
                 clearProducts();
-                // Limpar dados salvos após envio bem-sucedido
+                // limpar dados salvos após envio bem-sucedido
                 clearSavedFormData();
                 setFormData({
                     nome: '',
@@ -104,7 +101,6 @@ export default function OrcamentoPage() {
                 alert('Erro ao enviar orçamento. Tente novamente.');
             }
         } catch (error) {
-            console.error('Erro:', error);
             alert('Erro ao enviar orçamento. Tente novamente.');
         } finally {
             setIsSubmitting(false);
@@ -121,7 +117,7 @@ export default function OrcamentoPage() {
         localStorage.setItem('hasSeenProductReminder', 'true');
     };
 
-    // Carregar dados salvos quando o componente for montado
+    // carregar dados salvos quando o componente for montado
     useEffect(() => {
         const savedData = loadFormData();
         if (savedData) {
@@ -135,7 +131,7 @@ export default function OrcamentoPage() {
         }
     }, [submitSuccess]);
 
-    // Mostrar popup de lembrete quando houver produtos no carrinho
+    // mostrar popup de lembrete quando houver produtos no carrinho
     useEffect(() => {
         if (isLoaded && products.length > 0) {
             const hasSeenReminder = localStorage.getItem('hasSeenProductReminder');
@@ -169,7 +165,7 @@ export default function OrcamentoPage() {
         <div className="pt-20 min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 relative overflow-hidden">
             <NavBar />
 
-            {/* Popup de Lembrete de Produto */}
+            {/* popup de lembrete de produto */}
             {showProductReminder && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-gray-200 animate-in fade-in-0 zoom-in-95 duration-300">
@@ -210,7 +206,7 @@ export default function OrcamentoPage() {
                                 <button
                                     onClick={() => {
                                         setShowProductReminder(false);
-                                        // Não marcar como visto para mostrar novamente se necessário
+                                        // não marcar como visto para mostrar novamente se necessário
                                     }}
                                     className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                                 >
@@ -222,7 +218,7 @@ export default function OrcamentoPage() {
                 </div>
             )}
 
-            {/* Background Elements */}
+            {/* background elements */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 text-4xl animate-bounce">📧</div>
                 <div className="absolute top-20 right-20 text-3xl animate-pulse">📋</div>
@@ -232,7 +228,7 @@ export default function OrcamentoPage() {
                 <div className="absolute top-1/3 right-1/4 text-3xl animate-pulse">🎯</div>
             </div>
 
-            {/* Geometric Patterns */}
+            {/* geometric patterns */}
             <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-0 left-0 w-32 h-32 border-2 border-white rotate-45"></div>
                 <div className="absolute top-20 right-0 w-24 h-24 border-2 border-white rounded-full"></div>
@@ -255,7 +251,7 @@ export default function OrcamentoPage() {
                     </div>
 
                     <div className="flex flex-col gap-8">
-                        {/* Lista de Produtos - Design mais clean */}
+                        {/* lista de produtos - design mais clean */}
                         <div className="space-y-6">
                             {!isLoaded ? (
                                 <div className="text-center py-8">
@@ -318,7 +314,7 @@ export default function OrcamentoPage() {
                             )}
                         </div>
 
-                        {/* Formulário */}
+                        {/* formulário */}
                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -339,7 +335,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Empresa */}
+                                    {/* empresa */}
                                     <div>
                                         <label htmlFor="empresa" className="block text-white font-semibold mb-2">
                                             Empresa *
@@ -356,7 +352,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Telefone */}
+                                    {/* telefone */}
                                     <div>
                                         <label htmlFor="telefone" className="block text-white font-semibold mb-2">
                                             Telefone *
@@ -379,7 +375,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Email */}
+                                    {/* email */}
                                     <div>
                                         <label htmlFor="email" className="block text-white font-semibold mb-2">
                                             Email *
@@ -396,7 +392,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Cargo */}
+                                    {/* cargo */}
                                     <div>
                                         <label htmlFor="cargo" className="block text-white font-semibold mb-2">
                                             Cargo *
@@ -413,7 +409,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Departamento */}
+                                    {/* departamento */}
                                     <div>
                                         <label htmlFor="departamento" className="block text-white font-semibold mb-2">
                                             Departamento *
@@ -430,7 +426,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Prédio */}
+                                    {/* prédio */}
                                     <div>
                                         <label htmlFor="predio" className="block text-white font-semibold mb-2">
                                             Prédio
@@ -446,7 +442,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Laboratório/Sala */}
+                                    {/* laboratório/sala */}
                                     <div>
                                         <label htmlFor="laboratorio" className="block text-white font-semibold mb-2">
                                             Laboratório/Sala
@@ -462,7 +458,7 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* Estado */}
+                                    {/* estado */}
                                     <div>
                                         <label htmlFor="estado" className="block text-white font-semibold mb-2">
                                             Estado *
@@ -506,7 +502,7 @@ export default function OrcamentoPage() {
                                         </select>
                                     </div>
 
-                                    {/* Cidade */}
+                                    {/* cidade */}
                                     <div>
                                         <label htmlFor="cidade" className="block text-white font-semibold mb-2">
                                             Cidade *
@@ -524,7 +520,7 @@ export default function OrcamentoPage() {
                                     </div>
                                 </div>
 
-                                {/* Mensagem */}
+                                {/* mensagem */}
                                 <div>
                                     <label htmlFor="mensagem" className="block text-white font-semibold mb-2">
                                         Detalhes do Orçamento *
@@ -541,7 +537,7 @@ export default function OrcamentoPage() {
                                     />
                                 </div>
 
-                                {/* Submit Button */}
+                                {/* submit button */}
                                 <div className="text-center pt-4 space-y-3">
                                     <button
                                         type="submit"
@@ -561,7 +557,7 @@ export default function OrcamentoPage() {
                                         )}
                                     </button>
                                     
-                                    {/* Botão para limpar dados salvos */}
+                                    {/* botão para limpar dados salvos */}
                                     <div>
                                         <button
                                             type="button"

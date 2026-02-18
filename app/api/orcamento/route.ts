@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 export async function POST(req: Request) {
   const data = await req.json();
 
-  // Gerar HTML para os produtos se existirem
+  // gera HTML para os produtos se existirem
   const productsHtml = data.products && data.products.length > 0 ? data.products.map((product: any) => `
     <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; background: linear-gradient(to bottom, #f0f9ff, #ffffff);">
       <div style="display: flex; gap: 16px; align-items: flex-start;">
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     </div>
   `).join('') : '';
 
-  // Template HTML do email
+  // template HTML do email
   const htmlContent = `
     <!DOCTYPE html>
     <html>

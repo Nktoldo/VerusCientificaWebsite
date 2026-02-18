@@ -1,12 +1,11 @@
-'use client';
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { AdvancedSearch } from '../components/AdvancedSearch';
-import * as firebaseFunctions from '@/lib/databaseFunctions';
-import { useRouter } from 'next/navigation';
-import { sanitizeHtml } from '@/lib/htmlSanitizer';
+'use client'
 
-type SearchResult = {
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import ProductCard from '../components/ProductCard';
+import { AdvancedSearch } from '../components/AdvancedSearch';
+
+interface SearchResult {
   id: string;
   type: 'product' | 'category' | 'subcategory' | 'tag' | 'supplier';
   title: string;
@@ -19,517 +18,261 @@ type SearchResult = {
   supplier?: string;
   price?: string;
   relevance: number;
-};
+}
 
-function SearchContent() {
+export default function SearchClient() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
-  const [searchType, setSearchType] = useState<string>('');
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
+  // buscar parâmetros da URL
   useEffect(() => {
-    const urlQuery = searchParams.get('q');
-    const urlType = searchParams.get('type');
-    const urlCategories = searchParams.get('categories');
-    const urlSuppliers = searchParams.get('suppliers');
-    const urlTags = searchParams.get('tags');
+    const q = searchParams.get('q');
+    const type = searchParams.get('type');
     
-    if (urlQuery) {
-      setQuery(urlQuery);
-      setSearchType(urlType || '');
-      
-      // Preparar filtros baseados nos parâmetros da URL
-      const filters = {
-        types: ['product', 'category', 'subcategory', 'tag', 'supplier'],
-        categories: urlCategories ? urlCategories.split(',') : [],
-        suppliers: urlSuppliers ? urlSuppliers.split(',') : [],
-        tags: urlTags ? urlTags.split(',') : [],
-        priceRange: { min: 0, max: 100000 }
-      };
-      
-      performSearchWithFilters(urlQuery, urlType || '', filters);
+    if (q) {
+      setQuery(q);
+      performSearch(q, type);
     }
   }, [searchParams]);
 
-  const performSearchWithFilters = async (searchQuery: string, type: string = '', filters: any) => {
-    if (!searchQuery.trim()) return;
+  // função de busca
+  const performSearch = async (searchQuery: string, searchType?: string | null) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      return;
+    }
 
     setLoading(true);
     try {
-      let searchResults: SearchResult[] = [];
-
-      if (type === 'tag') {
-        // Buscar produtos que contêm a tag
-        const products = await firebaseFunctions.getProducts();
-        searchResults = products
-          .filter(product => {
-            if (!product.active) return false;
-            if (Array.isArray(product.tags)) {
-              return product.tags.some(tag => 
-                tag.toLowerCase().includes(searchQuery.toLowerCase())
-              );
-            }
-            return false;
-          })
-          .map(product => ({
-            id: product.id,
-            type: 'product' as const,
-            title: product.title,
-            subtitle: product.subtitle,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            category: product.category,
-            subcategory: product.subcategory,
-            supplier: product.supplier,
-            price: product.price,
-            relevance: 0.8
-          }));
-      } else if (type === 'supplier') {
-        // Buscar produtos do fornecedor
-        const products = await firebaseFunctions.getProducts();
-        searchResults = products
-          .filter(product => {
-            if (!product.active) return false;
-            return product.supplier?.toLowerCase().includes(searchQuery.toLowerCase());
-          })
-          .map(product => ({
-            id: product.id,
-            type: 'product' as const,
-            title: product.title,
-            subtitle: product.subtitle,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            category: product.category,
-            subcategory: product.subcategory,
-            supplier: product.supplier,
-            price: product.price,
-            relevance: 0.8
-          }));
+      const params = new URLSearchParams({
+        q: searchQuery,
+        ...(searchType && { type: searchType })
+      });
+      
+      const response = await fetch(`/api/search?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setResults(data.results || []);
       } else {
-        // Busca geral com filtros
-        searchResults = await firebaseFunctions.globalSearch({
-          query: searchQuery,
-          filters: filters
-        });
+        setResults([]);
       }
-
-      setResults(searchResults);
     } catch (error) {
-      console.error('Erro na busca:', error);
       setResults([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const performSearch = async (searchQuery: string, type: string = '') => {
-    if (!searchQuery.trim()) return;
-
-    setLoading(true);
-    try {
-      let searchResults: SearchResult[] = [];
-
-      if (type === 'tag') {
-        // Buscar produtos que contêm a tag
-        const products = await firebaseFunctions.getProducts();
-        searchResults = products
-          .filter(product => {
-            if (!product.active) return false;
-            if (Array.isArray(product.tags)) {
-              return product.tags.some(tag => 
-                tag.toLowerCase().includes(searchQuery.toLowerCase())
-              );
-            }
-            return false;
-          })
-          .map(product => ({
-            id: product.id,
-            type: 'product' as const,
-            title: product.title,
-            subtitle: product.subtitle,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            category: product.category,
-            subcategory: product.subcategory,
-            supplier: product.supplier,
-            price: product.price,
-            relevance: 0.8
-          }));
-      } else if (type === 'supplier') {
-        // Buscar produtos do fornecedor
-        const products = await firebaseFunctions.getProducts();
-        searchResults = products
-          .filter(product => {
-            if (!product.active) return false;
-            return product.supplier?.toLowerCase().includes(searchQuery.toLowerCase());
-          })
-          .map(product => ({
-            id: product.id,
-            type: 'product' as const,
-            title: product.title,
-            subtitle: product.subtitle,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            category: product.category,
-            subcategory: product.subcategory,
-            supplier: product.supplier,
-            price: product.price,
-            relevance: 0.8
-          }));
-      } else {
-        // Busca geral
-        searchResults = await firebaseFunctions.quickSearch(searchQuery);
-      }
-
-      setResults(searchResults);
-    } catch (error) {
-      console.error('Erro na busca:', error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // função para lidar com clique em resultado
   const handleResultClick = (result: SearchResult) => {
     switch (result.type) {
       case 'product':
-        // Construir URL baseada na disponibilidade de categoria e subcategoria
+        // construir URL baseada na disponibilidade de categoria e subcategoria
         if (result.category && result.subcategory) {
-          // Categoria + Subcategoria + Produto
-          router.push(`/products/${result.category}/${result.subcategory}/${result.id}`);
+          // categoria + subcategoria + produto
+          router.push(`/produtos/${result.category}/${result.subcategory}/${result.id}`);
         } else if (result.category) {
-          // Apenas Categoria + Produto
-          router.push(`/products/${result.category}/${result.id}`);
+          // apenas categoria + produto
+          router.push(`/produtos/${result.category}/${result.id}`);
         } else {
-          // Fallback: ir para página de busca com o produto
+          // fallback: ir para página de busca com o produto
           router.push(`/search?q=${encodeURIComponent(result.title)}&type=product`);
         }
         break;
       case 'category':
-        router.push(`/products/${result.id}`);
+        router.push(`/produtos/${result.id}`);
         break;
       case 'subcategory':
         if (result.category) {
-          router.push(`/products/${result.category}/${result.id}`);
+          router.push(`/produtos/${result.category}/${result.id}`);
         } else {
-          // Fallback: ir para busca
+          // fallback: ir para busca
           router.push(`/search?q=${encodeURIComponent(result.title)}&type=subcategory`);
         }
-        break;
-      case 'tag':
-        router.push(`/search?q=${encodeURIComponent(result.title)}&type=tag`);
         break;
       case 'supplier':
         router.push(`/search?q=${encodeURIComponent(result.title)}&type=supplier`);
         break;
+      default:
+        router.push(`/search?q=${encodeURIComponent(result.title)}`);
     }
   };
 
-  const getResultIcon = (type: string) => {
-    switch (type) {
-      case 'product': return '📦';
-      case 'category': return '📁';
-      case 'subcategory': return '📂';
-      case 'tag': return '🏷️';
-      case 'supplier': return '🏢';
-      default: return '🔍';
+  // função para lidar com busca
+  const handleSearch = (searchQuery: string) => {
+    setQuery(searchQuery);
+    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+  };
+
+  // agrupar resultados por tipo
+  const groupedResults = results.reduce((acc, result) => {
+    if (!acc[result.type]) {
+      acc[result.type] = [];
     }
-  };
+    acc[result.type].push(result);
+    return acc;
+  }, {} as Record<string, SearchResult[]>);
 
-  const getResultTypeLabel = (type: string) => {
-    switch (type) {
-      case 'product': return 'Produto';
-      case 'category': return 'Categoria';
-      case 'subcategory': return 'Subcategoria';
-      case 'tag': return 'Tag';
-      case 'supplier': return 'Fornecedor';
-      default: return 'Item';
-    }
-  };
-
-  const groupResultsByType = (results: SearchResult[]) => {
-    const grouped: { [key: string]: SearchResult[] } = {};
-    
-    results.forEach(result => {
-      if (!grouped[result.type]) {
-        grouped[result.type] = [];
-      }
-      grouped[result.type].push(result);
-    });
-
-    return grouped;
-  };
-
-  const groupedResults = groupResultsByType(results);
+  const resultTypes = [
+    { key: 'product', label: 'Produtos', icon: '📦' },
+    { key: 'category', label: 'Categorias', icon: '📁' },
+    { key: 'subcategory', label: 'Subcategorias', icon: '📂' },
+    { key: 'supplier', label: 'Fornecedores', icon: '🏢' },
+    { key: 'tag', label: 'Tags', icon: '🏷️' }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Busca Avançada</h1>
-          <p className="text-gray-600 mb-6">
-            Encontre produtos, categorias, tags e fornecedores em nosso catálogo
-          </p>
-          
-          {/* Barra de Pesquisa */}
-          <div className="max-w-4xl mx-auto">
-            <AdvancedSearch />
-          </div>
-        </div>
+    <div className="w-full min-h-screen py-4 sm:py-6 md:py-10 px-4 sm:px-6 md:px-10 flex flex-col">
+      {/* barra de pesquisa */}
+      <div className="w-full px-4 mb-6">
+        <AdvancedSearch />
+      </div>
 
-        {/* Resultados */}
-        {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-gray-600">Buscando...</p>
-          </div>
-        )}
-
-        {!loading && query && (
-          <div className="max-w-6xl mx-auto">
-            {/* Informações da Busca */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                Resultados para "{query}"
-                {searchType && (
-                  <span className="text-lg font-normal text-gray-600 ml-2">
-                    (filtrado por {searchType})
-                  </span>
-                )}
-              </h2>
-              
-              {/* Filtros Ativos */}
-              {(() => {
-                const urlCategories = searchParams.get('categories');
-                const urlSuppliers = searchParams.get('suppliers');
-                const urlTags = searchParams.get('tags');
-                
-                if (urlCategories || urlSuppliers || urlTags) {
-                  return (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {urlCategories && urlCategories.split(',').map((cat, index) => (
-                        <span key={`cat-${index}`} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                          📁 {cat}
-                        </span>
-                      ))}
-                      {urlSuppliers && urlSuppliers.split(',').map((supp, index) => (
-                        <span key={`supp-${index}`} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-                          🏢 {supp}
-                        </span>
-                      ))}
-                      {urlTags && urlTags.split(',').map((tag, index) => (
-                        <span key={`tag-${index}`} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800">
-                          🏷️ {tag}
-                        </span>
-                      ))}
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-              
-              <p className="text-gray-600 mt-2">
-                {results.length} resultado(s) encontrado(s)
-              </p>
-            </div>
-
-            {/* Resultados Agrupados */}
-            {results.length > 0 ? (
-              <div className="space-y-8">
-                {Object.entries(groupedResults).map(([type, typeResults]) => (
-                  <div key={type} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                      <span className="text-2xl mr-2">{getResultIcon(type)}</span>
-                      {getResultTypeLabel(type)}s ({typeResults.length})
-                    </h3>
-                    
-                    <div className={`grid gap-4 ${type === 'product' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
-                      {typeResults.map((result, index) => (
-                        <div
-                          key={`${result.type}-${result.id}-${index}`}
-                          onClick={() => handleResultClick(result)}
-                          className={`p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md cursor-pointer transition-all duration-200 ${
-                            type === 'product' ? 'bg-white' : ''
-                          }`}
-                        >
-                          {type === 'product' && result.imageUrl ? (
-                            // Layout para produtos com imagem
-                            <div className="space-y-3">
-                              {/* Imagem do produto */}
-                              <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                                <img
-                                  src={result.imageUrl}
-                                  alt={result.title}
-                                  className="max-w-full max-h-full object-contain"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.style.display = 'none';
-                                    const parent = target.parentElement;
-                                    if (parent) {
-                                      parent.innerHTML = `<div class="text-4xl text-gray-400">${getResultIcon(result.type)}</div>`;
-                                    }
-                                  }}
-                                />
-                              </div>
-                              
-                              {/* Informações do produto */}
-                              <div className="space-y-2">
-                                <h4 className="font-medium text-gray-900 truncate text-sm">
-                                  {result.title}
-                                </h4>
-                                
-                                {result.subtitle && (
-                                  <p className="text-xs text-gray-600 line-clamp-2">
-                                    {result.subtitle}
-                                  </p>
-                                )}
-                                
-                                <div className="flex flex-wrap gap-1 text-xs">
-                                  {result.category && (
-                                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                      📁 {result.category}
-                                    </span>
-                                  )}
-                                  {result.subcategory && (
-                                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                      📂 {result.subcategory}
-                                    </span>
-                                  )}
-                                  {result.supplier && (
-                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                      🏢 {result.supplier}
-                                    </span>
-                                  )}
-                                  {result.price && (
-                                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                                      💰 R$ {result.price}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            // Layout padrão para outros tipos ou produtos sem imagem
-                            <div className="flex items-start space-x-3">
-                              <div className="text-2xl flex-shrink-0">{getResultIcon(result.type)}</div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-gray-900 truncate mb-1">
-                                  {result.title}
-                                </h4>
-                                
-                                {result.subtitle && (
-                                  <p className="text-sm text-gray-600 truncate mb-2">
-                                    {result.subtitle}
-                                  </p>
-                                )}
-                                
-                                {result.description && (
-                                  <p
-                                    className="text-sm text-gray-500 line-clamp-2 mb-2"
-                                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(result.description || '') }}
-                                  />
-                                )}
-
-                                <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                                  {result.category && (
-                                    <span className="bg-gray-100 px-2 py-1 rounded">
-                                      📁 {result.category}
-                                    </span>
-                                  )}
-                                  {result.subcategory && (
-                                    <span className="bg-gray-100 px-2 py-1 rounded">
-                                      📂 {result.subcategory}
-                                    </span>
-                                  )}
-                                  {result.supplier && (
-                                    <span className="bg-gray-100 px-2 py-1 rounded">
-                                      🏢 {result.supplier}
-                                    </span>
-                                  )}
-                                  {result.price && (
-                                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                                      💰 R$ {result.price}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Nenhum resultado encontrado
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Não encontramos resultados para "{query}"
-                </p>
-                <div className="text-sm text-gray-500">
-                  <p>Dicas para melhorar sua busca:</p>
-                  <ul className="mt-2 space-y-1">
-                    <li>• Verifique a ortografia das palavras</li>
-                    <li>• Tente usar termos mais gerais</li>
-                    <li>• Use sinônimos ou termos relacionados</li>
-                    <li>• Experimente a busca avançada com filtros</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Estado Inicial */}
-        {!loading && !query && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Comece sua busca
-            </h3>
+      {/* resultados da busca */}
+      <div className="w-full max-w-7xl mx-auto">
+        {query && (
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+              Resultados para "{query}"
+            </h1>
             <p className="text-gray-600">
-              Digite o que você está procurando na barra de pesquisa acima
+              {loading ? 'Buscando...' : `${results.length} resultado(s) encontrado(s)`}
             </p>
           </div>
         )}
+
+        {/* loading */}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-600 text-sm">Buscando...</p>
+            </div>
+          </div>
+        )}
+
+        {/* resultados */}
+        {!loading && results.length > 0 && (
+          <div className="space-y-8">
+            {resultTypes.map(({ key, label, icon }) => {
+              const typeResults = groupedResults[key];
+              if (!typeResults || typeResults.length === 0) return null;
+
+              return (
+                <div key={key} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>{icon}</span>
+                    {label} ({typeResults.length})
+                  </h2>
+
+                  {key === 'product' ? (
+                    // layout de grid para produtos
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
+                      {typeResults.map((result) => (
+                        <ProductCard
+                          key={result.id}
+                          name={result.title}
+                          subtitle={result.subtitle || ''}
+                          image={result.imageUrl || ''}
+                          onClick={() => handleResultClick(result)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    // layout de lista para outros tipos
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {typeResults.map((result) => (
+                        <div
+                          key={result.id}
+                          className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200"
+                          onClick={() => handleResultClick(result)}
+                        >
+                          <h3 className="font-medium text-gray-900 mb-2">{result.title}</h3>
+                          {result.subtitle && (
+                            <p className="text-sm text-gray-600 mb-2">{result.subtitle}</p>
+                          )}
+                          {result.description && (
+                            <p className="text-xs text-gray-500 line-clamp-2">{result.description}</p>
+                          )}
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {result.category && (
+                              <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                                📁 {result.category}
+                              </span>
+                            )}
+                            {result.subcategory && (
+                              <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                                📂 {result.subcategory}
+                              </span>
+                            )}
+                            {result.supplier && (
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                🏢 {result.supplier}
+                              </span>
+                            )}
+                            {result.price && (
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                💰 R$ {result.price}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Sem resultados */}
+        {!loading && query && results.length === 0 && (
+          <div className="text-center py-12">
+            <div className="mb-6">
+              <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">
+                Nenhum resultado encontrado
+              </h2>
+              <p className="text-gray-500 mb-6">
+                Não encontramos resultados para "{query}". Tente termos diferentes ou verifique a ortografia.
+              </p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <p className="text-sm text-gray-600 mb-4">Sugestões:</p>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Verifique se todas as palavras estão escritas corretamente</li>
+                <li>• Tente palavras-chave diferentes</li>
+                <li>• Tente palavras-chave mais gerais</li>
+                <li>• Tente menos palavras-chave</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Página inicial sem busca */}
+        {!query && !loading && (
+          <div className="text-center py-12">
+            <div className="mb-6">
+              <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">
+                Busque por produtos
+              </h2>
+              <p className="text-gray-500 mb-6">
+                Digite o nome do produto, categoria, fornecedor ou qualquer termo relacionado.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-function SearchLoadingFallback() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Busca Avançada</h1>
-          <p className="text-gray-600 mb-6">
-            Encontre produtos, categorias, tags e fornecedores em nosso catálogo
-          </p>
-        </div>
-        <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function SearchClient() {
-  return (
-    <Suspense fallback={<SearchLoadingFallback />}>
-      <SearchContent />
-    </Suspense>
-  );
-}
-
-
-

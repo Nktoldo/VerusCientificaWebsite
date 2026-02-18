@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Verus Científica – Website
 
-## Getting Started
+Site da empresa (Next.js 15, Firebase). Catálogo de produtos, busca, orçamento e área administrativa.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Estrutura do projeto
+
+```
+├── app/
+│   ├── api/           # rotas de API (orçamento por email, fetch de HTML)
+│   ├── components/     # componentes reutilizáveis (NavBar, ProductCard, busca, etc.)
+│   ├── editor/        # área admin: listagem e criação/edição de produtos (TipTap)
+│   ├── hooks/         # useAuth, useQuote (cotação no localStorage)
+│   ├── produtos/      # páginas dinâmicas: categoria / subcategoria / produto
+│   ├── search/        # página de busca
+│   ├── orcamento/     # formulário de solicitação de orçamento
+│   ├── layout.tsx, page.tsx, sitemap.ts, robots.ts
+│   └── ...
+├── lib/
+│   ├── databaseFunctions.ts   # CRUD Firebase (produtos, categorias, tags, busca global)
+│   ├── firebase.mjs          # config Firebase (Realtime DB, Storage, Auth)
+│   ├── searchCache.ts        # cache da busca para reduzir chamadas ao Firebase
+│   ├── canonicalUtils.ts     # URLs canônicas e metadados para SEO
+│   ├── htmlSanitizer.ts      # sanitização de HTML (editor/descrições)
+│   ├── adminConfig.ts        # lista de emails admin
+│   ├── logger.ts             # logging (dev vs produção)
+│   └── migrateProducts.ts, cleanDuplicates.ts, debugSubcategories.ts
+├── middleware.ts     # redirecionamentos, canonical, cache
+├── next.config.ts
+└── public/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Soluções e decisões
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Problema | Solução |
+|----------|--------|
+| **Hospedagem Firebase com domínio próprio** | No `middleware`, redirecionamento 301 do domínio Firebase (`*.web.app` / `firebaseapp.com`) para `www.veruscientifica.com.br`. |
+| **SEO e URL canônica** | Header `Link: rel="canonical"` no middleware; `canonicalUtils` para gerar URLs; metadados dinâmicos em `produtos/[[...slug]]/layout.tsx`. |
+| **Muitas chamadas ao Firebase na busca** | Cache em memória em `lib/searchCache.ts` (TTL, tamanho máximo, invalidação). Busca global em `databaseFunctions` usa esse cache. |
+| **Produtos em várias categorias** | Estrutura com `paths[]` (categoria + subcategoria por path); compatibilidade com campos legados `category` / `subcategory`. |
+| **HTML do editor (XSS)** | `lib/htmlSanitizer.ts`: whitelist de tags/atributos, remoção de `script`, `iframe`, `on*`, `javascript:`. |
+| **Orçamento por email** | API `app/api/orcamento/route.ts` com Nodemailer; template HTML com dados do formulário e produtos. |
+| **Busca de HTML externo (iframes/descrição)** | API `app/api/html/route.ts`: só URLs HTTPS e domínios permitidos (ex.: fornecedores), timeout e limite de tamanho. |
+| **Rotas protegidas (admin)** | `useAuth`: hooks `useRequireAuth` e `useRequireAdmin`; lista de admins em `lib/adminConfig.ts`. |
+| **Sitemap dinâmico** | `app/sitemap.ts`: páginas estáticas + categorias + subcategorias com produtos + URLs de produtos; fallback em caso de erro. |
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---

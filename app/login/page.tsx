@@ -17,7 +17,6 @@ function LoginPage() {
         .catch((error) => {
             setHasError(true);
             console.error("Erro de login:", error);
-            // Em vez de alert, você pode implementar um toast ou notificação
         })
     }
     return (

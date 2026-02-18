@@ -17,8 +17,8 @@ type Item = { id: string, title?: string, img?: string, active?: boolean, catego
 type ProductPath = {
   id: string;
   category: string;
-  subcategory: string; // ID da subcategoria (sempre string, nunca undefined)
-  subcategoryTitle: string; // Título da subcategoria para exibição (sempre string, nunca undefined)
+  subcategory: string; // id da subcategoria (sempre string, nunca undefined)
+  subcategoryTitle: string; // título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
 
@@ -56,7 +56,7 @@ export default function Formulario() {
   const [observacoes, setObservacoes] = useState('');
   const [instrucoes, setInstrucoes] = useState('');
   const [imagemFile, setImagemFile] = useState<File | null>(null);
-  const [precoEspecial, setPrecoEspecial] = useState(''); // Para "Sob Consulta", "Sob Orçamento", etc.
+  const [precoEspecial, setPrecoEspecial] = useState(''); // para "Sob Consulta", "Sob Orçamento", etc.
   const [categorias, setCategorias] = useState<string[]>([]);
   const [subcategorias, setSubcategorias] = useState<Item[]>([]);
   const [productPaths, setProductPaths] = useState<ProductPath[]>([]);
@@ -65,7 +65,7 @@ export default function Formulario() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagsSelecionadas, setTagsSelecionadas] = useState<string[]>([]);
 
-  // Carregar dados do produto se estiver editando
+  // carregar dados do produto se estiver editando
   useEffect(() => {
     if (isEditing && editProductId) {
       loadProductData(editProductId);
@@ -86,22 +86,22 @@ export default function Formulario() {
         setDetalhes(product.technicalInfo || '');
         setFornecedor(product.supplier || '');
 
-        // Carregar caminhos do produto
+        // carrega caminhos do produto
         const paths: ProductPath[] = [];
         
-        // Se existem caminhos estruturados, usar eles
+        // se existem caminhos estruturados, usar eles
         if (product.paths && Array.isArray(product.paths)) {
           setProductPaths(product.paths);
         } else {
-          // Caso contrário, criar caminhos a partir dos dados antigos
+          // caso contrário, criar caminhos a partir dos dados antigos
           if (product.categories && Array.isArray(product.categories)) {
             product.categories.forEach((category: string, index: number) => {
               const subcategory = product.subcategories && product.subcategories[index] ? product.subcategories[index] : "";
               paths.push({
                 id: `legacy-${index}-${Date.now()}`,
                 category: category,
-                subcategory: subcategory || "", // Sempre string, nunca undefined
-                subcategoryTitle: subcategory || "", // Sempre string, nunca undefined
+                subcategory: subcategory || "", // sempre string, nunca undefined
+                subcategoryTitle: subcategory || "", // sempre string, nunca undefined
                 displayName: subcategory ? `${category} > ${subcategory}` : category
               });
             });
@@ -109,15 +109,15 @@ export default function Formulario() {
             paths.push({
               id: `legacy-single-${Date.now()}`,
               category: product.category,
-              subcategory: product.subcategory || "", // Sempre string, nunca undefined
-              subcategoryTitle: product.subcategory || "", // Sempre string, nunca undefined
+              subcategory: product.subcategory || "", // sempre string, nunca undefined
+              subcategoryTitle: product.subcategory || "", // sempre string
               displayName: product.subcategory ? `${product.category} > ${product.subcategory}` : product.category
             });
           }
           setProductPaths(paths);
         }
 
-        // Carregar tags se existirem
+        // carregar tags se existirem
         if (product.tags) {
           if (Array.isArray(product.tags)) {
             setTagsSelecionadas(product.tags);
@@ -128,7 +128,7 @@ export default function Formulario() {
       }
     } catch (error) {
       console.error('Erro ao carregar dados do produto:', error);
-      // Usar toast ou notificação em vez de alert
+      // exibe feedback ao usuário
       console.error('Erro ao carregar dados do produto:', error);
     }
   };
@@ -140,7 +140,7 @@ export default function Formulario() {
       imageUrlToUse = await uploadProductImage(imagemFile, imageId);
     }
 
-    // Tratar o preço antes de enviar
+    // tratar o preço antes de enviar
     let precoParaEnviar = null;
     if (preco && preco !== "" && preco !== "Solicite cotação") {
       const precoNumerico = parseFloat(preco);
@@ -151,7 +151,7 @@ export default function Formulario() {
 
     try {
       if (isEditing && editProductId) {
-        // Atualizar produto existente
+        // atualizar produto existente
         await updateProductData(editProductId, {
           title: titulo,
           subtitle: subtitulo,
@@ -159,7 +159,7 @@ export default function Formulario() {
           technicalInfo: detalhes,
           imageUrl: imageUrlToUse,
           paths: productPaths,
-          // Manter compatibilidade com campos antigos
+          // manter compatibilidade com campos antigos
           category: productPaths.length > 0 ? productPaths[0].category : '',
           subcategory: productPaths.length > 0 ? productPaths[0].subcategory || '' : '',
           categories: [...new Set(productPaths.map(path => path.category))].filter((cat): cat is string => typeof cat === 'string'),
@@ -170,10 +170,10 @@ export default function Formulario() {
           video: video
         });
 
-        // Produto atualizado com sucesso - implementar toast
+        // produto atualizado com sucesso
         router.push('/editor');
       } else {
-        // Criar novo produto
+        // criar novo produto
         await writeProductData({
           title: titulo,
           subtitle: subtitulo,
@@ -181,7 +181,7 @@ export default function Formulario() {
           technicalInfo: detalhes,
           imageUrl: imageUrlToUse,
           paths: productPaths,
-          // Manter compatibilidade com campos antigos
+          // manter compatibilidade com campos antigos
           category: productPaths.length > 0 ? productPaths[0].category : '',
           subcategory: productPaths.length > 0 ? productPaths[0].subcategory || '' : '',
           categories: [...new Set(productPaths.map(path => path.category))].filter((cat): cat is string => typeof cat === 'string'),
@@ -192,7 +192,7 @@ export default function Formulario() {
           video: video
         });
 
-        // Limpar formulário
+        // limpar formulário
         setTitulo('');
         setSubtitulo('');
         setPreco('');
@@ -200,19 +200,18 @@ export default function Formulario() {
         setVideo('');
         setDescricao('');
         setDetalhes('');
-        // setFornecedor('');
         setTagsSelecionadas([]);
         setProductPaths([]);
         setImagemFile(null);
       }
     } catch (error) {
       console.error('Erro ao enviar produto:', error);
-      // Erro ao enviar produto - implementar toast de erro
+      // erro ao enviar produto
       console.error('Erro ao enviar produto:', error);
     }
   };
 
-  // Busca fornecedores ao montar
+  // busca fornecedores ao montar
   useEffect(() => {
     getSuppleiers()
       .then(lista => { setFornecedores(lista) })
@@ -221,7 +220,7 @@ export default function Formulario() {
       });
   }, [])
 
-  // Busca tags ao montar
+  // busca tags ao montar
   useEffect(() => {
     getTags()
       .then((lista) => {
@@ -237,7 +236,7 @@ export default function Formulario() {
       });
   }, []);
 
-  // Buscar categorias ao montar
+  // buscar categorias ao montar
   useEffect(() => {
     let isMounted = true; // evita setState após unmount
   
@@ -264,7 +263,7 @@ export default function Formulario() {
     };
   }, []); 
 
-  // Buscar todas as subcategorias para o PathPicker
+  // busca todas as subcategorias para o PathPicker
   useEffect(() => {
     const loadAllSubcategories = async () => {
       try {
@@ -289,13 +288,13 @@ export default function Formulario() {
     loadAllSubcategories();
   }, []);
 
-  // Estado para controlar o modal
+  // estado do modal de IA
   const [showIAModal, setShowIAModal] = useState(false);
-  // Estados para os campos do modal IA
+  // estados dos campos do modal IA
   const [iaLink, setIaLink] = useState("");
   const [iaMensagem, setIaMensagem] = useState("");
 
-  // Mostrar tela de carregamento enquanto verifica autenticação
+  // mostra carregamento enquanto verifica autenticação
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -307,7 +306,7 @@ export default function Formulario() {
     );
   }
 
-  // Se não for admin, não mostrar nada (já foi redirecionado)
+  // não renderiza nada se não for admin (redirecionado)
   if (!isAdmin) {
     return null;
   }
@@ -362,7 +361,7 @@ Antes de responder, verifique:
 
 Responda APENAS com o JSON válido, sem explicações adicionais.`;
 
-    // Função para validar URL
+    // valida URL
     const isValidUrl = (string: string) => {
       try {
         new URL(string);
@@ -372,12 +371,12 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
       }
     };
 
-    // Função para validar resposta da IA
+    // valida resposta da IA
     const validateResponse = (response: string) => {
       try {
         const data = JSON.parse(response);
         
-        // Validar campos obrigatórios
+        // valida campos obrigatórios
         const requiredFields = ['titulo', 'descricao'];
         const missingFields = requiredFields.filter(field => !data[field] || data[field].trim() === '');
         
@@ -385,12 +384,12 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
           throw new Error(`Campos obrigatórios ausentes: ${missingFields.join(', ')}`);
         }
         
-        // Validar URLs
+        // valida URLs
         if (data.imagem && !isValidUrl(data.imagem)) {
           console.warn('URL da imagem pode estar inválida:', data.imagem);
         }
         
-        // Validar se não há títulos desnecessários
+        // valida ausência de títulos desnecessários
         const unwantedTitles = ['Descrição:', 'Características:', 'Informações Técnicas:', 'Especificações:', 'Detalhes:'];
         const hasUnwantedTitles = unwantedTitles.some(title => 
           data.descricao?.includes(title) || data.detalhes?.includes(title)
@@ -415,17 +414,17 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
       const response = await chat.sendMessage({ message: prompt });
       const resposta = response.text;
 
-      // Limpar blocos markdown ```json ... ``` ou ``` ... ```
+      // remove blocos markdown do JSON
       let respostaLimpa = resposta ?? "";
-      // Remove blocos markdown do início e fim
+      // remove blocos markdown do início e fim
       respostaLimpa = respostaLimpa.replace(/^```[a-zA-Z]*\s*([\s\S]*?)\s*```$/m, '$1').trim();
-      // Se ainda houver múltiplos blocos, pega o primeiro JSON válido
+      // usa o primeiro JSON válido se houver múltiplos blocos
       const match = respostaLimpa.match(/\{[\s\S]*\}/);
       if (match) {
         respostaLimpa = match[0];
       }
       
-      // Validar resposta antes de usar
+      // valida resposta antes de usar
       const sugestao = validateResponse(respostaLimpa);
 
       if (sugestao.titulo) setTitulo(sugestao.titulo);

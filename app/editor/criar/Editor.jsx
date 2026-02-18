@@ -17,7 +17,7 @@ import TextStyle from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import { useState, useEffect } from 'react'
 
-// Componente de botão da barra de ferramentas
+// componente de botão da barra de ferramentas
 const ToolbarButton = ({ onClick, isActive = false, disabled = false, children, title, className = "" }) => (
   <button
     onClick={onClick}
@@ -33,7 +33,7 @@ const ToolbarButton = ({ onClick, isActive = false, disabled = false, children, 
   </button>
 )
 
-// Componente de seletor de cor
+// componente de seletor de cor
 const ColorPicker = ({ onColorChange, currentColor = '#000000' }) => (
   <div className="flex items-center gap-2">
     <input
@@ -46,7 +46,7 @@ const ColorPicker = ({ onColorChange, currentColor = '#000000' }) => (
   </div>
 )
 
-// Componente de seletor de tamanho de fonte
+// componente de seletor de tamanho de fonte
 const FontSizeSelector = ({ onSizeChange, currentSize = '16px' }) => (
   <select
     value={currentSize}
@@ -120,14 +120,14 @@ export default function Editor({ content = '', onChange }) {
     immediatelyRender: false,
   })
 
-  // Atualizar o conteúdo quando mounted mudar
+  // atualizar o conteúdo quando mounted mudar
   useEffect(() => {
     if (mounted && editor && content !== editor.getHTML()) {
       editor.commands.setContent(content);
     }
   }, [mounted, editor, content]);
 
-  // Funções auxiliares
+  // funções auxiliares
   const setLink = () => {
     if (linkUrl) {
       editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
@@ -177,12 +177,12 @@ export default function Editor({ content = '', onChange }) {
   };
 
   const applyTextColor = (color) => {
-    // Aplica cor ao texto selecionado
+    // aplica cor ao texto selecionado
     editor.chain().focus().setColor(color).run();
   };
 
   const applyFontSize = (size) => {
-    // Aplica tamanho ao texto selecionado usando TextStyle
+    // aplica tamanho ao texto selecionado usando TextStyle
     editor.chain().focus().setMark('textStyle', { fontSize: size }).run();
   };
 
@@ -197,10 +197,10 @@ export default function Editor({ content = '', onChange }) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-      {/* Barra de Ferramentas Principal */}
+      {/* barra de ferramentas principal */}
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-4">
         <div className="flex flex-wrap gap-2 mb-4">
-          {/* Formatação de Texto */}
+          {/* formatação de texto */}
           <div className="flex items-center gap-1 p-2 bg-white rounded-lg border border-gray-200">
             <span className="text-xs font-medium text-gray-500 mr-2">Texto</span>
             <ToolbarButton
@@ -233,7 +233,7 @@ export default function Editor({ content = '', onChange }) {
             </ToolbarButton>
           </div>
 
-          {/* Títulos */}
+          {/* títulos */}
           <div className="flex items-center gap-1 p-2 bg-white rounded-lg border border-gray-200">
             <span className="text-xs font-medium text-gray-500 mr-2">Títulos</span>
             <ToolbarButton
@@ -266,7 +266,7 @@ export default function Editor({ content = '', onChange }) {
             </ToolbarButton>
           </div>
 
-          {/* Listas */}
+          {/* listas */}
           <div className="flex items-center gap-1 p-2 bg-white rounded-lg border border-gray-200">
             <span className="text-xs font-medium text-gray-500 mr-2">Listas</span>
             <ToolbarButton
@@ -285,7 +285,7 @@ export default function Editor({ content = '', onChange }) {
             </ToolbarButton>
           </div>
 
-          {/* Alinhamento */}
+          {/* alinhamento */}
           <div className="flex items-center gap-1 p-2 bg-white rounded-lg border border-gray-200">
             <span className="text-xs font-medium text-gray-500 mr-2">Alinhar</span>
             <ToolbarButton
@@ -532,22 +532,22 @@ export default function Editor({ content = '', onChange }) {
           height: 0;
         }
 
-        /* Estilos para cores e tamanhos de fonte */
+        /* estilos para cores e tamanhos de fonte */
         .tiptap .textStyle {
-          /* Estilos para marcações de texto */
+          /* estilos para marcações de texto */
         }
 
-        /* Estilos para texto colorido */
+        /* estilos para texto colorido */
         .tiptap [style*="color"] {
-          /* Aplica cor inline */
+          /* aplica cor inline */
         }
 
-        /* Estilos para diferentes tamanhos de fonte */
+        /* estilos para diferentes tamanhos de fonte */
         .tiptap [style*="font-size"] {
-          /* Aplica tamanho inline */
+          /* aplica tamanho inline */
         }
 
-        /* Classes específicas para cada tamanho de fonte */
+        /* classes para cada tamanho de fonte */
         .tiptap .textStyle[data-font-size="12px"] { font-size: 12px !important; }
         .tiptap .textStyle[data-font-size="14px"] { font-size: 14px !important; }
         .tiptap .textStyle[data-font-size="16px"] { font-size: 16px !important; }

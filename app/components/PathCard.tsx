@@ -1,3 +1,5 @@
+// cards de caminho com variantes de estilo (teste)
+
 interface PathCardProps {
     name: string;
     variant?: 'neon' | 'laboratory' | 'modern' | 'floating' | 'gradient-3d' | 'minimal-dark' | 'glassmorphism' | 'neon-glow' | 'carbon' | 'crystal';
@@ -5,7 +7,6 @@ interface PathCardProps {
 }
 
 export default function PathCard({ name, variant = 'modern', onClick }: PathCardProps) {
-    // Option 1: Modern (Clean & Contemporary)
     const ModernButton = () => (
         <div className="relative group" onClick={onClick}>
             <div className="
@@ -32,7 +33,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                 </div>
             </div>
             
-            {/* Blue to purple glow behind button */}
             <div className="
                 absolute -inset-1 bg-gradient-to-r from-blue-500/35 via-indigo-500/25 to-purple-600/15
                 rounded-2xl blur-sm opacity-0 group-hover:opacity-100
@@ -41,7 +41,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 2: Floating (Elevated & Clean)
     const FloatingButton = () => (
         <div className="relative group">
             <div className="
@@ -69,7 +68,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 3: Neon (Glowing Border Effect)
     const NeonButton = () => (
         <div className="relative group">
             <div className="
@@ -102,7 +100,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 4: Gradient 3D (Modern 3D Effect)
     const Gradient3DButton = () => (
         <div className="relative group">
             <div className="
@@ -134,7 +131,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 5: Minimal Dark (Clean Dark Theme)
     const MinimalDarkButton = () => (
         <div className="relative group">
             <div className="
@@ -147,7 +143,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                 cursor-pointer overflow-hidden
                 hover:border-blue-400/50
             ">
-                {/* Prominent blue left border on hover */}
                 <div className="
                     absolute left-0 top-0 bottom-0 w-1
                     bg-gradient-to-b from-blue-400 via-blue-500 to-blue-400
@@ -155,13 +150,11 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                     shadow-sm shadow-blue-400/50
                 "></div>
                 
-                {/* Blue glow effect on hover */}
                 <div className="
                     absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-600/10
                     opacity-0 group-hover:opacity-100 transition-opacity duration-300
                 "></div>
                 
-                {/* Blue corner accent */}
                 <div className="
                     absolute top-2 right-2 w-3 h-3
                     bg-gradient-to-br from-blue-400 to-blue-600
@@ -178,7 +171,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                     {name}
                 </div>
                 
-                {/* Blue accent line at bottom */}
                 <div className="
                     absolute bottom-0 left-0 right-0 h-0.5
                     bg-gradient-to-r from-transparent via-blue-500/40 to-transparent
@@ -186,7 +178,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                 "></div>
             </div>
             
-            {/* Enhanced blue glow behind button */}
             <div className="
                 absolute -inset-2 bg-gradient-to-r from-blue-400/40 to-blue-600/40
                 rounded-xl blur-md opacity-0 group-hover:opacity-100
@@ -195,7 +186,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 6: Glassmorphism (Frosted Glass)
     const GlassmorphismButton = () => (
         <div className="relative group">
             <div className="
@@ -227,7 +217,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 7: Neon Glow (Enhanced Neon)
     const NeonGlowButton = () => (
         <div className="relative group">
             <div className="
@@ -261,7 +250,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 8: Carbon (Industrial Look)
     const CarbonButton = () => (
         <div className="relative group">
             <div className="
@@ -291,7 +279,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 9: Crystal (Transparent & Shiny)
     const CrystalButton = () => (
         <div className="relative group">
             <div className="
@@ -328,7 +315,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Option 10: Laboratory (Scientific Theme)
     const LaboratoryButton = () => (
         <div className="relative group">
             <div className="
@@ -345,7 +331,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                 before:opacity-0 before:group-hover:opacity-100
                 before:transition-opacity before:duration-300
             ">
-                {/* Test tube bubbles effect */}
                 <div className="
                     absolute top-2 left-4 w-2 h-2 bg-cyan-300 rounded-full
                     opacity-0 group-hover:opacity-100 transition-opacity duration-500
@@ -362,21 +347,18 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                     animate-bounce
                 "></div>
                 
-                {/* Scientific grid pattern */}
                 <div className="
                     absolute inset-0 opacity-5
                     bg-[linear-gradient(90deg,transparent_50%,rgba(255,255,255,0.1)_50%),linear-gradient(0deg,transparent_50%,rgba(255,255,255,0.1)_50%)]
                     bg-[length:8px_8px]
                 "></div>
                 
-                {/* Shimmer effect */}
                 <div className="
                     absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent
                     -translate-x-full group-hover:translate-x-full
                     transition-transform duration-700 ease-out
                 "></div>
                 
-                {/* Content with scientific styling */}
                 <div className="
                     relative z-10 h-full flex items-center justify-center px-6
                     text-slate-100 font-mono font-semibold text-sm tracking-wider select-none
@@ -388,7 +370,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                     {name.toUpperCase()}
                 </div>
                 
-                {/* Bottom accent line */}
                 <div className="
                     absolute bottom-0 left-0 right-0 h-0.5
                     bg-gradient-to-r from-transparent via-cyan-400 to-transparent
@@ -396,7 +377,6 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
                 "></div>
             </div>
             
-            {/* Subtle glow effect */}
             <div className="
                 absolute -inset-1 bg-gradient-to-r from-cyan-400 to-blue-500
                 rounded-lg blur-sm opacity-0 group-hover:opacity-20
@@ -405,7 +385,7 @@ export default function PathCard({ name, variant = 'modern', onClick }: PathCard
         </div>
     );
 
-    // Render the selected variant
+    // renderizar a variante selecionada
     switch (variant) {
         case 'floating':
             return <FloatingButton />;

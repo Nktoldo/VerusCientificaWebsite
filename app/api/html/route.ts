@@ -1,7 +1,7 @@
-// app/api/html/route.ts (em Next.js 13+)
+// rota da API que busca HTML de uma URL externa permitida
 import { NextResponse } from 'next/server';
 
-// Lista de domínios permitidos para segurança
+// lista de domínios permitidos para segurança
 const ALLOWED_DOMAINS = [
   'loccus.com.br',
   'www.loccus.com.br',
@@ -17,12 +17,12 @@ function isValidUrl(urlString: string): boolean {
   try {
     const url = new URL(urlString);
     
-    // Verificar se é HTTPS
+    // verificar se é HTTPS
     if (url.protocol !== 'https:') {
       return false;
     }
     
-    // Verificar se o domínio está na lista permitida
+    // verificar se domínio está na lista permitida
     const domain = url.hostname.toLowerCase();
     return ALLOWED_DOMAINS.some(allowedDomain => 
       domain === allowedDomain || domain.endsWith('.' + allowedDomain)
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   try {
     const { url } = await req.json();
 
-    // Validar URL
+    // validar URL
     if (!url || typeof url !== 'string') {
       return NextResponse.json({ erro: "URL é obrigatória" }, { status: 400 });
     }
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       }, { status: 403 });
     }
 
-    // Timeout de 10 segundos
+    // timeout 10 segundos
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
     const html = await resposta.text();
     
-    // Limitar tamanho do HTML (1MB)
+    // limitar tamanho do HTML (1MB)
     if (html.length > 1024 * 1024) {
       return NextResponse.json({ 
         erro: "HTML muito grande. Máximo 1MB permitido." 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ erro: "Timeout ao buscar HTML" }, { status: 408 });
     }
     
-    console.error('Erro ao buscar HTML:', err);
+    // erro silencioso
     return NextResponse.json({ 
       erro: "Erro interno do servidor" 
     }, { status: 500 });

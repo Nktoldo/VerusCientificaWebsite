@@ -1,7 +1,7 @@
 import { ref, get } from "firebase/database";
 import { db } from './firebase.mjs';
 
-// Script para diagnosticar subcategorias duplicadas
+// script para diagnosticar subcategorias duplicadas
 export async function debugSubcategories() {
   try {
     console.log('🔍 Iniciando diagnóstico de subcategorias...');
@@ -17,7 +17,7 @@ export async function debugSubcategories() {
     const duplicates: { [key: string]: string[] } = {};
     const allSubcategories: { [key: string]: any } = {};
 
-    // Agrupar por título-categoria
+    // agrupa por título-categoria
     for (const [key, subcategoria] of Object.entries(subcategorias)) {
       const subcat = subcategoria as any;
       const identifier = `${subcat.title}-${subcat.categoria}`;
@@ -29,7 +29,7 @@ export async function debugSubcategories() {
       allSubcategories[key] = subcat;
     }
 
-    // Mostrar duplicatas
+    // exibe duplicatas no console
     console.log('\n📊 Análise de duplicatas:');
     let totalDuplicates = 0;
     
@@ -52,7 +52,7 @@ export async function debugSubcategories() {
     console.log(`   Total de duplicatas: ${totalDuplicates}`);
     console.log(`   Subcategorias únicas: ${Object.keys(duplicates).length}`);
 
-    // Verificar se há padrões nas duplicatas
+    // verifica padrões nas duplicatas
     console.log('\n🔍 Verificando padrões...');
     const recentDuplicates = Object.entries(duplicates)
       .filter(([_, keys]) => keys.length > 1)

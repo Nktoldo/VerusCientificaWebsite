@@ -28,12 +28,12 @@ export function TagPicker({
     const [tagColors, setTagColors] = useState<{[key: string]: string}>({});
     const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
 
-    // Fechar seletor de cores ao clicar fora
+    // fechar seletor de cores ao clicar fora
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (activeColorPicker) {
           const target = event.target as Element;
-          // Não fechar se clicou dentro do seletor de cores
+          // não fechar se clicou dentro do seletor de cores
           if (!target.closest('.color-selector-popup')) {
             setActiveColorPicker(null);
           }
@@ -46,7 +46,7 @@ export function TagPicker({
       }
     }, [activeColorPicker]);
   
-    // Paleta de cores predefinida (8 cores, 2 tons cada)
+    // paleta de cores predefinida (8 cores, 2 tons cada)
     const colorPalette = [
       { name: 'Azul Claro', value: '#60A5FA' },
       { name: 'Azul Escuro', value: '#1E40AF' },
@@ -66,7 +66,7 @@ export function TagPicker({
       { name: 'Amarelo Escuro', value: '#D97706' },
     ];
 
-    // Garantir que options e value sejam sempre arrays
+    // garantir que options e value sejam sempre arrays
     const safeOptions = Array.isArray(options) ? options : [];
     const safeValue = Array.isArray(value) ? value : [];
   
@@ -76,10 +76,10 @@ export function TagPicker({
           t.toLowerCase().includes(query.trim().toLowerCase())
         )
       : safeOptions
-    ).slice(0, 200); // segurança se houver muitas
+    ).slice(0, 200); // segurança se houver muitas tags
   
     function toggle(tag: string) {
-      if (!select) return; // Em modo de criação, não permite seleção
+      if (!select) return; // em modo de criação, não permite seleção
       const next = new Set(selecionadas);
       if (next.has(tag)) next.delete(tag);
       else next.add(tag);
@@ -88,18 +88,18 @@ export function TagPicker({
 
     function addNewTag() {
       if (newTagInput.trim() && !safeValue.includes(newTagInput.trim())) {
-        // Em modo de criação, adiciona a nova tag à lista de opções
+        // em modo de criação, adiciona a nova tag à lista de opções
         const newTag = newTagInput.trim();
         const newTags = [...safeValue, newTag];
         
-        // Definir cor padrão para a nova tag
+        // definir cor padrão para a nova tag
         const newColors = {
           ...tagColors,
           [newTag]: newTagColor
         };
         setTagColors(newColors);
         
-        // Notificar componente pai sobre as novas tags e cores
+        // notificar componente pai sobre as novas tags e cores
         onChange(newTags);
         if (onColorChange) {
           onColorChange(newTag, newTagColor);
@@ -118,7 +118,7 @@ export function TagPicker({
     }
   
     function addIfMatchesEnter() {
-      if (!select) return; // Em modo de criação, não permite seleção
+      if (!select) return; // em modo de criação, não permite seleção
       const list = filtradas || [];
       const alvo = list[hoverIndex] ?? list[0];
       if (alvo) toggle(alvo);
@@ -150,7 +150,7 @@ export function TagPicker({
     const visiveis = safeValue.slice(0, maxChips);
     const escondidas = Math.max(0, safeValue.length - visiveis.length);
 
-    // Componente de seletor de cores minimalista
+    // componente de seletor de cores minimalista
     const ColorSelector = ({ currentColor, onColorChange, isOpen, onToggle }: {
       currentColor: string;
       onColorChange: (color: string) => void;
@@ -209,7 +209,7 @@ export function TagPicker({
                         e.stopPropagation();
                         const next = safeValue.filter(t => t !== tag);
                         onChange(next);
-                        // Remover cor da tag removida
+                        // remover cor da tag removida
                         const newColors = { ...tagColors };
                         delete newColors[tag];
                         setTagColors(newColors);
@@ -225,12 +225,12 @@ export function TagPicker({
                   <ColorSelector
                     currentColor={tagColors[tag] || '#3B82F6'}
                     onColorChange={(newColor) => {
-                      // Atualizar estado local imediatamente
+                      // atualizar estado local imediatamente
                       setTagColors(prev => ({
                         ...prev,
                         [tag]: newColor
                       }));
-                      // Notificar componente pai
+                      // notificar componente pai
                       onColorChange(tag, newColor);
                     }}
                     isOpen={activeColorPicker === tag}

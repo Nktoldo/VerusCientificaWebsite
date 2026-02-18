@@ -1,4 +1,4 @@
-// Sistema de logging para produção
+// sistema de logging para produção
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogEntry {
@@ -20,7 +20,7 @@ class Logger {
       context: this.sanitizeContext(context)
     };
 
-    // Em desenvolvimento, sempre logar no console
+    // em desenvolvimento, sempre loga no console
     if (this.isDevelopment) {
       const consoleMethod = level === 'error' ? 'error' : 
                            level === 'warn' ? 'warn' : 
@@ -29,7 +29,7 @@ class Logger {
       console[consoleMethod](`[${level.toUpperCase()}] ${message}`, context || '');
     }
 
-    // Em produção, enviar para serviço de monitoramento
+    // em produção, envia para serviço de monitoramento
     if (this.isProduction && level === 'error') {
       this.sendToMonitoring(entry);
     }
@@ -40,7 +40,7 @@ class Logger {
 
     const sanitized = { ...context };
     
-    // Remover informações sensíveis
+    // remove informações sensíveis do contexto
     const sensitiveKeys = ['password', 'token', 'key', 'secret', 'apiKey'];
     sensitiveKeys.forEach(key => {
       if (sanitized[key]) {
@@ -52,8 +52,7 @@ class Logger {
   }
 
   private sendToMonitoring(entry: LogEntry) {
-    // Aqui você pode integrar com serviços como Sentry, LogRocket, etc.
-    // Por enquanto, apenas logar no console em produção
+    // envia erro para o console em produção
     console.error(`[PRODUCTION ERROR] ${entry.message}`, entry.context);
   }
 

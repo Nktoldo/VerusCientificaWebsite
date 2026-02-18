@@ -60,7 +60,7 @@ export default function editor() {
                                     });
                                 }
                             }
-                            // Ordenar alfabeticamente por título
+                            // ordenar alfabeticamente por título
                             productsData.sort((a, b) => {
                                 const titleA = (a.title || '').toLowerCase();
                                 const titleB = (b.title || '').toLowerCase();
@@ -82,7 +82,7 @@ export default function editor() {
                                     active: cat.active
                                 })
                             })
-                            // Ordenar alfabeticamente por título
+                            // ordenar alfabeticamente por título
                             categoryList.sort((a, b) => {
                                 const titleA = (a.title || '').toLowerCase();
                                 const titleB = (b.title || '').toLowerCase();
@@ -105,7 +105,7 @@ export default function editor() {
                                     active: cat.active
                                 })
                             })
-                            // Ordenar alfabeticamente por título
+                            // ordenar alfabeticamente por título
                             categoryList.sort((a, b) => {
                                 const titleA = (a.title || '').toLowerCase();
                                 const titleB = (b.title || '').toLowerCase();
@@ -129,7 +129,7 @@ export default function editor() {
         run();
     }, [selected]);
 
-    // Mostrar tela de carregamento enquanto verifica autenticação
+    // mostrar tela de carregamento enquanto verifica autenticação
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -141,14 +141,14 @@ export default function editor() {
         );
     }
 
-    // Se não for admin, não mostrar nada (já foi redirecionado)
+    // se não for admin, não mostrar nada (já foi redirecionado)
     if (!isAdmin) {
         return null;
     }
 
     const handleEdit = (productId: string) => {
         if (selected === 1) {
-            // Navegar para a página de criação com o ID do produto para edição
+            // navega para a página de criação com o id do produto para edição
             router.push(`/editor/criar?edit=${productId}`);
         }
     };
@@ -237,7 +237,7 @@ export default function editor() {
                                         value={tagsSelecionadas}
                                         onChange={(newTags) => {
                                             setTagsSelecionadas(newTags);
-                                            // Capturar cores das novas tags
+                                            // captura cores das novas tags
                                             const newColors = { ...tagColors };
                                             newTags.forEach(tag => {
                                                 if (!newColors[tag]) {
@@ -333,9 +333,9 @@ export default function editor() {
                                             }
                                             await writeCategoryData({ title: categoriaSelecionada });
                                             setCategoriaSelecionada("");
-                                            // Recarregar categorias existentes
+                                            // recarrega categorias existentes
                                             await searchCategories();
-                                            // Recarregar lista de itens se estiver na aba de categorias
+                                            // recarrega lista de itens na aba de categorias
                                             if (selected === 2) {
                                                 const run = async () => {
                                                     setDataLoading(true);
@@ -381,7 +381,7 @@ export default function editor() {
                                             await writeSubcategoryData({ title: subcategoriaSelecionada, category: categoriaSelecionada });
                                             setSubcategoriaSelecionada("");
                                             setCategoriaSelecionada("");
-                                            // Recarregar subcategorias existentes se estiver na aba de subcategorias
+                                            // recarrega subcategorias na aba de subcategorias
                                             if (selected === 3) {
                                                 const run = async () => {
                                                     setDataLoading(true);
@@ -419,8 +419,8 @@ export default function editor() {
                                         onClick={async () => {
                                             await writeSupplierData({ title: fornecedorSelecionado, type: supplierType });
                                             setFornecedorSelecionado("");
-                                            setSupplierType("Representada"); // Reset para padrão
-                                            // Recarregar fornecedores existentes
+                                            setSupplierType("Representada"); // reseta para padrão
+                                            // recarrega fornecedores existentes
                                             await searchSuppliers();
                                         }}
                                     >Criar Fornecedor</button>
@@ -436,10 +436,10 @@ export default function editor() {
                                                     active: true
                                                 });
                                             }
-                                            // Limpar após criação
+                                            // limpa estado após criação
                                             setTagsSelecionadas([]);
                                             setTagColors({});
-                                            // Recarregar tags existentes
+                                            // recarrega tags existentes
                                             await searchTags();
                                         }}
                                     >Criar Tags</button>
@@ -465,14 +465,14 @@ export default function editor() {
                                                         type="color"
                                                         value={tagInfo.color}
                                                         onChange={(e) => {
-                                                            // Atualizar estado local imediatamente para preview
+                                                            // atualiza estado local para preview
                                                             setExistingTags(prev => ({
                                                                 ...prev,
                                                                 [tagName]: { ...prev[tagName], color: e.target.value }
                                                             }));
                                                         }}
                                                         onBlur={async (e) => {
-                                                            // Enviar para banco apenas quando perder foco
+                                                            // envia para o banco ao perder foco
                                                             const newColor = e.target.value;
                                                             try {
                                                                 await writeTagsData({
@@ -482,7 +482,7 @@ export default function editor() {
                                                                 });
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar cor da tag:', error);
-                                                                // Reverter em caso de erro
+                                                                // reverte em caso de erro
                                                                 setExistingTags(prev => ({
                                                                     ...prev,
                                                                     [tagName]: { ...prev[tagName], color: existingTags[tagName].color }
@@ -504,13 +504,13 @@ export default function editor() {
                                                         onChange={async (e) => {
                                                             const checked = e.target.checked;
                                                             try {
-                                                                // Atualizar estado local imediatamente
+                                                                // atualiza estado local
                                                                 setExistingTags(prev => ({
                                                                     ...prev,
                                                                     [tagName]: { ...prev[tagName], active: checked }
                                                                 }));
 
-                                                                // Atualizar no banco de dados
+                                                                // atualiza no banco de dados
                                                                 await changeItemState({
                                                                     id: tagName,
                                                                     type: "filtros/tags",
@@ -518,7 +518,7 @@ export default function editor() {
                                                                 });
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar estado da tag:', error);
-                                                                // Reverter mudança em caso de erro
+                                                                // reverte mudança em caso de erro
                                                                 setExistingTags(prev => ({
                                                                     ...prev,
                                                                     [tagName]: { ...prev[tagName], active: !checked }
@@ -536,7 +536,7 @@ export default function editor() {
                                                         if (confirm(`Tem certeza que deseja deletar a tag "${tagName}"?`)) {
                                                             try {
                                                                 await deleteItem({ id: tagName, type: "filtros/tags" });
-                                                                // Remover da lista local
+                                                                // remove da lista local
                                                                 const newTags = { ...existingTags };
                                                                 delete newTags[tagName];
                                                                 setExistingTags(newTags);
@@ -580,13 +580,13 @@ export default function editor() {
                                                         onChange={async (e) => {
                                                             const checked = e.target.checked;
                                                             try {
-                                                                // Atualizar estado local imediatamente
+                                                                // atualiza estado local
                                                                 setExistingSuppliers(prev => ({
                                                                     ...prev,
                                                                     [supplierName]: { ...prev[supplierName], active: checked }
                                                                 }));
 
-                                                                // Atualizar no banco de dados
+                                                                // atualiza no banco de dados
                                                                 await changeItemState({
                                                                     id: supplierName,
                                                                     type: "filtros/suppliers",
@@ -594,7 +594,7 @@ export default function editor() {
                                                                 });
                                                             } catch (error) {
                                                                 console.error('Erro ao alterar estado do fornecedor:', error);
-                                                                // Reverter mudança em caso de erro
+                                                                // reverte mudança em caso de erro
                                                                 setExistingSuppliers(prev => ({
                                                                     ...prev,
                                                                     [supplierName]: { ...prev[supplierName], active: !checked }
@@ -612,7 +612,7 @@ export default function editor() {
                                                         if (confirm(`Tem certeza que deseja deletar o fornecedor "${supplierName}"?`)) {
                                                             try {
                                                                 await deleteItem({ id: supplierName, type: "filtros/suppliers" });
-                                                                // Remover da lista local
+                                                                // remove da lista local
                                                                 const newSuppliers = { ...existingSuppliers };
                                                                 delete newSuppliers[supplierName];
                                                                 setExistingSuppliers(newSuppliers);
@@ -788,7 +788,7 @@ export default function editor() {
 
                                                         await deleteItem({ id: item.id || item.title || "", type });
 
-                                                        // Remover da lista local
+                                                        // remove da lista local
                                                         setItems(prev => prev.filter(p => p.id !== item.id && p.title !== item.title));
 
                                                     } catch (error) {

@@ -16,7 +16,7 @@ interface ProductStructuredDataProps {
 
 export default function ProductStructuredData({ product }: ProductStructuredDataProps) {
   useEffect(() => {
-    // Gerar dados estruturados para o produto
+    // gerar dados estruturados para o produto
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "Product",
@@ -46,20 +46,20 @@ export default function ProductStructuredData({ product }: ProductStructuredData
       }
     };
 
-    // Remover dados estruturados anteriores se existirem
+    // remover dados estruturados anteriores se existirem
     const existingScript = document.getElementById('product-structured-data');
     if (existingScript) {
       existingScript.remove();
     }
 
-    // Adicionar novos dados estruturados
+    // adicionar novos dados estruturados
     const script = document.createElement('script');
     script.id = 'product-structured-data';
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify(structuredData);
     document.head.appendChild(script);
 
-    // Cleanup function
+    // função de limpeza
     return () => {
       const scriptToRemove = document.getElementById('product-structured-data');
       if (scriptToRemove) {
@@ -68,7 +68,7 @@ export default function ProductStructuredData({ product }: ProductStructuredData
     };
   }, [product]);
 
-  return null; // Este componente não renderiza nada visualmente
+  return null; // este componente não renderiza nada visualmente
 }
 
 

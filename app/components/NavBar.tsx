@@ -20,11 +20,11 @@ export default function NavBar() {
     };
 
     const handleNavigation = () => {
-        // Close mobile menu when navigating
+        // fechar menu mobile quando navegar
         setMobileMenuOpen(false);
     };
 
-    // Garantir que o componente seja renderizado de forma consistente
+    // garantir que componente seja renderizado de forma consistente
     if (!mounted) {
         return (
             <nav className={`
@@ -68,7 +68,7 @@ export default function NavBar() {
                     </Link>
                 </div>
                 
-                {/* Desktop Navigation */}
+                {/* navegação desktop */}
                 <div className="hidden md:flex justify-around gap-15">
                     <Link href="/linhas" className="hover:scale-96 duration-200" onClick={handleNavigation}>
                         <p className="font-bold text-shadow-strong text-white">Nossas Linhas</p>
@@ -84,7 +84,7 @@ export default function NavBar() {
                     </Link>
                 </div>
                 
-                {/* Desktop Button */}
+                {/* botão desktop */}
                 <div className="hidden md:block">
                     <Link href="/orcamento">
                         <span className="inline-block bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg text-sm shadow-md hover:bg-blue-700 transition-colors duration-200">
@@ -93,7 +93,7 @@ export default function NavBar() {
                     </Link>
                 </div>
 
-                {/* Mobile Menu Button */}
+                {/* botão menu mobile */}
                 <div className="lg:hidden">
                     <button
                         onClick={toggleMobileMenu}
@@ -157,7 +157,7 @@ export default function NavBar() {
                     </Link>
                 </div>
                 
-                {/* Desktop Navigation */}
+                {/* navegação desktop */}
                 <div className="hidden md:flex justify-around gap-15">
                     <Link href="/#linhas" scroll={true} className="hover:scale-96 duration-200" onClick={handleNavigation}>
                         <p className={`font-bold ${isProductsPage ? 'text-black' : 'text-shadow-strong text-white'}`}>
@@ -181,7 +181,7 @@ export default function NavBar() {
                     </Link>
                 </div>
                 
-                {/* Desktop Button */}
+                {/* botão desktop */}
                 <div className="hidden md:block">
                     <Link href="/orcamento">
                         <span className="inline-block bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg text-sm shadow-md hover:bg-blue-700 hover:border-2 transition-all duration-300 transform hover:scale-105 will-change-transform">
@@ -190,7 +190,7 @@ export default function NavBar() {
                     </Link>
                 </div>
 
-                {/* Mobile Menu Button */}
+                {/* botão menu mobile */}
                 <div className="md:hidden">
                     <button
                         onClick={toggleMobileMenu}
@@ -210,7 +210,7 @@ export default function NavBar() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
+            {/* overlay menu mobile */}
             {mobileMenuOpen && (
                 <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={toggleMobileMenu}>
                     <div className="absolute top-20 left-5 right-5 bg-white rounded-2xl shadow-2xl p-6" onClick={(e) => e.stopPropagation()}>

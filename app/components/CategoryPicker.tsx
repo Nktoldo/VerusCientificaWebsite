@@ -4,7 +4,7 @@ type Category = {
   id: string;
   title: string;
   active?: boolean;
-  category?: string; // Para subcategorias, indica a qual categoria pertence
+  category?: string; // para subcategorias, indica a qual categoria pertence
 };
 
 export function CategoryPicker({
@@ -35,11 +35,11 @@ export function CategoryPicker({
   const [categoriesHoverIndex, setCategoriesHoverIndex] = useState(0);
   const [subcategoriesHoverIndex, setSubcategoriesHoverIndex] = useState(0);
   
-  // Refs para detectar cliques fora dos dropdowns
+  // refs para detectar cliques fora dos dropdowns
   const categoriesRef = useRef<HTMLDivElement>(null);
   const subcategoriesRef = useRef<HTMLDivElement>(null);
 
-  // Garantir que os arrays sejam sempre válidos
+  // garante que os arrays sejam sempre válidos
   const safeCategories = Array.isArray(categories) ? categories : [];
   const safeSubcategories = Array.isArray(subcategories) ? subcategories : [];
   const safeSelectedCategories = Array.isArray(selectedCategories) ? selectedCategories : [];
@@ -48,32 +48,28 @@ export function CategoryPicker({
   const selectedCategoriesSet = new Set(safeSelectedCategories);
   const selectedSubcategoriesSet = new Set(safeSelectedSubcategories);
 
-  // Filtrar categorias baseado na query
+  // filtra categorias pela query
   const filteredCategories = categoriesQuery
     ? safeCategories.filter((cat) =>
         cat.title.toLowerCase().includes(categoriesQuery.trim().toLowerCase())
       )
     : safeCategories;
 
-  // Filtrar subcategorias baseado na query E nas categorias selecionadas
+  // filtra subcategorias pela query e pelas categorias selecionadas
   const filteredSubcategories = (() => {
     let filtered = safeSubcategories;
     
-    // Se há categorias selecionadas, filtrar subcategorias que pertencem a essas categorias
+    // filtra subcategorias que pertencem às categorias selecionadas
     if (safeSelectedCategories.length > 0) {
-      // Assumindo que as subcategorias têm uma propriedade 'category' ou similar
-      // Se não tiver, vamos mostrar todas as subcategorias
       filtered = safeSubcategories.filter((subcat) => {
-        // Se a subcategoria tem uma propriedade category, filtrar por ela
         if ('category' in subcat && subcat.category) {
           return safeSelectedCategories.includes(subcat.category);
         }
-        // Se não tem, mostrar todas (comportamento atual)
         return true;
       });
     }
     
-    // Aplicar filtro de busca se houver query
+    // aplica filtro de busca pela query
     if (subcategoriesQuery) {
       filtered = filtered.filter((subcat) =>
         subcat.title.toLowerCase().includes(subcategoriesQuery.trim().toLowerCase())
@@ -83,7 +79,7 @@ export function CategoryPicker({
     return filtered;
   })();
 
-  // Detectar cliques fora dos dropdowns para fechá-los
+  // detecta cliques fora dos dropdowns para fechá-los
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
@@ -170,11 +166,11 @@ export function CategoryPicker({
     }
   }
 
-  // Chips visíveis para categorias
+  // chips visíveis para categorias
   const visibleCategories = safeSelectedCategories.slice(0, maxChips);
   const hiddenCategories = Math.max(0, safeSelectedCategories.length - visibleCategories.length);
 
-  // Chips visíveis para subcategorias
+  // chips visíveis para subcategorias
   const visibleSubcategories = safeSelectedSubcategories.slice(0, maxChips);
   const hiddenSubcategories = Math.max(0, safeSelectedSubcategories.length - visibleSubcategories.length);
 

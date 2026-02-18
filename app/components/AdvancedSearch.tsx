@@ -1,10 +1,10 @@
+'use client'
+
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import * as firebaseFunctions from '@/lib/databaseFunctions';
-import { logger } from '@/lib/logger';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
-type SearchResult = {
+interface SearchResult {
   id: string;
   type: 'product' | 'category' | 'subcategory' | 'tag' | 'supplier';
   title: string;
@@ -17,77 +17,61 @@ type SearchResult = {
   supplier?: string;
   price?: string;
   relevance: number;
-};
+}
 
-type SearchFilters = {
-  suppliers: string[];
-  priceRange: {
-    min: number;
-    max: number;
-  };
-  tags: string[];
-};
-
-export function AdvancedSearch() {
+export default function AdvancedSearch() {
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 300); // 300ms de delay
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({
-    suppliers: [],
-    priceRange: { min: 0, max: 100000 },
-    tags: []
-  });
-  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
-  const [availableSuppliers, setAvailableSuppliers] = useState<string[]>([]);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Carregar dados para filtros
-  useEffect(() => {
-    const loadFilterData = async () => {
-      try {
-        const [categories, suppliers, tags] = await Promise.all([
-          firebaseFunctions.getCategories(),
-          firebaseFunctions.getSuppleiers(),
-          firebaseFunctions.getTags()
-        ]);
+  // debounce da query para evitar muitas requisições
+  const debouncedQuery = useDebounce(query, 300);
 
-        setAvailableCategories(categories.map(cat => cat.title));
-        setAvailableSuppliers(suppliers);
-        setAvailableTags(tags);
-        logger.debug('Dados dos filtros carregados', { 
-          categories: categories.length, 
-          suppliers: suppliers.length, 
-          tags: tags.length 
-        });
-      } catch (error) {
-        logger.error('Erro ao carregar dados dos filtros', { error: error instanceof Error ? error.message : String(error) });
+  // função de busca
+  const searchItems = async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setResults(data.results || []);
+      } else {
+        setResults([]);
       }
-    };
+    } catch (error) {
+      setResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    loadFilterData();
-  }, []);
-
-  // Busca automática enquanto digita (com debounce)
+  // efeito para buscar quando query muda
   useEffect(() => {
-    if (debouncedQuery.trim()) {
-      performSearch(debouncedQuery);
+    if (debouncedQuery) {
+      searchItems(debouncedQuery);
+      setShowResults(true);
     } else {
       setResults([]);
       setShowResults(false);
     }
-  }, [debouncedQuery, filters]);
+  }, [debouncedQuery]);
 
-  // Fechar resultados ao clicar fora
+  // fechar resultados ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowResults(false);
+        setSelectedIndex(-1);
       }
     };
 
@@ -97,257 +81,231 @@ export function AdvancedSearch() {
     };
   }, []);
 
-  const performSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      setShowResults(false);
-      return;
-    }
+  // navegação com teclado
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showResults || results.length === 0) return;
 
-    setLoading(true);
-    try {
-      // Sempre pesquisar por todos os tipos: produtos, categorias, subcategorias, tags e fornecedores
-      const searchResults = await firebaseFunctions.globalSearch({
-        query: searchQuery,
-        filters: {
-          types: ['product', 'category', 'subcategory', 'tag', 'supplier'],
-          categories: [],
-          ...filters
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < results.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev > 0 ? prev - 1 : results.length - 1
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < results.length) {
+          handleResultClick(results[selectedIndex]);
         }
-      });
-
-      // Ordenar por relevância
-      const sortedResults = searchResults.sort((a, b) => b.relevance - a.relevance);
-      setResults(sortedResults);
-      setShowResults(true);
-      logger.debug('Busca realizada com sucesso', { 
-        query: searchQuery.substring(0, 50), 
-        resultsCount: sortedResults.length 
-      });
-    } catch (error) {
-      logger.error('Erro na busca', { error: error instanceof Error ? error.message : String(error) });
-      setResults([]);
-    } finally {
-      setLoading(false);
+        break;
+      case 'Escape':
+        setShowResults(false);
+        setSelectedIndex(-1);
+        inputRef.current?.blur();
+        break;
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (query.trim()) {
-      // Redirecionar para a página de busca com todos os resultados
-      const searchParams = new URLSearchParams();
-      searchParams.set('q', query.trim());
-      
-      // Adicionar filtros ativos como parâmetros de URL
-      if (filters.suppliers.length > 0) {
-        searchParams.set('suppliers', filters.suppliers.join(','));
-      }
-      if (filters.tags.length > 0) {
-        searchParams.set('tags', filters.tags.join(','));
-      }
-      
-      router.push(`/search?${searchParams.toString()}`);
-    }
-  };
-
+  // função para lidar com clique em resultado
   const handleResultClick = (result: SearchResult) => {
     setShowResults(false);
-    setQuery('');
+    setSelectedIndex(-1);
     
     switch (result.type) {
       case 'product':
-        // Construir URL baseada na disponibilidade de categoria e subcategoria
+        // construir URL baseada na disponibilidade de categoria e subcategoria
         if (result.category && result.subcategory) {
-          // Categoria + Subcategoria + Produto
-          router.push(`/products/${result.category}/${result.subcategory}/${result.id}`);
+          // categoria + subcategoria + produto
+          router.push(`/produtos/${result.category}/${result.subcategory}/${result.id}`);
         } else if (result.category) {
-          // Apenas Categoria + Produto
-          router.push(`/products/${result.category}/${result.id}`);
+          // apenas categoria + produto
+          router.push(`/produtos/${result.category}/${result.id}`);
         } else {
-          // Fallback: ir para página de busca com o produto
+          // fallback: ir para página de busca com o produto
           router.push(`/search?q=${encodeURIComponent(result.title)}&type=product`);
         }
         break;
       case 'category':
-        router.push(`/products/${result.id}`);
+        router.push(`/produtos/${result.id}`);
         break;
       case 'subcategory':
         if (result.category) {
-          router.push(`/products/${result.category}/${result.id}`);
+          router.push(`/produtos/${result.category}/${result.id}`);
         } else {
-          // Fallback: ir para busca
           router.push(`/search?q=${encodeURIComponent(result.title)}&type=subcategory`);
         }
-        break;
-      case 'tag':
-        router.push(`/search?q=${encodeURIComponent(result.title)}&type=tag`);
         break;
       case 'supplier':
         router.push(`/search?q=${encodeURIComponent(result.title)}&type=supplier`);
         break;
+      default:
+        router.push(`/search?q=${encodeURIComponent(result.title)}`);
     }
   };
 
-  const toggleFilter = (filterType: keyof SearchFilters, value: string) => {
-    if (filterType === 'suppliers') {
-      setFilters(prev => ({
-        ...prev,
-        suppliers: prev.suppliers.includes(value)
-          ? prev.suppliers.filter(s => s !== value)
-          : [...prev.suppliers, value]
-      }));
-    } else if (filterType === 'tags') {
-      setFilters(prev => ({
-        ...prev,
-        tags: prev.tags.includes(value)
-          ? prev.tags.filter(t => t !== value)
-          : [...prev.tags, value]
-      }));
-    }
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      suppliers: [],
-      priceRange: { min: 0, max: 100000 },
-      tags: []
-    });
-  };
-
-  const getResultIcon = (type: string) => {
-    switch (type) {
-      case 'product': return '📦';
-      case 'category': return '📁';
-      case 'subcategory': return '📂';
-      case 'tag': return '🏷️';
-      case 'supplier': return '🏢';
-      default: return '🔍';
-    }
-  };
-
-  const getResultTypeLabel = (type: string) => {
-    switch (type) {
-      case 'product': return 'Produto';
-      case 'category': return 'Categoria';
-      case 'subcategory': return 'Subcategoria';
-      case 'tag': return 'Tag';
-      case 'supplier': return 'Fornecedor';
-      default: return 'Item';
+  // função para lidar com submit do formulário
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
   return (
     <div className="relative w-full max-w-2xl mx-auto" ref={searchRef}>
-      {/* Barra de Pesquisa Principal */}
-      <form onSubmit={handleSearch} className="relative">
-        <div className="flex items-center bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar produtos, categorias, características, marcas..."
-              className="w-full px-4 py-3 text-gray-700 placeholder-gray-500 focus:outline-none"
-              onFocus={() => query && setShowResults(true)}
-            />
-            {loading && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative">
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(-1);
+            }}
+            onKeyDown={handleKeyDown}
+            onFocus={() => {
+              if (results.length > 0) {
+                setShowResults(true);
+              }
+            }}
+            placeholder="Buscar produtos, categorias, fornecedores..."
+            className="w-full px-4 py-3 pl-12 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          />
           
-          <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* ícone de busca */}
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-          </button>
-        </div>
-      </form>
+          </div>
 
-      {/* Resultados da Busca */}
-      {showResults && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 max-h-96 overflow-y-auto z-50">
-          <div className="p-2">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-3 px-2">
-              <span>{results.length} resultado(s) encontrado(s)</span>
-              <span className="text-blue-600 font-medium">Pressione Enter para ver todos</span>
+          {/* ícone de loading */}
+          {isLoading && (
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
             </div>
-            
-            {/* Mostrar apenas os primeiros 5 resultados mais relevantes */}
-            {results.slice(0, 5).map((result, index) => (
+          )}
+
+          {/* botão de limpar */}
+          {query && !isLoading && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setResults([]);
+                setShowResults(false);
+                inputRef.current?.focus();
+              }}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* resultados da busca */}
+        {showResults && results.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
+            {results.map((result, index) => (
               <div
-                key={`${result.type}-${result.id}-${index}`}
+                key={`${result.type}-${result.id}`}
+                className={`p-3 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-150 ${
+                  index === selectedIndex 
+                    ? 'bg-blue-50 border-blue-200' 
+                    : 'hover:bg-gray-50'
+                }`}
                 onClick={() => handleResultClick(result)}
-                className="flex items-center space-x-3 p-3 hover:bg-gray-50 cursor-pointer rounded-lg transition-colors border-b border-gray-100 last:border-b-0"
               >
-                <div className="text-2xl">{getResultIcon(result.type)}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h4 className="font-medium text-gray-900 truncate">{result.title}</h4>
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                      {getResultTypeLabel(result.type)}
-                    </span>
-                  </div>
-                  {result.subtitle && (
-                    <p className="text-sm text-gray-600 truncate mb-1">{result.subtitle}</p>
+                <div className="flex items-start gap-3">
+                  {/* imagem do produto (se disponível) */}
+                  {result.imageUrl && (
+                    <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={result.imageUrl}
+                        alt={result.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    </div>
                   )}
-                  <div className="flex items-center space-x-3 text-xs text-gray-500">
-                    {result.category && (
-                      <span className="flex items-center">
-                        <span className="mr-1">📁</span>
-                        {result.category}
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-sm font-medium text-gray-900 truncate">
+                        {result.title}
+                      </h3>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        result.type === 'product' ? 'bg-green-100 text-green-800' :
+                        result.type === 'category' ? 'bg-blue-100 text-blue-800' :
+                        result.type === 'subcategory' ? 'bg-purple-100 text-purple-800' :
+                        result.type === 'supplier' ? 'bg-orange-100 text-orange-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {result.type === 'product' ? 'Produto' :
+                         result.type === 'category' ? 'Categoria' :
+                         result.type === 'subcategory' ? 'Subcategoria' :
+                         result.type === 'supplier' ? 'Fornecedor' :
+                         'Outro'}
                       </span>
+                    </div>
+                    
+                    {result.subtitle && (
+                      <p className="text-xs text-gray-600 line-clamp-2">
+                        {result.subtitle}
+                      </p>
                     )}
-                    {result.supplier && (
-                      <span className="flex items-center">
-                        <span className="mr-1">🏢</span>
-                        {result.supplier}
-                      </span>
-                    )}
-                    {result.price && (
-                      <span className="flex items-center text-green-600 font-medium">
-                        <span className="mr-1">💰</span>
-                        R$ {result.price}
-                      </span>
-                    )}
+                    
+                    <div className="flex flex-wrap gap-1 text-xs">
+                      {result.category && (
+                        <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                          📁 {result.category}
+                        </span>
+                      )}
+                      {result.subcategory && (
+                        <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                          📂 {result.subcategory}
+                        </span>
+                      )}
+                      {result.supplier && (
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          🏢 {result.supplier}
+                        </span>
+                      )}
+                      {result.price && (
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
+                          💰 R$ {result.price}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-
               </div>
             ))}
-            
-            {/* Mostrar indicador se há mais resultados */}
-            {results.length > 5 && (
-              <div className="text-center py-3 text-sm text-blue-600 font-medium border-t border-gray-100">
-                +{results.length - 5} resultado(s) restante(s) - Pressione Enter para ver todos
-              </div>
-            )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Nenhum resultado */}
-      {showResults && results.length === 0 && !loading && query && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50">
-          <div className="text-center text-gray-500">
-            <div className="text-4xl mb-2">🔍</div>
-            <p className="font-medium mb-1">Nenhum resultado encontrado para "{query}"</p>
-            <p className="text-sm mb-3">Tente usar termos diferentes ou ajustar os filtros</p>
-            <div className="text-xs text-gray-400">
-              <p>Dicas de busca:</p>
-              <p>• Use palavras-chave específicas</p>
-              <p>• Tente nomes de produtos ou categorias</p>
-              <p>• Verifique se os filtros não estão muito restritivos</p>
-            </div>
+        {/* mensagem quando não há resultados */}
+        {showResults && !isLoading && query && results.length === 0 && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500">
+            <p>Nenhum resultado encontrado para "{query}"</p>
+            <p className="text-xs mt-1">Tente termos diferentes ou verifique a ortografia</p>
           </div>
-        </div>
-      )}
+        )}
+      </form>
     </div>
   );
 }
+
+export { AdvancedSearch };
