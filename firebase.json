@@ -22,13 +22,8 @@
           }
         ]
       }
-    ],
-    "redirects": [
-      {
-        "source": "**",
-        "destination": "https://www.veruscientifica.com.br/:splat",
-        "type": 301
-      }
     ]
+    
   }
 }
+

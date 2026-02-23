@@ -6,9 +6,16 @@ import { useQuote } from '../hooks/useQuote';
 
 export default function OrcamentoPage() {
     const { products, removeProduct, clearProducts, isLoaded } = useQuote();
+    const [primeiraCompra, setPrimeiraCompra] = useState(true);
+    const [tipoPessoa, setTipoPessoa] = useState('Fisica');
     const [formData, setFormData] = useState({
+        tipoPessoa: 'Fisica',
+        primeiraCompra: "Sim",
         nome: '',
+        dataNascimento: '',
         empresa: '',
+        cpf: '',
+        cnpj: '',
         telefone: '',
         email: '',
         cargo: '',
@@ -16,6 +23,9 @@ export default function OrcamentoPage() {
         predio: '',
         laboratorio: '',
         estado: '',
+        cep: '',
+        endereco: "",
+        numeroComplemento: "",
         cidade: '',
         mensagem: ''
     });
@@ -85,14 +95,22 @@ export default function OrcamentoPage() {
                 // limpar dados salvos após envio bem-sucedido
                 clearSavedFormData();
                 setFormData({
+                    tipoPessoa: "Fisica",
+                    primeiraCompra: "Sim",
                     nome: '',
                     empresa: '',
+                    cpf: '',
+                    cnpj: '',
                     telefone: '',
                     email: '',
+                    dataNascimento: '',
                     cargo: '',
                     departamento: '',
                     predio: '',
                     laboratorio: '',
+                    cep: '',
+                    endereco: "",
+                    numeroComplemento: "",
                     estado: '',
                     cidade: '',
                     mensagem: ''
@@ -106,6 +124,12 @@ export default function OrcamentoPage() {
             setIsSubmitting(false);
         }
     };
+
+    const handleSwitchChange = (campo: string, valor: string) => {
+        const newFormData = { ...formData, [campo]: valor };
+        setFormData(newFormData);
+        saveFormData(newFormData);
+    }
 
     const formatPhone = (value: string) => {
         const phone = value.replace(/\D/g, '');
@@ -303,8 +327,8 @@ export default function OrcamentoPage() {
                                             </div>
                                         </div>
                                     ))}
-                                    <a 
-                                        href="https://www.veruscientifica.com.br/produtos" 
+                                    <a
+                                        href="https://www.veruscientifica.com.br/produtos"
                                         className="inline-flex items-center gap-2 text-blue-300 hover:text-white text-sm font-medium transition-colors duration-200 hover:underline decoration-blue-300 hover:decoration-white underline-offset-2"
                                     >
                                         <span>+</span>
@@ -318,6 +342,73 @@ export default function OrcamentoPage() {
                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                    { /* Tipo pessoa */}
+                                    <div>
+                                        <label htmlFor="tipoPessoa" className="block text-white font-semibold mb-2">Tipo de Pessoa *</label>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setTipoPessoa("Fisica")
+                                                    handleSwitchChange("tipoPessoa", "Fisica");
+                                                }}
+                                                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${tipoPessoa === "Fisica"
+                                                    ? "bg-slate-900 text-white"
+                                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                Pessoa Física
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setTipoPessoa("Juridica");
+                                                    handleSwitchChange("tipoPessoa", "Juridica");
+                                                }}
+                                                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${tipoPessoa === "Juridica"
+                                                    ? "bg-slate-900 text-white"
+                                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                Pessoa Jurídica
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    { /* Tipo pessoa */}
+                                    <div>
+                                        <label htmlFor="primeiraCompra" className="block text-white font-semibold mb-2">Primeira Compra?</label>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPrimeiraCompra(true);
+                                                    handleSwitchChange("primeiraCompra", "Sim");
+                                                }}
+                                                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${primeiraCompra === true
+                                                    ? "bg-green-900 text-white"
+                                                    : "bg-white text-gray-700 hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                Sim
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPrimeiraCompra(false);
+                                                    handleSwitchChange("primeiraCompra", "Não");
+                                                }}
+                                                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${primeiraCompra === false
+                                                    ? "bg-red-900 text-white"
+                                                    : "bg-white text-gray-700 hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                Não
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {/* Nome */}
                                     <div>
                                         <label htmlFor="nome" className="block text-white font-semibold mb-2">
@@ -335,22 +426,45 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* empresa */}
-                                    <div>
-                                        <label htmlFor="empresa" className="block text-white font-semibold mb-2">
-                                            Empresa *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="empresa"
-                                            name="empresa"
-                                            value={formData.empresa}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Nome da sua empresa"
-                                        />
-                                    </div>
+                                    {/* CPF */}
+                                    {tipoPessoa == "Fisica" && (
+                                        <div>
+                                            <label htmlFor="cpf" className="block text-white font-semibold mb-2">
+                                                CPF *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="cpf"
+                                                name="cpf"
+                                                value={formData.cpf}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="000.000.000-00"
+                                                maxLength={14}
+                                            />
+                                        </div>
+                                    )}
+                                    {/* CNPJ */}
+                                    {tipoPessoa == "Juridica" && (
+                                        <div>
+                                            <label htmlFor="cnpj" className="block text-white font-semibold mb-2">
+                                                CNPJ *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="cnpj"
+                                                name="cnpj"
+                                                value={formData.cnpj}
+                                                onChange={handleInputChange}
+                                                required
+                                                maxLength={18}
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="00.000.000/0000-00"
+                                            />
+                                        </div>
+                                    )}
+
 
                                     {/* telefone */}
                                     <div>
@@ -375,6 +489,25 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
+                                    {/* data nascimento */}
+                                    {(tipoPessoa == "Fisica" && primeiraCompra == true) && (
+                                    <div>
+                                        <label htmlFor="dataNascimento" className="block text-white font-semibold mb-2">
+                                            Data de nascimento *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="dataNascimento"
+                                            name="dataNascimento"
+                                            value={formData.dataNascimento}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                        placeholder="DD/MM/AAAA"
+                                        />
+                                    </div>
+                                    )}
+
                                     {/* email */}
                                     <div>
                                         <label htmlFor="email" className="block text-white font-semibold mb-2">
@@ -392,132 +525,202 @@ export default function OrcamentoPage() {
                                         />
                                     </div>
 
-                                    {/* cargo */}
+                                    {/* empresa */}
                                     <div>
-                                        <label htmlFor="cargo" className="block text-white font-semibold mb-2">
-                                            Cargo *
+                                        <label htmlFor="empresa" className="block text-white font-semibold mb-2">
+                                            Empresa *
                                         </label>
                                         <input
                                             type="text"
-                                            id="cargo"
-                                            name="cargo"
-                                            value={formData.cargo}
+                                            id="empresa"
+                                            name="empresa"
+                                            value={formData.empresa}
                                             onChange={handleInputChange}
                                             required
                                             className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Seu cargo na empresa"
+                                            placeholder="Nome da sua empresa"
                                         />
                                     </div>
+
+                                    {/* informações necessarias somente na primeira compra */}
+                                    {/* cargo */}
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="cargo" className="block text-white font-semibold mb-2">
+                                                Cargo *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="cargo"
+                                                name="cargo"
+                                                value={formData.cargo}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Seu cargo na empresa"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* departamento */}
-                                    <div>
-                                        <label htmlFor="departamento" className="block text-white font-semibold mb-2">
-                                            Departamento *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="departamento"
-                                            name="departamento"
-                                            value={formData.departamento}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Nome do departamento"
-                                        />
-                                    </div>
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="departamento" className="block text-white font-semibold mb-2">
+                                                Departamento *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="departamento"
+                                                name="departamento"
+                                                value={formData.departamento}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Nome do departamento"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* prédio */}
-                                    <div>
-                                        <label htmlFor="predio" className="block text-white font-semibold mb-2">
-                                            Prédio
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="predio"
-                                            name="predio"
-                                            value={formData.predio}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Nome ou número do prédio"
-                                        />
-                                    </div>
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="predio" className="block text-white font-semibold mb-2">
+                                                Prédio
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="predio"
+                                                name="predio"
+                                                value={formData.predio}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Nome ou número do prédio"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* laboratório/sala */}
-                                    <div>
-                                        <label htmlFor="laboratorio" className="block text-white font-semibold mb-2">
-                                            Laboratório/Sala
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="laboratorio"
-                                            name="laboratorio"
-                                            value={formData.laboratorio}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Nome ou número da sala/laboratório"
-                                        />
-                                    </div>
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="laboratorio" className="block text-white font-semibold mb-2">
+                                                Laboratório/Sala
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="laboratorio"
+                                                name="laboratorio"
+                                                value={formData.laboratorio}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Nome ou número da sala/laboratório"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* CEP */}
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="cep" className="block text-white font-semibold mb-2">
+                                                CEP *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="cep"
+                                                name="cep"
+                                                maxLength={9}
+                                                minLength={8}
+                                                value={formData.cep}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="00000-000"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* estado */}
-                                    <div>
-                                        <label htmlFor="estado" className="block text-white font-semibold mb-2">
-                                            Estado *
-                                        </label>
-                                        <select
-                                            id="estado"
-                                            name="estado"
-                                            value={formData.estado}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                        >
-                                            <option value="" className="text-gray-800">Selecione o estado</option>
-                                            <option value="AC" className="text-gray-800">Acre</option>
-                                            <option value="AL" className="text-gray-800">Alagoas</option>
-                                            <option value="AP" className="text-gray-800">Amapá</option>
-                                            <option value="AM" className="text-gray-800">Amazonas</option>
-                                            <option value="BA" className="text-gray-800">Bahia</option>
-                                            <option value="CE" className="text-gray-800">Ceará</option>
-                                            <option value="DF" className="text-gray-800">Distrito Federal</option>
-                                            <option value="ES" className="text-gray-800">Espírito Santo</option>
-                                            <option value="GO" className="text-gray-800">Goiás</option>
-                                            <option value="MA" className="text-gray-800">Maranhão</option>
-                                            <option value="MT" className="text-gray-800">Mato Grosso</option>
-                                            <option value="MS" className="text-gray-800">Mato Grosso do Sul</option>
-                                            <option value="MG" className="text-gray-800">Minas Gerais</option>
-                                            <option value="PA" className="text-gray-800">Pará</option>
-                                            <option value="PB" className="text-gray-800">Paraíba</option>
-                                            <option value="PR" className="text-gray-800">Paraná</option>
-                                            <option value="PE" className="text-gray-800">Pernambuco</option>
-                                            <option value="PI" className="text-gray-800">Piauí</option>
-                                            <option value="RJ" className="text-gray-800">Rio de Janeiro</option>
-                                            <option value="RN" className="text-gray-800">Rio Grande do Norte</option>
-                                            <option value="RS" className="text-gray-800">Rio Grande do Sul</option>
-                                            <option value="RO" className="text-gray-800">Rondônia</option>
-                                            <option value="RR" className="text-gray-800">Roraima</option>
-                                            <option value="SC" className="text-gray-800">Santa Catarina</option>
-                                            <option value="SP" className="text-gray-800">São Paulo</option>
-                                            <option value="SE" className="text-gray-800">Sergipe</option>
-                                            <option value="TO" className="text-gray-800">Tocantins</option>
-                                        </select>
-                                    </div>
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="estado" className="block text-white font-semibold mb-2">
+                                                Estado *
+                                            </label>
+                                            <select
+                                                id="estado"
+                                                name="estado"
+                                                value={formData.estado}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                            >
+                                                <option value="" className="text-gray-800">Selecione o estado</option>
+                                                <option value="AC" className="text-gray-800">Acre</option>
+                                                <option value="AL" className="text-gray-800">Alagoas</option>
+                                                <option value="AP" className="text-gray-800">Amapá</option>
+                                                <option value="AM" className="text-gray-800">Amazonas</option>
+                                                <option value="BA" className="text-gray-800">Bahia</option>
+                                                <option value="CE" className="text-gray-800">Ceará</option>
+                                                <option value="DF" className="text-gray-800">Distrito Federal</option>
+                                                <option value="ES" className="text-gray-800">Espírito Santo</option>
+                                                <option value="GO" className="text-gray-800">Goiás</option>
+                                                <option value="MA" className="text-gray-800">Maranhão</option>
+                                                <option value="MT" className="text-gray-800">Mato Grosso</option>
+                                                <option value="MS" className="text-gray-800">Mato Grosso do Sul</option>
+                                                <option value="MG" className="text-gray-800">Minas Gerais</option>
+                                                <option value="PA" className="text-gray-800">Pará</option>
+                                                <option value="PB" className="text-gray-800">Paraíba</option>
+                                                <option value="PR" className="text-gray-800">Paraná</option>
+                                                <option value="PE" className="text-gray-800">Pernambuco</option>
+                                                <option value="PI" className="text-gray-800">Piauí</option>
+                                                <option value="RJ" className="text-gray-800">Rio de Janeiro</option>
+                                                <option value="RN" className="text-gray-800">Rio Grande do Norte</option>
+                                                <option value="RS" className="text-gray-800">Rio Grande do Sul</option>
+                                                <option value="RO" className="text-gray-800">Rondônia</option>
+                                                <option value="RR" className="text-gray-800">Roraima</option>
+                                                <option value="SC" className="text-gray-800">Santa Catarina</option>
+                                                <option value="SP" className="text-gray-800">São Paulo</option>
+                                                <option value="SE" className="text-gray-800">Sergipe</option>
+                                                <option value="TO" className="text-gray-800">Tocantins</option>
+                                            </select>
+                                        </div>
+                                    )}
 
                                     {/* cidade */}
-                                    <div>
-                                        <label htmlFor="cidade" className="block text-white font-semibold mb-2">
-                                            Cidade *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="cidade"
-                                            name="cidade"
-                                            value={formData.cidade}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                            placeholder="Nome da cidade"
-                                        />
-                                    </div>
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="cidade" className="block text-white font-semibold mb-2">
+                                                Cidade *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="cidade"
+                                                name="cidade"
+                                                value={formData.cidade}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Nome da cidade"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* endereco */}
+                                    {primeiraCompra == true && (
+                                        <div>
+                                            <label htmlFor="endereco" className="block text-white font-semibold mb-2">
+                                                Endereço *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="endereco"
+                                                name="endereco"
+                                                value={formData.endereco}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                                                placeholder="Endereço completo (rua, número, complemento, bairro, cidade, estado, CEP)"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* mensagem */}
@@ -543,8 +746,8 @@ export default function OrcamentoPage() {
                                         type="submit"
                                         disabled={isSubmitting}
                                         className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 ${isSubmitting
-                                                ? 'bg-gray-400 cursor-not-allowed'
-                                                : 'bg-white text-blue-600 hover:bg-gray-100 transform hover:scale-105'
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-white text-blue-600 hover:bg-gray-100 transform hover:scale-105'
                                             }`}
                                     >
                                         {isSubmitting ? (
@@ -556,7 +759,7 @@ export default function OrcamentoPage() {
                                             'Enviar Orçamento'
                                         )}
                                     </button>
-                                    
+
                                     {/* botão para limpar dados salvos */}
                                     <div>
                                         <button
@@ -565,12 +768,20 @@ export default function OrcamentoPage() {
                                                 if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
                                                     clearSavedFormData();
                                                     setFormData({
+                                                        tipoPessoa: 'Fisica',
+                                                        primeiraCompra: "Sim",
                                                         nome: '',
                                                         empresa: '',
+                                                        cpf: '',
+                                                        cnpj: '',
                                                         telefone: '',
                                                         email: '',
+                                                        dataNascimento: '',
                                                         cargo: '',
                                                         departamento: '',
+                                                        cep: '',
+                                                        endereco: "",
+                                                        numeroComplemento: "",
                                                         predio: '',
                                                         laboratorio: '',
                                                         estado: '',

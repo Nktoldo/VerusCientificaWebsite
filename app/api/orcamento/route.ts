@@ -11,7 +11,6 @@ const transporter = nodemailer.createTransport({
 export async function POST(req: Request) {
   const data = await req.json();
 
-  // gera HTML para os produtos se existirem
   const productsHtml = data.products && data.products.length > 0 ? data.products.map((product: any) => `
     <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; background: linear-gradient(to bottom, #f0f9ff, #ffffff);">
       <div style="display: flex; gap: 16px; align-items: flex-start;">
@@ -47,8 +46,29 @@ export async function POST(req: Request) {
         <h2 style="color: #1e40af; margin-bottom: 20px; font-size: 22px;">Dados do Cliente</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
           <div>
-            <strong>Nome:</strong> ${data.nome}
+            <strong>Tipo de Pessoa:</strong> ${data.tipoPessoa}
           </div>
+          <div>
+            <strong>Primeira Compra:</strong> ${data.primeiraCompra}
+          </div>
+          <div>
+          <strong>Nome:</strong> ${data.nome}
+          </div>
+          ${data.tipoPessoa === 'Fisica' ? `
+            <div>
+              <strong>CPF:</strong> ${data.cpf}
+            </div>
+          ` : ''}
+          ${data.tipoPessoa === 'Juridica' ? `
+            <div>
+              <strong>CNPJ:</strong> ${data.cnpj}
+            </div>
+          ` : ''}
+          ${data.tipoPessoa === 'Fisica' ? `
+            <div>
+              <strong>Data de nascimento:</strong> ${data.dataNascimento}
+            </div>
+          ` : ''}
           <div>
             <strong>Email:</strong> ${data.email}
           </div>
@@ -70,9 +90,19 @@ export async function POST(req: Request) {
           <div>
             <strong>Cidade:</strong> ${data.cidade || 'Não informado'}
           </div>
+          <div>
+            <strong>CEP:</strong> ${data.cep || 'Não informado'}
+          </div>
+          <div>
+            <strong>Endereço:</strong> ${data.endereco || 'Não informado'}
+          </div>
+          <div>
+            <strong>Prédio:</strong> ${data.predio || 'Não informado'}
+          </div>
+          <div>
+          <strong>Laboratório/Sala:</strong> ${data.laboratorio || 'Não informado'}
+          </div>
         </div>
-        ${data.predio ? `<div><strong>Prédio:</strong> ${data.predio}</div>` : ''}
-        ${data.laboratorio ? `<div><strong>Laboratório/Sala:</strong> ${data.laboratorio}</div>` : ''}
         ${data.mensagem ? `
           <div style="margin-top: 20px;">
             <strong>Mensagem:</strong>
@@ -98,6 +128,9 @@ export async function POST(req: Request) {
     html: htmlContent,
     text:
       `Orçamento recebido pelo website:\n\n` +
+      ` --> Tipo de Pessoa: ${data.tipoPessoa}\n` +
+      ` --> Primeira Compra: ${data.primeiraCompra}\n` +
+      `${data.tipoPessoa === 'Fisica' ? ` --> CPF: ${data.cpf}\n` : ` --> CNPJ: ${data.cnpj}\n`}` +
       ` --> Nome: ${data.nome}\n` +
       ` --> Empresa: ${data.empresa}\n` +
       ` --> Telefone: ${data.telefone}\n` +
@@ -107,7 +140,9 @@ export async function POST(req: Request) {
       (data.predio ? ` --> Prédio: ${data.predio}\n` : '') +
       (data.laboratorio ? ` --> Laboratório/Sala: ${data.laboratorio}\n` : '') +
       ` --> Estado: ${data.estado}\n` +
-      ` --> Cidade: ${data.cidade}\n\n` +
+      ` --> Cidade: ${data.cidade}\n` +
+      ` --> CEP: ${data.cep}\n` +
+      ` --> Endereço: ${data.endereco}\n` +
       ` --> Mensagem:\n${data.mensagem}\n` +
       (data.products && data.products.length > 0 ? `\n --> Produtos selecionados: ${data.products.length} produtos\n` : '')
   });
