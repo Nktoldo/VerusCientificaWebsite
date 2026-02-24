@@ -717,7 +717,7 @@ export default function OrcamentoPage() {
                                                 onChange={handleInputChange}
                                                 required
                                                 className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
-                                                placeholder="Endereço completo (rua, número, complemento, bairro, cidade, estado, CEP)"
+                                                placeholder="Endereço completo (rua, número, complemento)"
                                             />
                                         </div>
                                     )}
