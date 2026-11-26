@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import ProductCard from "../../components/ProductCard";
 import { AdvancedSearch } from "../../components/AdvancedSearch";
 import { useRouter, useParams } from "next/navigation";
@@ -182,10 +183,6 @@ export default function ProdutosBlocks() {
     fetchData();
   }, [slug.join('/')]);
 
-  const handleSubcategoryClick = (categoryId: string, subcategoryId: string) => {
-    router.push(`/produtos/${categoryId}/${subcategoryId}`);
-  };
-
   const handleCategoryClick = async (categoryId: string) => {
     setLoading(true);
     try {
@@ -351,13 +348,13 @@ export default function ProdutosBlocks() {
                 {category.subcategories.length > 0 && (
                   <div className="p-3 space-y-1">
                     {category.subcategories.map((subcategory) => (
-                      <button
+                      <Link
                         key={subcategory.id}
-                        onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
+                        href={`/produtos/${category.id}/${subcategory.id}`}
                         className="block w-full text-left p-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors duration-200"
                       >
                         {subcategory.title}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 )}

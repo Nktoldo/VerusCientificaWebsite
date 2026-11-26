@@ -30,8 +30,7 @@ export default function ProductStructuredData({ product }: ProductStructuredData
       "image": product.imageUrl ? [product.imageUrl] : [],
       "offers": {
         "@type": "Offer",
-        "price": product.price || "Sob consulta",
-        "priceCurrency": "BRL",
+        ...(Number(product.price) > 0 && { "price": Number(product.price), "priceCurrency": "BRL" }),
         "availability": "https://schema.org/InStock",
         "seller": {
           "@type": "Organization",

@@ -92,6 +92,7 @@ export default function OrcamentoPage() {
             const result = await response.json();
 
             if (result.success) {
+                (window as any).gtag?.('event', 'generate_lead', { form: 'orcamento' });
                 setSubmitSuccess(true);
                 clearProducts();
                 // limpar dados salvos após envio bem-sucedido

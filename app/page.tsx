@@ -40,8 +40,7 @@ export default function Home() {
       "availableLanguage": "Portuguese"
     },
     "sameAs": [
-      "https://www.linkedin.com/company/verus-cientifica",
-      "https://www.facebook.com/veruscientifica"
+      "https://www.instagram.com/veruscientifica/"
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -54,8 +53,6 @@ export default function Home() {
             "name": "PCR Tempo Real",
             "description": "Equipamentos de PCR Tempo Real para laboratórios"
           },
-          "price": "Sob consulta",
-          "priceCurrency": "BRL",
           "availability": "https://schema.org/InStock",
           "seller": {
             "@type": "Organization",
@@ -69,8 +66,6 @@ export default function Home() {
             "name": "Eletroforeses",
             "description": "Equipamentos de eletroforese para laboratórios"
           },
-          "price": "Sob consulta",
-          "priceCurrency": "BRL",
           "availability": "https://schema.org/InStock",
           "seller": {
             "@type": "Organization",
@@ -84,8 +79,6 @@ export default function Home() {
             "name": "Incubadoras de CO2",
             "description": "Incubadoras de CO2 para laboratórios"
           },
-          "price": "Sob consulta",
-          "priceCurrency": "BRL",
           "availability": "https://schema.org/InStock",
           "seller": {
             "@type": "Organization",
