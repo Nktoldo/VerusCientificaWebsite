@@ -31,20 +31,21 @@ export default function OrcamentoPage() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [website, setWebsite] = useState('');
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [showProductReminder, setShowProductReminder] = useState(false);
 
     // funções para auto-save
     const saveFormData = (data: typeof formData) => {
         try {
-            localStorage.setItem('orcamentoFormData', JSON.stringify(data));
+            sessionStorage.setItem('orcamentoFormData', JSON.stringify(data));
         } catch (error) {
         }
     };
 
     const loadFormData = () => {
         try {
-            const savedData = localStorage.getItem('orcamentoFormData');
+            const savedData = sessionStorage.getItem('orcamentoFormData');
             if (savedData) {
                 return JSON.parse(savedData);
             }
@@ -55,7 +56,7 @@ export default function OrcamentoPage() {
 
     const clearSavedFormData = () => {
         try {
-            localStorage.removeItem('orcamentoFormData');
+            sessionStorage.removeItem('orcamentoFormData');
         } catch (error) {
         }
     };
@@ -83,6 +84,7 @@ export default function OrcamentoPage() {
                 },
                 body: JSON.stringify({
                     ...formData,
+                    website,
                     products
                 }),
             });
@@ -319,7 +321,7 @@ export default function OrcamentoPage() {
                                                 </div>
                                                 <button
                                                     onClick={() => removeProduct(product.id)}
-                                                    className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-all duration-200 text-sm p-1"
+                                                    className="text-red-400 hover:text-red-300 transition-all duration-200 text-sm p-1"
                                                     title="Remover produto"
                                                 >
                                                     ✕
@@ -341,6 +343,16 @@ export default function OrcamentoPage() {
                         {/* formulário */}
                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={website}
+                                    onChange={e => setWebsite(e.target.value)}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                    className="hidden"
+                                />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                     { /* Tipo pessoa */}

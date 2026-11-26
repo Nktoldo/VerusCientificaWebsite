@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Editor from './Editor';
-import { getCategories, getSubCategories, uploadProductImage, getTags, writeProductData, getSuppleiers, getProductById, updateProductData } from '@/lib/databaseFunctions';
+import { getCategories, getSubCategories, uploadProductImage, getTags, writeProductData, getSuppleiers, getProductById, updateProductData, isExternalImageUrl, importExternalImage, importExternalImagesInHtml } from '@/lib/databaseFunctions';
 import { v4 as uuidv4 } from 'uuid';
 import { onValue, ref } from 'firebase/database';
 import { db } from '@/lib/firebase.mjs';
-import { GoogleGenAI } from "@google/genai";
 import { TagPicker } from '@/app/components/TagPicker';
 import { PathPicker } from '@/app/components/PathPicker';
 import { useRequireAdmin } from '@/app/hooks/useAuth';
@@ -21,23 +20,6 @@ type ProductPath = {
   subcategoryTitle: string; // título da subcategoria para exibição (sempre string, nunca undefined)
   displayName: string;
 };
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY || ""
-});
-
-async function getHTMLFromUrl(url: string) {
-  const resposta = await fetch("/api/html", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ url })
-  });
-
-  const dados = await resposta.json();
-  return dados.html;
-}
 
 export default function Formulario() {
   const router = useRouter();
@@ -64,6 +46,8 @@ export default function Formulario() {
   const [fornecedor, setFornecedor] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagsSelecionadas, setTagsSelecionadas] = useState<string[]>([]);
+  const [enviando, setEnviando] = useState(false);
+  const [destaque, setDestaque] = useState(false);
 
   // carregar dados do produto se estiver editando
   useEffect(() => {
@@ -82,6 +66,7 @@ export default function Formulario() {
         setPreco(product.price?.toString() || '');
         setImagem(product.imageUrl || '');
         setVideo(product.video || '');
+        setDestaque(product.featured === true);
         setDescricao(product.description || '');
         setDetalhes(product.technicalInfo || '');
         setFornecedor(product.supplier || '');
@@ -140,6 +125,35 @@ export default function Formulario() {
       imageUrlToUse = await uploadProductImage(imagemFile, imageId);
     }
 
+    let descricaoParaEnviar = descricao;
+    let detalhesParaEnviar = detalhes;
+    if (user) {
+      const idToken = await user.getIdToken();
+      const falhas: string[] = [];
+
+      if (!imagemFile && isExternalImageUrl(imagem)) {
+        try {
+          imageUrlToUse = await importExternalImage(imagem, idToken);
+        } catch (error) {
+          falhas.push(`Imagem principal: ${imagem} (${error instanceof Error ? error.message : String(error)})`);
+        }
+      }
+
+      const [descricaoImportada, detalhesImportados] = await Promise.all([
+        importExternalImagesInHtml(descricao, idToken),
+        importExternalImagesInHtml(detalhes, idToken)
+      ]);
+      descricaoParaEnviar = descricaoImportada.html;
+      detalhesParaEnviar = detalhesImportados.html;
+      falhas.push(...descricaoImportada.falhas, ...detalhesImportados.falhas);
+
+      if (falhas.length > 0 && !confirm(
+        `Não foi possível copiar ${falhas.length} imagem(ns) para o Storage:\n\n${falhas.join('\n')}\n\nSalvar mesmo assim com os links externos?`
+      )) {
+        return;
+      }
+    }
+
     // tratar o preço antes de enviar
     let precoParaEnviar = null;
     if (preco && preco !== "" && preco !== "Solicite cotação") {
@@ -155,8 +169,8 @@ export default function Formulario() {
         await updateProductData(editProductId, {
           title: titulo,
           subtitle: subtitulo,
-          description: descricao,
-          technicalInfo: detalhes,
+          description: descricaoParaEnviar,
+          technicalInfo: detalhesParaEnviar,
           imageUrl: imageUrlToUse,
           paths: productPaths,
           // manter compatibilidade com campos antigos
@@ -167,7 +181,8 @@ export default function Formulario() {
           price: precoParaEnviar ? precoParaEnviar.toString() : "",
           tags: tagsSelecionadas,
           supplier: fornecedor,
-          video: video
+          video: video,
+          featured: destaque
         });
 
         // produto atualizado com sucesso
@@ -177,8 +192,8 @@ export default function Formulario() {
         await writeProductData({
           title: titulo,
           subtitle: subtitulo,
-          description: descricao,
-          technicalInfo: detalhes,
+          description: descricaoParaEnviar,
+          technicalInfo: detalhesParaEnviar,
           imageUrl: imageUrlToUse,
           paths: productPaths,
           // manter compatibilidade com campos antigos
@@ -189,7 +204,8 @@ export default function Formulario() {
           price: precoParaEnviar ? precoParaEnviar.toString() : "",
           tags: tagsSelecionadas,
           supplier: fornecedor,
-          video: video
+          video: video,
+          featured: destaque
         });
 
         // limpar formulário
@@ -203,6 +219,7 @@ export default function Formulario() {
         setTagsSelecionadas([]);
         setProductPaths([]);
         setImagemFile(null);
+        setDestaque(false);
       }
     } catch (error) {
       console.error('Erro ao enviar produto:', error);
@@ -288,12 +305,6 @@ export default function Formulario() {
     loadAllSubcategories();
   }, []);
 
-  // estado do modal de IA
-  const [showIAModal, setShowIAModal] = useState(false);
-  // estados dos campos do modal IA
-  const [iaLink, setIaLink] = useState("");
-  const [iaMensagem, setIaMensagem] = useState("");
-
   // mostra carregamento enquanto verifica autenticação
   if (loading) {
     return (
@@ -311,142 +322,6 @@ export default function Formulario() {
     return null;
   }
 
-  async function handleEnviarIA() {
-    const html = await getHTMLFromUrl(iaLink);
-    if (!html) {
-      alert('Não foi possível obter o HTML da URL informada.');
-      return;
-    } else {
-    }
-
-    const prompt = `Você é um especialista em extração de dados de produtos. Sua tarefa é analisar EXCLUSIVAMENTE o HTML fornecido e extrair informações específicas.
-
-INSTRUÇÕES CRÍTICAS:
-- Analise APENAS o conteúdo HTML fornecido
-- NÃO faça pesquisas externas ou inferências
-- NÃO invente dados que não estejam no HTML
-- Se uma informação não estiver disponível, deixe o campo vazio ("")
-- Foque APENAS no produto principal da página
-
-DADOS DE ENTRADA:
-LINK: ${iaLink}
-HTML: ${html}
-
-FORMATO DE SAÍDA (JSON):
-{
-  "titulo": "string - nome principal do produto",
-  "subtitulo": "string - modelo do produto (se diferente do título)",
-  "fornecedor": "string - marca ou fabricante",
-  "imagem": "string - URL direta da imagem principal",
-  "video": "string - URL do YouTube (se houver iframe)",
-  "descricao": "string - descrição completa com formatação HTML",
-  "detalhes": "string - especificações técnicas em formato de tabela"
-}
-
-REGRAS ESPECÍFICAS:
-1. TÍTULO: Nome principal do produto, sem incluir modelo
-2. SUBTÍTULO: Apenas o modelo (ex: "Modelo XYZ-123")
-3. IMAGEM: URL completa e direta da imagem principal
-4. VÍDEO: Extrair apenas o ID do YouTube de iframes
-5. DESCRIÇÃO: Manter formatação original com <p>, <br>, <b>, <i> - NÃO incluir títulos como "Descrição:", "Características:" ou similares
-6. DETALHES: Converter especificações para tabela HTML - NÃO incluir títulos como "Informações Técnicas:", "Especificações:" ou similares
-
-VALIDAÇÃO FINAL:
-Antes de responder, verifique:
-- Todos os campos estão preenchidos corretamente?
-- Nenhum dado foi inventado?
-- A formatação está adequada?
-- As URLs são válidas?
-- NÃO há títulos desnecessários na descrição e detalhes?
-
-Responda APENAS com o JSON válido, sem explicações adicionais.`;
-
-    // valida URL
-    const isValidUrl = (string: string) => {
-      try {
-        new URL(string);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    };
-
-    // valida resposta da IA
-    const validateResponse = (response: string) => {
-      try {
-        const data = JSON.parse(response);
-        
-        // valida campos obrigatórios
-        const requiredFields = ['titulo', 'descricao'];
-        const missingFields = requiredFields.filter(field => !data[field] || data[field].trim() === '');
-        
-        if (missingFields.length > 0) {
-          throw new Error(`Campos obrigatórios ausentes: ${missingFields.join(', ')}`);
-        }
-        
-        // valida URLs
-        if (data.imagem && !isValidUrl(data.imagem)) {
-          console.warn('URL da imagem pode estar inválida:', data.imagem);
-        }
-        
-        // valida ausência de títulos desnecessários
-        const unwantedTitles = ['Descrição:', 'Características:', 'Informações Técnicas:', 'Especificações:', 'Detalhes:'];
-        const hasUnwantedTitles = unwantedTitles.some(title => 
-          data.descricao?.includes(title) || data.detalhes?.includes(title)
-        );
-        
-        if (hasUnwantedTitles) {
-          console.warn('Resposta contém títulos desnecessários que devem ser removidos');
-        }
-        
-        return data;
-      } catch (error) {
-        console.error('Erro ao validar resposta da IA:', error);
-        throw error;
-      }
-    };
-
-    try {
-      const chat = ai.chats.create({
-        model: "gemini-2.5-flash",
-      });
-
-      const response = await chat.sendMessage({ message: prompt });
-      const resposta = response.text;
-
-      // remove blocos markdown do JSON
-      let respostaLimpa = resposta ?? "";
-      // remove blocos markdown do início e fim
-      respostaLimpa = respostaLimpa.replace(/^```[a-zA-Z]*\s*([\s\S]*?)\s*```$/m, '$1').trim();
-      // usa o primeiro JSON válido se houver múltiplos blocos
-      const match = respostaLimpa.match(/\{[\s\S]*\}/);
-      if (match) {
-        respostaLimpa = match[0];
-      }
-      
-      // valida resposta antes de usar
-      const sugestao = validateResponse(respostaLimpa);
-
-      if (sugestao.titulo) setTitulo(sugestao.titulo);
-      if (sugestao.subtitulo) setSubtitulo(sugestao.subtitulo);
-      if (sugestao.preco === "Solicite cotação") {
-        setPreco("Solicite cotação");
-      } else if (sugestao.preco) {
-        setPreco(sugestao.preco);
-      }
-      if (sugestao.tags) setTags(sugestao.tags);
-      if (sugestao.fornecedor) setFornecedor(sugestao.fornecedor);
-      if (sugestao.imagem) setImagem(sugestao.imagem);
-      if (sugestao.video) setVideo(sugestao.video);
-      if (sugestao.descricao) setDescricao(sugestao.descricao);
-      if (sugestao.detalhes) setDetalhes(sugestao.detalhes);
-      setShowIAModal(false);
-    } catch (e) {
-      alert('Não foi possível interpretar a resposta da IA.');
-      console.error(e);
-    }
-  }
-
   return (
     <div className="w-full pt-14 p-4 sm:p-6 flex flex-col gap-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-b-2xl shadow-2xl border border-slate-700">
       <div className="flex items-center justify-between mb-2">
@@ -462,53 +337,8 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
               Cancelar
             </button>
           )}
-          {/* <button
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition"
-            onClick={() => setShowIAModal(true)}
-          >
-            IA Assistent
-          </button> */}
         </div>
       </div>
-
-      {/* Modal IA Assistent */}
-      {showIAModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-              onClick={() => setShowIAModal(false)}
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-bold mb-4 text-green-700">IA Assistent</h2>
-            <div className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Link</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                  placeholder="Insira um link do produto aqui"
-                  value={iaLink}
-                  onChange={e => setIaLink(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mensagem</label>
-                <textarea
-                  className="w-full border border-gray-300 rounded px-3 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-green-400"
-                  placeholder="Insira instrucoes extras para a IA"
-                  value={iaMensagem}
-                  onChange={e => setIaMensagem(e.target.value)}
-                />
-              </div>
-              <button className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded transition"
-                onClick={handleEnviarIA}
-              >Enviar</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Seleção de Caminhos do Produto */}
       <PathPicker
@@ -587,6 +417,15 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
             <option key={sup} value={sup}>{sup}</option>
           ))}
         </select>
+        <label className="flex items-center gap-2 mt-2 text-slate-200">
+          <input
+            type="checkbox"
+            className="w-4 h-4"
+            checked={destaque}
+            onChange={e => setDestaque(e.target.checked)}
+          />
+          Destaque no carrossel da página do fornecedor (ex.: /loccus)
+        </label>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -626,8 +465,20 @@ Responda APENAS com o JSON válido, sem explicações adicionais.`;
         <Editor content={detalhes} onChange={setDetalhes} />
       </div>
 
-      <button onClick={() => {handleEnviar(); window.scrollTo({ top: 0, behavior: 'smooth'})}} className="mt-6 px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-900 shadow-lg w-full sm:w-auto">
-        {isEditing ? 'Atualizar Produto' : 'Enviar para Firebase'}
+      <button
+        disabled={enviando}
+        onClick={async () => {
+          setEnviando(true);
+          window.scrollTo({ top: 0, behavior: 'smooth'});
+          try {
+            await handleEnviar();
+          } finally {
+            setEnviando(false);
+          }
+        }}
+        className="mt-6 px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-900 shadow-lg w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {enviando ? 'Enviando...' : (isEditing ? 'Atualizar Produto' : 'Enviar para Firebase')}
       </button>
     </div>
   );

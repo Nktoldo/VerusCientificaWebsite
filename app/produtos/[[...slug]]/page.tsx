@@ -58,7 +58,10 @@ export default function ProdutosBlocks() {
       try {
         if (slug.length === 0) {
           // página principal - mostrar todas as categorias em blocos
-          const categoriesData = await firebaseFunctions.getCategories();
+          const [categoriesData, allSubcategories] = await Promise.all([
+            firebaseFunctions.getCategories(),
+            firebaseFunctions.getSubCategories({ category: "none" })
+          ]);
           
           if (!categoriesData || categoriesData.length === 0) {
             setCategories([]);
@@ -70,9 +73,9 @@ export default function ProdutosBlocks() {
           for (const category of categoriesData) {
             if (category && category.active) {
               // buscar subcategorias da categoria
-              const subcategories = await firebaseFunctions.getSubCategories({ 
-                category: category.id 
-              });
+              const subcategories = allSubcategories.filter((s: any) =>
+                s.category === category.id || s.category === category.title
+              );
 
               categoriesWithSubcategories.push({
                 id: category.id,

@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "produtos": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid == 'rWJ8050wTgUKujuAA3W5ZxoKfMt2' || auth.uid == 'nBboz3LDL4f0raurkCr4qE5t5hP2')"
+    },
+    "categorias": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid == 'rWJ8050wTgUKujuAA3W5ZxoKfMt2' || auth.uid == 'nBboz3LDL4f0raurkCr4qE5t5hP2')"
+    },
+    "subcategorias": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid == 'rWJ8050wTgUKujuAA3W5ZxoKfMt2' || auth.uid == 'nBboz3LDL4f0raurkCr4qE5t5hP2')"
+    },
+    "filtros": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid == 'rWJ8050wTgUKujuAA3W5ZxoKfMt2' || auth.uid == 'nBboz3LDL4f0raurkCr4qE5t5hP2')"
+    },
+    "users": {
+      ".read": false,
+      ".write": false
+    },
+    "adminEmails": {
+      ".read": "auth != null",
+      ".write": false,
+      ".indexOn": ["email"]
+    }
+  }
+}

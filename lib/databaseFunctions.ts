@@ -32,6 +32,7 @@ type Product = {
   tags?: string[] | Record<number, string>;
   supplier: string;
   video?: string;
+  featured?: boolean; // destaque no carrossel da página da representada
   active: boolean;
 };
 
@@ -49,16 +50,6 @@ type Tag = {
   color: string;
   active: boolean;
 };
-
-// cria usuário no banco
-export function writeUserData(name: string, email: string, password: string, admin: boolean) {
-  push(ref(db, 'users/'), {
-    username: name,
-    email: email,
-    password: password,
-    admin: admin
-  });
-}
 
 // gera id para o link da categoria/equipo (título igual pode sobrepor)
 function generateLinkID({ title }: { title: string }) {
@@ -84,7 +75,8 @@ export async function writeProductData({
   price,
   tags,
   supplier,
-  video = ""
+  video = "",
+  featured
 }: {
   title: string;
   subtitle: string;
@@ -100,6 +92,7 @@ export async function writeProductData({
   tags: string[] | Record<number, string>;
   supplier: string;
   video?: string;
+  featured?: boolean;
 }) {
 
   // se nao houver categoria selecionada, evita que produto seja criado na raiz da pagina de produtos
@@ -161,6 +154,7 @@ export async function writeProductData({
     supplier: supplier,
     active: true,
     video: !video ? "" : video,
+    featured: featured === true,
     
     // salva paths completos
     paths: finalPaths,
@@ -217,10 +211,10 @@ export async function writeSubcategoryData({ title, category }: { title: string,
       active: true
     });
     
-    console.log(`✅ Nova subcategoria "${title}" criada na categoria "${category}"`);
+    console.log(`Nova subcategoria "${title}" criada na categoria "${category}"`);
     return subcategoriaID;
   } catch (error) {
-    console.error('❌ Erro ao criar subcategoria:', error);
+    console.error('Erro ao criar subcategoria:', error);
     throw error;
   }
 }
@@ -246,6 +240,60 @@ export async function uploadProductImage(file: File, imageId: string) {
   const imgRef = storageRef(storage, `produtos/${imageId}`);
   await uploadBytes(imgRef, file);
   return await getDownloadURL(imgRef);
+}
+
+// verifica se a imagem está fora do Storage do projeto
+export function isExternalImageUrl(url: string): boolean {
+  if (!/^https?:\/\//i.test(url)) return false;
+  try {
+    const host = new URL(url).hostname;
+    return host !== 'firebasestorage.googleapis.com' &&
+      host !== 'storage.googleapis.com' &&
+      !host.endsWith('.firebasestorage.app');
+  } catch {
+    return false;
+  }
+}
+
+// baixa imagem externa pelo servidor e envia ao Storage
+export async function importExternalImage(url: string, idToken: string): Promise<string> {
+  const resposta = await fetch('/api/importar-imagem', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+    body: JSON.stringify({ url })
+  });
+
+  if (!resposta.ok) {
+    const dados = await resposta.json().catch(() => null);
+    throw new Error(dados?.erro || `Erro HTTP ${resposta.status}`);
+  }
+
+  const blob = await resposta.blob();
+  const imageId = uuidv4();
+  return await uploadProductImage(new File([blob], imageId, { type: blob.type }), imageId);
+}
+
+// envia ao Storage as imagens externas de um HTML e retorna o HTML com urls do Storage
+export async function importExternalImagesInHtml(html: string, idToken: string): Promise<{ html: string, falhas: string[] }> {
+  const srcs = [...new Set([...html.matchAll(/<img[^>]+src=["']([^"']+)["']/g)].map(m => m[1]))];
+  const falhas: string[] = [];
+  let newHtml = html;
+
+  await Promise.all(srcs.map(async (src) => {
+    const url = src.replace(/&amp;/g, '&');
+    if (!isExternalImageUrl(url)) return;
+    try {
+      const storageUrl = await importExternalImage(url, idToken);
+      newHtml = newHtml.split(src).join(storageUrl.replace(/&/g, '&amp;'));
+    } catch (error) {
+      falhas.push(`${url} (${error instanceof Error ? error.message : String(error)})`);
+    }
+  }));
+
+  return { html: newHtml, falhas };
 }
 
 // faz upload das imagens base64 do HTML e retorna HTML com urls do Storage
@@ -418,7 +466,7 @@ export async function buscarProdutosPorCategoria(category: string): Promise<Prod
     const snapshot = await get(ref(db, "produtos"));
     
     if (!snapshot.exists()) {
-      console.error("❌ Nenhum produto encontrado no banco");
+      console.error("Nenhum produto encontrado no banco");
       return [];
     }
 
@@ -468,7 +516,7 @@ export async function buscarProdutosPorCategoria(category: string): Promise<Prod
     return produtos;
 
   } catch (error) {
-    console.error("❌ Erro ao buscar produtos da categoria:", error);
+    console.error("Erro ao buscar produtos da categoria:", error);
     return [];
   }
 }
@@ -849,6 +897,10 @@ type SearchResult = {
   relevance: number;
 };
 
+function normalizeSearchText(text?: string | null): string {
+  return (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
 // busca global com cache
 export async function globalSearch({ query, filters }: { query: string, filters: CacheSearchFilters }): Promise<CacheSearchResult[]> {
   const startTime = performance.now();
@@ -863,7 +915,7 @@ export async function globalSearch({ query, filters }: { query: string, filters:
     return cachedResults;
   }
 
-  const searchTerm = query.toLowerCase().trim();
+  const searchTerm = normalizeSearchText(query).trim();
   const results: SearchResult[] = [];
 
   try {
@@ -898,20 +950,19 @@ export async function globalSearch({ query, filters }: { query: string, filters:
           }
 
           // busca no texto
-          const title = product.title?.toLowerCase() || '';
-          const subtitle = product.subtitle?.toLowerCase() || '';
-          const description = product.description?.toLowerCase() || '';
-          const supplier = product.supplier?.toLowerCase() || '';
+          const title = normalizeSearchText(product.title);
+          const subtitle = normalizeSearchText(product.subtitle);
+          const supplier = normalizeSearchText(product.supplier);
           
           // verifica match nos campos principais
           if (title.includes(searchTerm) || subtitle.includes(searchTerm) || 
-              description.includes(searchTerm) || supplier.includes(searchTerm)) {
+              supplier.includes(searchTerm)) {
             return true;
           }
           
           // verifica tags
           if (Array.isArray(product.tags)) {
-            if (product.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) {
+            if (product.tags.some((tag: string) => normalizeSearchText(tag).includes(searchTerm))) {
               return true;
             }
           }
@@ -920,15 +971,15 @@ export async function globalSearch({ query, filters }: { query: string, filters:
           const hasPaths = product.paths && product.paths.length > 0;
           if (hasPaths) {
             if (product.paths.some((path: any) => 
-              path.category?.toLowerCase().includes(searchTerm) || 
-              path.subcategoryTitle?.toLowerCase().includes(searchTerm)
+              normalizeSearchText(path.category).includes(searchTerm) || 
+              normalizeSearchText(path.subcategoryTitle).includes(searchTerm)
             )) {
               return true;
             }
           } else {
             // estrutura legada
-            const category = product.category?.toLowerCase() || '';
-            const subcategory = product.subcategory?.toLowerCase() || '';
+            const category = normalizeSearchText(product.category);
+            const subcategory = normalizeSearchText(product.subcategory);
             if (category.includes(searchTerm) || subcategory.includes(searchTerm)) {
               return true;
             }
@@ -940,20 +991,18 @@ export async function globalSearch({ query, filters }: { query: string, filters:
           let relevance = 0;
           
           // calcula relevância do resultado
-          const title = product.title?.toLowerCase() || '';
-          const subtitle = product.subtitle?.toLowerCase() || '';
-          const description = product.description?.toLowerCase() || '';
-          const supplier = product.supplier?.toLowerCase() || '';
+          const title = normalizeSearchText(product.title);
+          const subtitle = normalizeSearchText(product.subtitle);
+          const supplier = normalizeSearchText(product.supplier);
           
           if (title.includes(searchTerm)) relevance += 0.4;
           if (subtitle.includes(searchTerm)) relevance += 0.3;
-          if (description.includes(searchTerm)) relevance += 0.2;
           if (supplier.includes(searchTerm)) relevance += 0.1;
           
           // relevância para tags
           if (Array.isArray(product.tags)) {
             product.tags.forEach((tag: string) => {
-              if (tag.toLowerCase().includes(searchTerm)) relevance += 0.15;
+              if (normalizeSearchText(tag).includes(searchTerm)) relevance += 0.15;
             });
           }
           
@@ -961,13 +1010,13 @@ export async function globalSearch({ query, filters }: { query: string, filters:
           const hasPaths = product.paths && product.paths.length > 0;
           if (hasPaths) {
             product.paths.forEach((path: any) => {
-              if (path.category?.toLowerCase().includes(searchTerm)) relevance += 0.1;
-              if (path.subcategoryTitle?.toLowerCase().includes(searchTerm)) relevance += 0.1;
+              if (normalizeSearchText(path.category).includes(searchTerm)) relevance += 0.1;
+              if (normalizeSearchText(path.subcategoryTitle).includes(searchTerm)) relevance += 0.1;
             });
           } else {
             // estrutura legada
-            if (product.category?.toLowerCase().includes(searchTerm)) relevance += 0.1;
-            if (product.subcategory?.toLowerCase().includes(searchTerm)) relevance += 0.1;
+            if (normalizeSearchText(product.category).includes(searchTerm)) relevance += 0.1;
+            if (normalizeSearchText(product.subcategory).includes(searchTerm)) relevance += 0.1;
           }
 
           // determina categoria e subcategoria para navegação
@@ -1010,13 +1059,13 @@ export async function globalSearch({ query, filters }: { query: string, filters:
         .filter(category => {
           if (!category.active) return false;
           if (filters.categories.length > 0 && !filters.categories.includes(category.title)) return false;
-          return category.title.toLowerCase().includes(searchTerm);
+          return normalizeSearchText(category.title).includes(searchTerm);
         })
         .map(category => ({
           id: category.id,
           type: 'category' as const,
           title: category.title,
-          relevance: category.title.toLowerCase().includes(searchTerm) ? 0.8 : 0.5
+          relevance: normalizeSearchText(category.title).includes(searchTerm) ? 0.8 : 0.5
         }));
 
       results.push(...categoryResults);
@@ -1029,14 +1078,14 @@ export async function globalSearch({ query, filters }: { query: string, filters:
         .filter(subcategory => {
           if (!subcategory.active) return false;
           if (filters.categories.length > 0 && !filters.categories.includes(subcategory.category || '')) return false;
-          return subcategory.title.toLowerCase().includes(searchTerm);
+          return normalizeSearchText(subcategory.title).includes(searchTerm);
         })
         .map(subcategory => ({
           id: subcategory.id,
           type: 'subcategory' as const,
           title: subcategory.title,
           category: subcategory.category,
-          relevance: subcategory.title.toLowerCase().includes(searchTerm) ? 0.7 : 0.4
+          relevance: normalizeSearchText(subcategory.title).includes(searchTerm) ? 0.7 : 0.4
         }));
 
       results.push(...subcategoryResults);
@@ -1048,13 +1097,13 @@ export async function globalSearch({ query, filters }: { query: string, filters:
       const tagResults = tags
         .filter(tag => {
           if (filters.tags.length > 0 && !filters.tags.includes(tag)) return false;
-          return tag.toLowerCase().includes(searchTerm);
+          return normalizeSearchText(tag).includes(searchTerm);
         })
         .map(tag => ({
           id: tag,
           type: 'tag' as const,
           title: tag,
-          relevance: tag.toLowerCase().includes(searchTerm) ? 0.6 : 0.3
+          relevance: normalizeSearchText(tag).includes(searchTerm) ? 0.6 : 0.3
         }));
 
       results.push(...tagResults);
@@ -1066,13 +1115,13 @@ export async function globalSearch({ query, filters }: { query: string, filters:
       const supplierResults = suppliers
         .filter(supplier => {
           if (filters.suppliers.length > 0 && !filters.suppliers.includes(supplier)) return false;
-          return supplier.toLowerCase().includes(searchTerm);
+          return normalizeSearchText(supplier).includes(searchTerm);
         })
         .map(supplier => ({
           id: supplier,
           type: 'supplier' as const,
           title: supplier,
-          relevance: supplier.toLowerCase().includes(searchTerm) ? 0.6 : 0.3
+          relevance: normalizeSearchText(supplier).includes(searchTerm) ? 0.6 : 0.3
         }));
 
       results.push(...supplierResults);
@@ -1125,7 +1174,9 @@ export async function getProducts(): Promise<Product[]> {
         subtitle: value.subtitle,
         img: value.imageUrl,
         active: value.active,
-        category: value.categoria,
+        category: value.category,
+        subcategory: value.subcategory,
+        subcategories: value.subcategories,
         supplier: value.supplier
       }))
       // .filter((p) => p.active); // só ativos
@@ -1133,6 +1184,20 @@ export async function getProducts(): Promise<Product[]> {
     return products;
   } catch (e) {
     console.error("Erro ao buscar produtos:", e);
+    return [];
+  }
+}
+
+export async function getProductsBySupplier(supplier: string): Promise<Product[]> {
+  try {
+    const snap = await get(ref(db, "produtos"));
+    if (!snap.exists()) return [];
+
+    return Object.entries(snap.val())
+      .map(([id, value]: [string, any]) => ({ id, ...value }))
+      .filter((product: any) => product.active === true && product.supplier === supplier);
+  } catch (error) {
+    console.error("Erro ao buscar produtos do fornecedor:", error);
     return [];
   }
 }
@@ -1178,7 +1243,8 @@ export async function updateProductData(productId: string, {
   price,
   tags,
   supplier,
-  video = ""
+  video = "",
+  featured
 }: {
   title: string;
   subtitle: string;
@@ -1194,6 +1260,7 @@ export async function updateProductData(productId: string, {
   tags: string[] | Record<number, string>;
   supplier: string;
   video?: string;
+  featured?: boolean;
 }) {
 
   // se nao houver categoria selecionada, evita que produto seja atualizado
@@ -1254,6 +1321,7 @@ export async function updateProductData(productId: string, {
       tags: tags,
       supplier: supplier,
       video: !video ? "" : video,
+      ...(featured !== undefined && { featured }),
       
       // salva paths completos
       paths: finalPaths,

@@ -1,27 +1,16 @@
-// lista de emails autorizados para acessar a área administrativa
-export const ADMIN_EMAILS = [
-  'nicolastoldo@veruscientifica.com.br',
-  'vendas@veruscientifica.com.br',
-  'tiago@veruscientifica.com.br',
-];
+import { get, query, ref, orderByChild, equalTo } from 'firebase/database';
+import { db } from './firebase.mjs';
 
-// função para verificar se um email é admin
-export function isAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false;
-  return ADMIN_EMAILS.includes(email.toLowerCase());
-}
-
-// função para obter a lista de admins
-export function getAdminEmails(): string[] {
-  return [...ADMIN_EMAILS];
-}
-
-// função para verificar admin no banco de dados
 export async function isAdminEmailInDatabase(email: string | null | undefined): Promise<boolean> {
   if (!email) return false;
   
   try {
-    return isAdminEmail(email);
+    const snapshot = await get(query(ref(db, 'adminEmails'), orderByChild('email'), equalTo(email.toLowerCase())));
+    let isAdmin = false;
+    snapshot.forEach(child => {
+      if (child.val()?.active === true) isAdmin = true;
+    });
+    return isAdmin;
   } catch (error) {
     console.error('Erro ao verificar admin no banco:', error);
     return false;

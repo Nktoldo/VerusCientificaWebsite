@@ -50,6 +50,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // categorias: usa c.id gerado por generateLinkID (nome sem espaços)
     const categories = await safeGetCategories()
     
+    // mapa de id ou título da categoria para o id usado nas URLs
+    const categoryIdByKey = new Map<string, string>()
+    for (const c of categories ?? []) {
+      categoryIdByKey.set(c.id, c.id)
+      categoryIdByKey.set(c.title, c.id)
+    }
+
     const categoryUrls: MetadataRoute.Sitemap =
       (categories ?? [])
         .filter((c: any) => c?.active)
@@ -77,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       
       if (hasProducts) {
         // encontrar a categoria desta subcategoria
-        const categoryId = s.category
+        const categoryId = categoryIdByKey.get(s.category)
         if (categoryId) {
           subcategoryUrls.push({
             url: `${baseUrl}/produtos/${categoryId}/${s.id}`, // categoria (nome) + subcategoria (id Firebase)
@@ -93,24 +100,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productUrls: MetadataRoute.Sitemap = []
     
     for (const p of (allProducts ?? []).filter((p: any) => p?.active)) {
-      // constrói URL baseada na estrutura do produto
-      const urlParts = [`${baseUrl}/produtos`]
-      
-      // adicionar categoria (nome sem espaços)
-      if (p.category) {
-        urlParts.push(p.category)
-      }
-      
-      // adiciona subcategoria (id Firebase)
-      if (p.subcategory) {
-        urlParts.push(p.subcategory)
-      }
-      
-      // adiciona produto (id Firebase)
-      urlParts.push(p.id)
-      
+      // a página de produto exige categoria (id) + subcategoria (id Firebase) + produto (id Firebase)
+      const categoryId = categoryIdByKey.get(p.category)
+      if (!categoryId || !p.subcategory) continue
+
       productUrls.push({
-        url: urlParts.join('/'),
+        url: `${baseUrl}/produtos/${categoryId}/${p.subcategory}/${p.id}`,
         lastModified: p.updatedAt ? new Date(p.updatedAt) : now,
         changeFrequency: 'monthly' as const,
         priority: 0.6,

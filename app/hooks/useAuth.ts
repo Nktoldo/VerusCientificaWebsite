@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase.mjs';
 import { useRouter } from 'next/navigation';
-import { isAdminEmail } from '@/lib/adminConfig';
+import { isAdminEmailInDatabase } from '@/lib/adminConfig';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,9 +11,10 @@ export function useAuth() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      const admin = user ? await isAdminEmailInDatabase(user.email) : false;
       setUser(user);
-      setIsAdmin(user ? isAdminEmail(user.email) : false);
+      setIsAdmin(admin);
       setLoading(false);
     });
 

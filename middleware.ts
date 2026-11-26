@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// rotas que requerem autenticação
-const protectedRoutes = ['/editor'];
-
-// rotas que requerem admin
-const adminRoutes = ['/editor'];
+// páginas administrativas: o acesso aos dados é barrado pelas regras do Firebase
+const adminRoutes = ['/editor', '/login'];
 
 export function middleware(request: NextRequest) {
   const { pathname, host } = request.nextUrl;
@@ -19,13 +16,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  // verifica se a rota exige autenticação
-  const isProtectedRoute = protectedRoutes.some(route => 
+  // páginas administrativas: sem cache e fora dos buscadores
+  const isAdminRoute = adminRoutes.some(route =>
     pathname.startsWith(route)
   );
 
-  if (isProtectedRoute) {
-    return NextResponse.next();
+  if (isAdminRoute) {
+    const adminResponse = NextResponse.next();
+    adminResponse.headers.set('Cache-Control', 'no-store');
+    adminResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return adminResponse;
   }
 
   // adiciona headers de segurança e SEO

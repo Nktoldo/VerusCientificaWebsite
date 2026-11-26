@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import * as firebaseFunctions from '@/lib/databaseFunctions';
 
 interface SearchResult {
   id: string;
@@ -41,13 +42,8 @@ export default function AdvancedSearch() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
-      if (response.ok) {
-        const data = await response.json();
-        setResults(data.results || []);
-      } else {
-        setResults([]);
-      }
+      const data = await firebaseFunctions.quickSearch(searchQuery);
+      setResults([...data].sort((a, b) => b.relevance - a.relevance));
     } catch (error) {
       setResults([]);
     } finally {
@@ -99,8 +95,8 @@ export default function AdvancedSearch() {
         );
         break;
       case 'Enter':
-        e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < results.length) {
+          e.preventDefault();
           handleResultClick(results[selectedIndex]);
         }
         break;
@@ -153,6 +149,7 @@ export default function AdvancedSearch() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      setShowResults(false);
       router.push(`/search?q=${encodeURIComponent(query)}`);
     }
   };

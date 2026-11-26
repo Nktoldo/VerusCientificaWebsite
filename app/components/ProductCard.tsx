@@ -36,7 +36,7 @@ export default function ProductCard({name, image, subtitle, onClick}: {name: str
                                     setImageLoading(false);
                                 }}
                                 onError={(e) => {
-                                    console.error(`❌ Erro ao carregar imagem Firebase: ${name}`, {
+                                    console.error(`Erro ao carregar imagem Firebase: ${name}`, {
                                         src: image,
                                         error: e
                                     });

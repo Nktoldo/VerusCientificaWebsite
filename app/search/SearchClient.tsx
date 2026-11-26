@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../components/ProductCard';
 import { AdvancedSearch } from '../components/AdvancedSearch';
+import * as firebaseFunctions from '@/lib/databaseFunctions';
 
 interface SearchResult {
   id: string;
@@ -30,16 +31,15 @@ export default function SearchClient() {
   // buscar parâmetros da URL
   useEffect(() => {
     const q = searchParams.get('q');
-    const type = searchParams.get('type');
     
     if (q) {
       setQuery(q);
-      performSearch(q, type);
+      performSearch(q);
     }
   }, [searchParams]);
 
   // função de busca
-  const performSearch = async (searchQuery: string, searchType?: string | null) => {
+  const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
@@ -47,18 +47,8 @@ export default function SearchClient() {
 
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        q: searchQuery,
-        ...(searchType && { type: searchType })
-      });
-      
-      const response = await fetch(`/api/search?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setResults(data.results || []);
-      } else {
-        setResults([]);
-      }
+      const data = await firebaseFunctions.quickSearch(searchQuery);
+      setResults([...data].sort((a, b) => b.relevance - a.relevance));
     } catch (error) {
       setResults([]);
     } finally {

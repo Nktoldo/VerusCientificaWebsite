@@ -4,25 +4,144 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,       
+    pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
 
-export async function POST(req: Request) {
-  const data = await req.json();
+const MAX_BODY_BYTES = 100 * 1024;
+const MAX_PRODUTOS = 50;
+const LIMITE_ENVIOS = 5;
+const JANELA_MS = 10 * 60 * 1000;
+const SITE_HOST = 'www.veruscientifica.com.br';
 
-  const productsHtml = data.products && data.products.length > 0 ? data.products.map((product: any) => `
+// envios recentes por IP (por instância do servidor)
+const enviosPorIp = new Map<string, number[]>();
+
+function excedeuLimite(ip: string): boolean {
+  const agora = Date.now();
+  const recentes = (enviosPorIp.get(ip) || []).filter(t => agora - t < JANELA_MS);
+  if (recentes.length >= LIMITE_ENVIOS) {
+    enviosPorIp.set(ip, recentes);
+    return true;
+  }
+  recentes.push(agora);
+  enviosPorIp.set(ip, recentes);
+  if (enviosPorIp.size > 5000) {
+    for (const [chave, tempos] of enviosPorIp) {
+      if (tempos.every(t => agora - t >= JANELA_MS)) enviosPorIp.delete(chave);
+    }
+  }
+  return false;
+}
+
+// escapa texto para inserir no HTML do e-mail
+function esc(valor: unknown): string {
+  return String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function texto(valor: unknown, max = 200): string {
+  return typeof valor === 'string' ? valor.trim().slice(0, max) : '';
+}
+
+// só aceita links https do próprio site (ou do host atual) e imagens https
+function urlSegura(valor: unknown, hostsPermitidos: string[] | null): string {
+  if (typeof valor !== 'string') return '';
+  try {
+    const url = new URL(valor);
+    if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.hostname === 'localhost')) return '';
+    if (hostsPermitidos && !hostsPermitidos.includes(url.host)) return '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
+export async function POST(req: Request) {
+  const host = req.headers.get('host') || '';
+  const origin = req.headers.get('origin');
+  if (origin) {
+    try {
+      const originHost = new URL(origin).host;
+      if (originHost !== host && originHost !== SITE_HOST) {
+        return Response.json({ success: false }, { status: 403 });
+      }
+    } catch {
+      return Response.json({ success: false }, { status: 403 });
+    }
+  }
+
+  if (Number(req.headers.get('content-length') || 0) > MAX_BODY_BYTES) {
+    return Response.json({ success: false }, { status: 413 });
+  }
+
+  const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'desconhecido';
+  if (excedeuLimite(ip)) {
+    return Response.json({ success: false, erro: 'Muitos envios. Tente novamente em alguns minutos.' }, { status: 429 });
+  }
+
+  let raw: any;
+  try {
+    raw = await req.json();
+  } catch {
+    return Response.json({ success: false }, { status: 400 });
+  }
+
+  // campo-armadilha: invisível para pessoas, robôs costumam preencher
+  if (texto(raw?.website)) {
+    return Response.json({ success: true }, { status: 200 });
+  }
+
+  const data = {
+    tipoPessoa: raw?.tipoPessoa === 'Juridica' ? 'Juridica' : 'Fisica',
+    primeiraCompra: raw?.primeiraCompra === 'Não' ? 'Não' : 'Sim',
+    nome: texto(raw?.nome, 150),
+    cpf: texto(raw?.cpf, 20),
+    cnpj: texto(raw?.cnpj, 25),
+    dataNascimento: texto(raw?.dataNascimento, 20),
+    email: texto(raw?.email, 150),
+    telefone: texto(raw?.telefone, 30),
+    empresa: texto(raw?.empresa, 150),
+    cargo: texto(raw?.cargo, 100),
+    departamento: texto(raw?.departamento, 100),
+    estado: texto(raw?.estado, 30),
+    cidade: texto(raw?.cidade, 100),
+    cep: texto(raw?.cep, 15),
+    endereco: texto(raw?.endereco, 200),
+    predio: texto(raw?.predio, 100),
+    laboratorio: texto(raw?.laboratorio, 100),
+    mensagem: texto(raw?.mensagem, 5000),
+  };
+
+  if (!data.nome || !data.telefone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    return Response.json({ success: false, erro: 'Dados inválidos' }, { status: 400 });
+  }
+
+  const products = (Array.isArray(raw?.products) ? raw.products : []).slice(0, MAX_PRODUTOS).map((product: any) => ({
+    title: texto(product?.title, 200),
+    subtitle: texto(product?.subtitle, 200),
+    supplier: texto(product?.supplier, 100),
+    price: typeof product?.price === 'number' && isFinite(product.price) ? product.price : null,
+    imageUrl: urlSegura(product?.imageUrl, null),
+    productUrl: urlSegura(product?.productUrl, [SITE_HOST, host]),
+  }));
+
+  const productsHtml = products.length > 0 ? products.map((product: any) => `
     <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; background: linear-gradient(to bottom, #f0f9ff, #ffffff);">
       <div style="display: flex; gap: 16px; align-items: flex-start;">
         <div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f0f9ff; display: flex; align-items: center; justify-content: center;">
-          <img src="${product.imageUrl}" alt="${product.title}" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+          ${product.imageUrl ? `<img src="${esc(product.imageUrl)}" alt="${esc(product.title)}" style="max-width: 100%; max-height: 100%; object-fit: contain;" />` : ''}
         </div>
         <div style="flex: 1;">
-          <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: bold; color: #1e40af;">${product.title}</h3>
-          <p style="margin: 0 0 8px 0; font-size: 14px; color: #64748b;">${product.subtitle}</p>
-          <p style="margin: 0 0 8px 0; font-size: 12px; color: #3b82f6;">Fornecido por: ${product.supplier}</p>
-          ${product.price ? `<p style="margin: 0; font-size: 14px; font-weight: 600; color: #059669;">R$ ${product.price.toLocaleString('pt-BR')}</p>` : ''}
-          <a href="${product.productUrl}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-size: 12px;">Ver Produto</a>
+          <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: bold; color: #1e40af;">${esc(product.title)}</h3>
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #64748b;">${esc(product.subtitle)}</p>
+          <p style="margin: 0 0 8px 0; font-size: 12px; color: #3b82f6;">Fornecido por: ${esc(product.supplier)}</p>
+          ${product.price !== null ? `<p style="margin: 0; font-size: 14px; font-weight: 600; color: #059669;">R$ ${esc(product.price.toLocaleString('pt-BR'))}</p>` : ''}
+          ${product.productUrl ? `<a href="${esc(product.productUrl)}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-size: 12px;">Ver Produto</a>` : ''}
         </div>
       </div>
     </div>
@@ -46,74 +165,74 @@ export async function POST(req: Request) {
         <h2 style="color: #1e40af; margin-bottom: 20px; font-size: 22px;">Dados do Cliente</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
           <div>
-            <strong>Tipo de Pessoa:</strong> ${data.tipoPessoa}
+            <strong>Tipo de Pessoa:</strong> ${esc(data.tipoPessoa)}
           </div>
           <div>
-            <strong>Primeira Compra:</strong> ${data.primeiraCompra}
+            <strong>Primeira Compra:</strong> ${esc(data.primeiraCompra)}
           </div>
           <div>
-          <strong>Nome:</strong> ${data.nome}
+          <strong>Nome:</strong> ${esc(data.nome)}
           </div>
           ${data.tipoPessoa === 'Fisica' ? `
             <div>
-              <strong>CPF:</strong> ${data.cpf}
+              <strong>CPF:</strong> ${esc(data.cpf)}
             </div>
           ` : ''}
           ${data.tipoPessoa === 'Juridica' ? `
             <div>
-              <strong>CNPJ:</strong> ${data.cnpj}
+              <strong>CNPJ:</strong> ${esc(data.cnpj)}
             </div>
           ` : ''}
           ${data.tipoPessoa === 'Fisica' ? `
             <div>
-              <strong>Data de nascimento:</strong> ${data.dataNascimento}
+              <strong>Data de nascimento:</strong> ${esc(data.dataNascimento)}
             </div>
           ` : ''}
           <div>
-            <strong>Email:</strong> ${data.email}
+            <strong>Email:</strong> ${esc(data.email)}
           </div>
           <div>
-            <strong>Telefone:</strong> ${data.telefone || 'Não informado'}
+            <strong>Telefone:</strong> ${esc(data.telefone || 'Não informado')}
           </div>
           <div>
-            <strong>Empresa:</strong> ${data.empresa || 'Não informado'}
+            <strong>Empresa:</strong> ${esc(data.empresa || 'Não informado')}
           </div>
           <div>
-            <strong>Cargo:</strong> ${data.cargo || 'Não informado'}
+            <strong>Cargo:</strong> ${esc(data.cargo || 'Não informado')}
           </div>
           <div>
-            <strong>Departamento:</strong> ${data.departamento || 'Não informado'}
+            <strong>Departamento:</strong> ${esc(data.departamento || 'Não informado')}
           </div>
           <div>
-            <strong>Estado:</strong> ${data.estado || 'Não informado'}
+            <strong>Estado:</strong> ${esc(data.estado || 'Não informado')}
           </div>
           <div>
-            <strong>Cidade:</strong> ${data.cidade || 'Não informado'}
+            <strong>Cidade:</strong> ${esc(data.cidade || 'Não informado')}
           </div>
           <div>
-            <strong>CEP:</strong> ${data.cep || 'Não informado'}
+            <strong>CEP:</strong> ${esc(data.cep || 'Não informado')}
           </div>
           <div>
-            <strong>Endereço:</strong> ${data.endereco || 'Não informado'}
+            <strong>Endereço:</strong> ${esc(data.endereco || 'Não informado')}
           </div>
           <div>
-            <strong>Prédio:</strong> ${data.predio || 'Não informado'}
+            <strong>Prédio:</strong> ${esc(data.predio || 'Não informado')}
           </div>
           <div>
-          <strong>Laboratório/Sala:</strong> ${data.laboratorio || 'Não informado'}
+          <strong>Laboratório/Sala:</strong> ${esc(data.laboratorio || 'Não informado')}
           </div>
         </div>
         ${data.mensagem ? `
           <div style="margin-top: 20px;">
             <strong>Mensagem:</strong>
-            <p style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 8px 0 0 0;">${data.mensagem}</p>
+            <p style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 8px 0 0 0; white-space: pre-wrap;">${esc(data.mensagem)}</p>
           </div>
         ` : ''}
       </div>
 
       ${productsHtml ? `
         <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-          <h2 style="color: #1e40af; margin-bottom: 20px; font-size: 22px;">Produtos Solicitados (${data.products.length})</h2>
+          <h2 style="color: #1e40af; margin-bottom: 20px; font-size: 22px;">Produtos Solicitados (${products.length})</h2>
           ${productsHtml}
         </div>
       ` : ''}
@@ -124,6 +243,7 @@ export async function POST(req: Request) {
   await transporter.sendMail({
     from: process.env.GMAIL_USER,
     to: process.env.GMAIL_TO,
+    replyTo: data.email,
     subject: 'Novo orçamento recebido pelo website',
     html: htmlContent,
     text:
@@ -144,8 +264,8 @@ export async function POST(req: Request) {
       ` --> CEP: ${data.cep}\n` +
       ` --> Endereço: ${data.endereco}\n` +
       ` --> Mensagem:\n${data.mensagem}\n` +
-      (data.products && data.products.length > 0 ? `\n --> Produtos selecionados: ${data.products.length} produtos\n` : '')
+      (products.length > 0 ? `\n --> Produtos selecionados: ${products.length} produtos\n` : '')
   });
 
   return new Response(JSON.stringify({ success: true }), { status: 200 });
-} 
+}
